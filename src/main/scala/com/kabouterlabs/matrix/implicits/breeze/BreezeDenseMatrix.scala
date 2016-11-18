@@ -150,7 +150,7 @@ object BreezeDenseMatrixImplicit {
 
 
   implicit class AggregationT$implicit(matrix:MatrixDouble) extends AggregateT[MatrixDouble] {
-    override def sumRows(): MatrixDouble = ->(matrix, (m:MatrixImpl)=>breeze.linalg.sum(m(::,*)))
+    override def sumRows(): MatrixDouble = ->(matrix, (m:MatrixImpl)=>breeze.linalg.sum(m(::,*)).toDenseMatrix)
 
     override def sumCols(): MatrixDouble = ->(matrix, (m:MatrixImpl)=>breeze.linalg.sum(m(*,::)).toDenseMatrix.t)
 

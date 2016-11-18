@@ -8,6 +8,7 @@ package com.kabouterlabs.matrix.main
 import com.kabouterlabs.matrix.MatrixM
 import com.kabouterlabs.matrix.MatrixOperations._
 import com.kabouterlabs.matrix.implicits.breeze.BreezeDenseMatrixImplicit._
+//import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
 
 object Main extends App
 {
@@ -24,6 +25,11 @@ object Main extends App
   val m4 = MatrixM.ones(10,20)
   println(m4)
   val m6 = m3 :+ m3
+  println(m6)
+  val m7 = m6.sumRows()
+  println(m7)
+  val m8 = m6.sumCols()
+  println(m8)
 
   println("DONE")
 

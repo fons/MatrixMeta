@@ -655,7 +655,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
 
   it should "be able to serialize to a csv file" in {
     val m = MatrixM.rand(1000,1000)
-    val fn = "/tmp/test.csv"
+    val fn = "/tmp/testserializebreeze.csv"
     MatrixM.csvwrite(fn, m)
     val k = MatrixM.csvread(fn)
     val res = m :- k
