@@ -28,6 +28,8 @@ libraryDependencies  ++= Seq(
 )
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.0"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+libraryDependencies += "jeigen" % "jeigen" % "1.2" from "https://github.com/hughperkins/jeigen/releases/download/v1.2/Jeigen-onefat.jar"
+libraryDependencies += "jeigen" % "jna" % "4.1.0" from "https://github.com/hughperkins/jeigen/releases/download/v1.2/jna-4.1.0.jar"
 
 resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases"
 
