@@ -26,8 +26,12 @@ libraryDependencies  ++= Seq(
   // It depends on LGPL code.
   //"org.scalanlp" %% "breeze-viz" % "0.12"
 )
+
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.0"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+// https://mvnrepository.com/artifact/org.armadillojava/armadillojava
+libraryDependencies += "org.armadillojava" % "armadillojava" % "4.000.0"
+
 libraryDependencies += "jeigen" % "jeigen" % "1.2" from "https://github.com/hughperkins/jeigen/releases/download/v1.2/Jeigen-onefat.jar"
 libraryDependencies += "jeigen" % "jna" % "4.1.0" from "https://github.com/hughperkins/jeigen/releases/download/v1.2/jna-4.1.0.jar"
 
