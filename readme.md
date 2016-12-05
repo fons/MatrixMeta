@@ -23,10 +23,6 @@ The goal is to provide a uniform api for both dense and sparse matrices as well 
 
 import com.kabouterlabs.matrix.MatrixOperations._
 
-/**
-  * Created by fons on 12/2/16.
-  */
-
 case class MatrixExample[T](implicit evmatrix: MatrixOperationsTC[T]) {
 
   def apply(): Unit = {
@@ -544,11 +540,44 @@ Process finished with exit code 0
 </code>
 
 
+
+
+# Matrix Libraries Covered
+
+  1. [breeze](https://github.com/scalanlp/breeze)
+ 
+ ```scala
+   import com.kabouterlabs.matrix.implicits.breeze.BreezeDenseMatrixImplicit._
+  ```
+  
+  2. [jeigen](https://github.com/hughperkins/jeigen)
+ 
+ 
+ ```scala
+  import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
+  ```
+  
+  3. [armadillojava](https://github.com/SRAhub/ArmadilloJava)
+  
+    ```scala
+    import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaMatImplicit._
+```
+
+
 #API
 
-## Matrix Libraries
+## Creation
+
+|               | Direct         |   Implicit |
+|---------------|----------------|-------------------
+| Empty Matrix  |   MatrixM(rows,colls) | matrix(rows,colls)
+| Initialize matrix with Array |  MatrixM(rows,colls,data) | matrix(rows,colls,data)
+|
+ 
 
 
-## Matrix Creation
+ 
 
-## 
+
+
+

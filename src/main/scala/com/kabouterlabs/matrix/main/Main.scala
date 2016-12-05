@@ -27,6 +27,8 @@
 
 package com.kabouterlabs.matrix.main
 
+import com.kabouterlabs.matrix.MatrixM
+
 /**
   * Created by fons on 3/13/16.
   */
@@ -54,6 +56,8 @@ object Use
 
 object Main extends App {
 
+
+  MatrixM(2,2)
 
   Use.run1()()
   Use.run2()()
