@@ -1,3 +1,30 @@
+/*
+ * Copyright (c) 2016.
+ * https://opensource.org/licenses/BSD-3-Clause
+ *
+ * Copyright (c) 2016, MatrixMeta developers
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *    of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING,
+ * BUT NOT LIMITED TO,THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+ * THE COPYRIGHT HOLDER OR CONTRIBUTORS BELIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+ * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * EOM
+ */
+
 package com.kabouterlabs.matrix.implicits.breeze
 
 import java.io.{File, PrintWriter, StringWriter}
@@ -23,7 +50,7 @@ private object BreezeDenseMatrix {
       Some(new DenseMatrix[B](rows, colls, data))
     }
     catch {
-      case e:Throwable => {
+      case e: Throwable => {
         val sw = new StringWriter
         e.printStackTrace(new PrintWriter(sw))
         println("exception caught :" + e + sw)
@@ -34,10 +61,10 @@ private object BreezeDenseMatrix {
 
   def apply(rows: Int, cols: Int): Option[DenseMatrix[Double]] = {
     try {
-      Some(DenseMatrix.zeros[Double](rows,cols))
+      Some(DenseMatrix.zeros[Double](rows, cols))
     }
     catch {
-      case e:Throwable => {
+      case e: Throwable => {
         val sw = new StringWriter
         e.printStackTrace(new PrintWriter(sw))
         println("exception caught :" + e + sw)
@@ -49,29 +76,29 @@ private object BreezeDenseMatrix {
   def adddouble[B: Numeric](matrix: DenseMatrix[Double], rhs: B): DenseMatrix[Double] = rhs match {
     case q if rhs.isInstanceOf[Double] => matrix :+= rhs.asInstanceOf[Double]
     case q if rhs.isInstanceOf[Float] => matrix :+= rhs.asInstanceOf[Float].toDouble
-    case q if rhs.isInstanceOf[Int]  => matrix :+= rhs.asInstanceOf[Int].toDouble
+    case q if rhs.isInstanceOf[Int] => matrix :+= rhs.asInstanceOf[Int].toDouble
     case _ => matrix
   }
 
 
   def subdouble[B: Numeric](matrix: DenseMatrix[Double], rhs: B): DenseMatrix[Double] = rhs match {
-    case q if rhs.isInstanceOf[Double]  => matrix :+= (-1.0 * rhs.asInstanceOf[Double])
+    case q if rhs.isInstanceOf[Double] => matrix :+= (-1.0 * rhs.asInstanceOf[Double])
     case q if rhs.isInstanceOf[Float] => matrix :+= (-1.0 * rhs.asInstanceOf[Float].toDouble)
-    case q if rhs.isInstanceOf[Int]  => matrix :+= (-1.0 * rhs.asInstanceOf[Int].toDouble)
+    case q if rhs.isInstanceOf[Int] => matrix :+= (-1.0 * rhs.asInstanceOf[Int].toDouble)
     case _ => matrix
   }
 
   def muldouble[B: Numeric](matrix: DenseMatrix[Double], rhs: B): DenseMatrix[Double] = rhs match {
-    case q if rhs.isInstanceOf[Double]  => matrix :*= rhs.asInstanceOf[Double]
+    case q if rhs.isInstanceOf[Double] => matrix :*= rhs.asInstanceOf[Double]
     case q if rhs.isInstanceOf[Float] => matrix :*= rhs.asInstanceOf[Float].toDouble
     case q if rhs.isInstanceOf[Int] => matrix :*= rhs.asInstanceOf[Int].toDouble
     case _ => matrix
   }
 
   def divdouble[B: Numeric](matrix: DenseMatrix[Double], rhs: B): DenseMatrix[Double] = rhs match {
-    case q if rhs.isInstanceOf[Double]  => matrix :*= (1.0 / rhs.asInstanceOf[Double])
-    case q if rhs.isInstanceOf[Float]   => matrix :*= (1.0 / rhs.asInstanceOf[Float].toDouble)
-    case q if rhs.isInstanceOf[Int]     => matrix :*= (1.0 / rhs.asInstanceOf[Int].toDouble)
+    case q if rhs.isInstanceOf[Double] => matrix :*= (1.0 / rhs.asInstanceOf[Double])
+    case q if rhs.isInstanceOf[Float] => matrix :*= (1.0 / rhs.asInstanceOf[Float].toDouble)
+    case q if rhs.isInstanceOf[Int] => matrix :*= (1.0 / rhs.asInstanceOf[Int].toDouble)
     case _ => matrix
   }
 
@@ -90,15 +117,15 @@ object BreezeDenseMatrixImplicit {
 
   private def boolToDouble(b: Boolean): Double = if (b) 1.0 else 0.0
 
-  private def ~->[U](matrix:MatrixDouble, f:(MatrixImpl)=>U) : Option[U] = {
+  private def ~->[U](matrix: MatrixDouble, f: (MatrixImpl) => U): Option[U] = {
     matrix.matrix match {
-      case None          => None
+      case None => None
       case Some(matrixm) => {
         try {
           Some(f(matrixm))
         }
         catch {
-          case e:Throwable => {
+          case e: Throwable => {
             val sw = new StringWriter
             e.printStackTrace(new PrintWriter(sw))
             println("exception caught :" + e + sw)
@@ -111,48 +138,59 @@ object BreezeDenseMatrixImplicit {
   }
 
 
-  private def ~>(lhs:MatrixDouble, rhs:MatrixDouble, f:(MatrixImpl, MatrixImpl)=>MatrixImpl):MatrixDouble = {
+  private def ~>(lhs: MatrixDouble, rhs: MatrixDouble, f: (MatrixImpl, MatrixImpl) => MatrixImpl): MatrixDouble = {
     (lhs.matrix, rhs.matrix) match {
-      case (Some(lhsm: MatrixImpl), Some(rhsm: MatrixImpl)) => MatrixM(()=>f(lhsm, rhsm))
-      case (_, _) => MatrixM.none
-    }
-  }
-  private def :~>[B](lhs:MatrixDouble, rhs:B, f:(MatrixImpl, B)=>MatrixImpl):MatrixDouble = {
-    (lhs.matrix, rhs) match {
-      case (Some(lhsm: MatrixImpl), rhsm) => MatrixM(()=>f(lhsm, rhsm))
+      case (Some(lhsm: MatrixImpl), Some(rhsm: MatrixImpl)) => MatrixM(() => f(lhsm, rhsm))
       case (_, _) => MatrixM.none
     }
   }
 
-  private def ->(matrix:MatrixDouble, f:(MatrixImpl)=>MatrixImpl) : MatrixDouble = {
+  private def :~>[B](lhs: MatrixDouble, rhs: B, f: (MatrixImpl, B) => MatrixImpl): MatrixDouble = {
+    (lhs.matrix, rhs) match {
+      case (Some(lhsm: MatrixImpl), rhsm) => MatrixM(() => f(lhsm, rhsm))
+      case (_, _) => MatrixM.none
+    }
+  }
+
+  private def ->(matrix: MatrixDouble, f: (MatrixImpl) => MatrixImpl): MatrixDouble = {
     matrix.matrix match {
-      case Some(matrixm) => MatrixM(()=>f(matrixm))
-      case None          => matrix
+      case Some(matrixm) => MatrixM(() => f(matrixm))
+      case None => matrix
     }
   }
 
 
   implicit val fdouble = new FactoryT {
-      override type MatrixImplT = DenseMatrix[Double]
-      implicit override def apply(row: Int, col: Int, data: Array[Double]): Option[MatrixImplT] = BreezeDenseMatrix(row, col, data)
-      implicit override def apply(row:Int, col:Int): Option[MatrixImplT] = BreezeDenseMatrix(row, col)
+    override type MatrixImplT = DenseMatrix[Double]
+
+    implicit override def apply(row: Int, col: Int, data: Array[Double]): Option[MatrixImplT] = BreezeDenseMatrix(row, col, data)
+
+    implicit override def apply(row: Int, col: Int): Option[MatrixImplT] = BreezeDenseMatrix(row, col)
   }
 
   implicit object CompanionT$implicit extends CompanionT {
     override type MatrixImplT = MatrixDouble
-    override def fill(row: Int, col: Int, value: ElemT): MatrixDouble = MatrixM(row,col,Array.fill[Double](row*col)(value))
-    override def ones(row: Int, col: Int): MatrixDouble   = MatrixM.apply(() => DenseMatrix.ones(row,col))
-    override def rand(row: Int, col: Int): MatrixDouble   = MatrixM.apply(() => {DenseMatrix.rand[Double](row, col)})
-    override def eye(size: Int): MatrixDouble             = MatrixM.apply(() => DenseMatrix.eye[Double](size))
-    override def diag(data: Array[Double]): MatrixDouble  = MatrixM.apply(() => breeze.linalg.diag(new DenseVector[Double](data)))
-    override def zeros(row: Int, col: Int): MatrixDouble  = MatrixM.apply(() => DenseMatrix.zeros[Double](row, col))
+
+    override def fill(row: Int, col: Int, value: ElemT): MatrixDouble = MatrixM(row, col, Array.fill[Double](row * col)(value))
+
+    override def ones(row: Int, col: Int): MatrixDouble = MatrixM.apply(() => DenseMatrix.ones(row, col))
+
+    override def rand(row: Int, col: Int): MatrixDouble = MatrixM.apply(() => {
+      DenseMatrix.rand[Double](row, col)
+    })
+
+    override def eye(size: Int): MatrixDouble = MatrixM.apply(() => DenseMatrix.eye[Double](size))
+
+    override def diag(data: Array[Double]): MatrixDouble = MatrixM.apply(() => breeze.linalg.diag(new DenseVector[Double](data)))
+
+    override def zeros(row: Int, col: Int): MatrixDouble = MatrixM.apply(() => DenseMatrix.zeros[Double](row, col))
   }
 
 
-  implicit class AggregationT$implicit(matrix:MatrixDouble) extends AggregateT[MatrixDouble] {
-    override def sumRows(): MatrixDouble = ->(matrix, (m:MatrixImpl)=>breeze.linalg.sum(m(::,*)).toDenseMatrix)
+  implicit class AggregationT$implicit(matrix: MatrixDouble) extends AggregateT[MatrixDouble] {
+    override def sumRows(): MatrixDouble = ->(matrix, (m: MatrixImpl) => breeze.linalg.sum(m(::, *)).toDenseMatrix)
 
-    override def sumCols(): MatrixDouble = ->(matrix, (m:MatrixImpl)=>breeze.linalg.sum(m(*,::)).toDenseMatrix.t)
+    override def sumCols(): MatrixDouble = ->(matrix, (m: MatrixImpl) => breeze.linalg.sum(m(*, ::)).toDenseMatrix.t)
 
     override def trace(): Option[ElemT] = {
       matrix.matrix match {
@@ -160,107 +198,174 @@ object BreezeDenseMatrixImplicit {
         case _ => None
       }
     }
-    override def sum(): Option[ElemT] =  ~->(matrix, (m:MatrixImpl)=>breeze.linalg.sum(m))
+
+    override def sum(): Option[ElemT] = ~->(matrix, (m: MatrixImpl) => breeze.linalg.sum(m))
   }
 
 
+  implicit class SliceT$implicit(matrix: MatrixDouble) extends SliceT[MatrixDouble] {
 
+    override def apply(row: Int, coll: Int, v: ElemT): MatrixDouble = ->(matrix, (m) => m(row to row, coll to coll) := v)
 
-  implicit class SliceT$implicit(matrix:MatrixDouble) extends SliceT[MatrixDouble] {
+    override def toDiag(): MatrixDouble = ->(matrix, (m: MatrixImpl) => m :* DenseMatrix.eye[Double](m.rows))
 
-    override def apply(row: Int, coll: Int, v: ElemT): MatrixDouble = ->(matrix, (m)=>m(row to row,coll to coll) :=v)
+    override def toArray(): Option[Array[ElemT]] = ~->(matrix, (m: MatrixImpl) => m.toArray)
 
-    override def toDiag(): MatrixDouble = ->(matrix, (m:MatrixImpl)=> m :* DenseMatrix.eye[Double](m.rows))
+    def name = "breeze double matrix" + matrix.toString
 
-    override def toArray(): Option[Array[ElemT]] = ~->(matrix, (m:MatrixImpl)=>m.toArray)
-    def name = "breeze double matrix"  + matrix.toString
     // breeze supports step 1 size only
-    override def apply[K, L](row: K, col: L): MatrixDouble = (row,col) match {
-      case (r:Range, ::) =>  ->(matrix, (m:MatrixImpl)  => m(r.start to r.end,::))
-      case (::, r:Range) =>  ->(matrix, (m:MatrixImpl)  => m(::, r.start to r.end))
+    override def apply[K, L](row: K, col: L): MatrixDouble = (row, col) match {
+      case (r: Range, ::) => ->(matrix, (m: MatrixImpl) => m(r.start to r.end, ::))
+      case (::, r: Range) => ->(matrix, (m: MatrixImpl) => m(::, r.start to r.end))
 
-      case (row:Int, ::) =>  ->(matrix, (m:MatrixImpl)  => m(row,::).t.toDenseMatrix)
-      case (::, col:Int) =>  ->(matrix, (m:MatrixImpl)  => m(::,col).toDenseMatrix.t)
+      case (row: Int, ::) => ->(matrix, (m: MatrixImpl) => m(row, ::).t.toDenseMatrix)
+      case (::, col: Int) => ->(matrix, (m: MatrixImpl) => m(::, col).toDenseMatrix.t)
 
-      case (r:Range, c:Range) => ->(matrix, (m:MatrixImpl)  => m(r.start to r.end, c.start to c.end))
-      case (row:Int, r:Range) => ->(matrix, (m:MatrixImpl)  => m(row, r.start to r.end).t.toDenseMatrix)
-      case (r:Range, col:Int) => ->(matrix, (m:MatrixImpl)  => m(r.start to r.end, col).toDenseMatrix)
-      case (_,_) => matrix
+      case (r: Range, c: Range) => ->(matrix, (m: MatrixImpl) => m(r.start to r.end, c.start to c.end))
+      case (row: Int, r: Range) => ->(matrix, (m: MatrixImpl) => m(row, r.start to r.end).t.toDenseMatrix)
+      case (r: Range, col: Int) => ->(matrix, (m: MatrixImpl) => m(r.start to r.end, col).toDenseMatrix)
+      case (_, _) => matrix
     }
-    override def apply(row: Int, col: Int): Option[ElemT] = ~->(matrix, (m:MatrixImpl)=>m(row,col))
-    override def concatRight(rhs: MatrixDouble): MatrixDouble = ~>(matrix, rhs, (l:MatrixImpl, r:MatrixImpl)=>DenseMatrix.horzcat(l,r))
-    override def concatDown(rhs: MatrixDouble): MatrixDouble = ~>(matrix, rhs, (l:MatrixImpl, r:MatrixImpl)=>DenseMatrix.vertcat(l,r))
+
+    override def apply(row: Int, col: Int): Option[ElemT] = ~->(matrix, (m: MatrixImpl) => m(row, col))
+
+    override def concatRight(rhs: MatrixDouble): MatrixDouble = ~>(matrix, rhs, (l: MatrixImpl, r: MatrixImpl) => DenseMatrix.horzcat(l, r))
+
+    override def concatDown(rhs: MatrixDouble): MatrixDouble = ~>(matrix, rhs, (l: MatrixImpl, r: MatrixImpl) => DenseMatrix.vertcat(l, r))
   }
 
   implicit class LinearAlgebraT$implicit(matrix: MatrixDouble) extends LinearAlgebraT {
     override type MatrixRetTypeT = MatrixDouble
-    override type EigenResultT   = BreezeEigenResult
-    override def eig():EigenResultT =  EigenResultM.alloc(matrix.matrix.map(breeze.linalg.eig(_)))
+    override type EigenResultT = BreezeEigenResult
+
+    override def eig(): EigenResultT = EigenResultM.alloc(matrix.matrix.map(breeze.linalg.eig(_)))
+
     override def solve(rhs: MatrixDouble): MatrixDouble = ~>(matrix, rhs, (l: MatrixImpl, r: MatrixImpl) => l \ r)
+
     override def inverse(): MatrixRetTypeT = ->(matrix, (m: MatrixImpl) => inv(m))
+
     override def transpose(): MatrixDouble = ->(matrix, (m: MatrixImpl) => m.t)
-    override def determinant(): Option[ElemT] = ~->(matrix , (m:MatrixImpl)=>det(m))
+
+    override def determinant(): Option[ElemT] = ~->(matrix, (m: MatrixImpl) => det(m))
 
   }
 
   implicit object SerializeT$implicit extends SerializeT[MatrixDouble] {
-    override def csvWrite(fn: String, matrix:MatrixDouble): Unit = {
+    override def csvWrite(fn: String, matrix: MatrixDouble): Unit = {
       matrix.matrix match {
-        case Some(m) => breeze.linalg.csvwrite(new java.io.File(fn),m)
+        case Some(m) => breeze.linalg.csvwrite(new java.io.File(fn), m)
         case _ => Unit
       }
     }
+
     //
 
-    override def csvRead(fn: String): MatrixDouble = MatrixM(()=>breeze.linalg.csvread(new File(fn)))
+    override def csvRead(fn: String): MatrixDouble = MatrixM(() => breeze.linalg.csvread(new File(fn)))
   }
 
   //TODO : Complex eigenvalues/eigenvectors aren't handled
-  implicit class EigenResultAccessT$(result : BreezeEigenResult) extends EigenAccessT [MatrixDouble] {
+  implicit class EigenResultAccessT$(result: BreezeEigenResult) extends EigenAccessT[MatrixDouble] {
     def name = "jeigen breeze dense matrix result"
-    override def values(): MatrixDouble = MatrixM(result.result.map((r)=>DenseMatrix.vertcat(r.eigenvalues.toDenseMatrix, r.eigenvectorsComplex.toDenseMatrix).t))
+
+    override def values(): MatrixDouble = MatrixM(result.result.map((r) => DenseMatrix.vertcat(r.eigenvalues.toDenseMatrix, r.eigenvectorsComplex.toDenseMatrix).t))
+
     //TODO : This will not handle complex eigen vectors.
-    override def vectors(): MatrixDouble = MatrixM(result.result.map((r)=>r.eigenvectors))
+    override def vectors(): MatrixDouble = MatrixM(result.result.map((r) => r.eigenvectors))
   }
 
   implicit object MatrixOperationsTC$implicit$ extends MatrixOperationsTC[MatrixDouble] {
-    override def add(lhs: MatrixDouble,   rhs: MatrixDouble): MatrixDouble  = ~>(lhs,rhs, (l:MatrixImpl, r:MatrixImpl)=> l + r)
-    override def sub(lhs: MatrixDouble,   rhs: MatrixDouble): MatrixDouble  = ~>(lhs,rhs, (l:MatrixImpl, r:MatrixImpl)=> l - r)
-    override def multe(lhs: MatrixDouble, rhs: MatrixDouble):MatrixDouble   = ~>(lhs,rhs, (l:MatrixImpl, r:MatrixImpl)=> l:*r)
-    override def dive(lhs: MatrixDouble,  rhs: MatrixDouble): MatrixDouble  = ~>(lhs,rhs, (l:MatrixImpl, r:MatrixImpl)=> l:/r)
-    override def mult(lhs: MatrixDouble,  rhs: MatrixDouble): MatrixDouble  = ~>(lhs,rhs, (l:MatrixImpl, r:MatrixImpl)=> l*r)
-    override def add1[B: Numeric](lhs: MatrixDouble, rhs: B) = :~>(lhs,rhs, (l:MatrixImpl, r:B)=> BreezeDenseMatrix.adddouble(l.copy, r))
-    override def sub1[B: Numeric](lhs: MatrixDouble, rhs: B) = :~>(lhs,rhs, (l:MatrixImpl, r:B)=> BreezeDenseMatrix.subdouble(l.copy, r))
-    override def mul1[B: Numeric](lhs: MatrixDouble, rhs: B) = :~>(lhs,rhs, (l:MatrixImpl, r:B)=> BreezeDenseMatrix.muldouble(l.copy, r))
-    override def div1[B: Numeric](lhs: MatrixDouble, rhs: B) = :~>(lhs,rhs, (l:MatrixImpl, r:B)=> BreezeDenseMatrix.divdouble(l.copy, r))
-    override def eq(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (l:MatrixImpl, r:MatrixImpl)=> (l :== r).mapValues(boolToDouble))
-    override def ne(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (l:MatrixImpl, r:MatrixImpl)=> (!(l :== r)).mapValues(boolToDouble))
-    override def lt(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (l:MatrixImpl, r:MatrixImpl)=> ((l :< r)).mapValues(boolToDouble))
-    override def le(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (l:MatrixImpl, r:MatrixImpl)=>
+
+    override type EigenResultT = BreezeEigenResult
+
+    override def eig(m: MatrixDouble): EigenResultT = m.eig()
+
+    override def vectors(r: EigenResultT): MatrixDouble = r.vectors()
+
+    override def values(r: EigenResultT): MatrixDouble = r.values()
+
+    override def add(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (l: MatrixImpl, r: MatrixImpl) => l + r)
+
+    override def sub(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (l: MatrixImpl, r: MatrixImpl) => l - r)
+
+    override def multe(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (l: MatrixImpl, r: MatrixImpl) => l :* r)
+
+    override def dive(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (l: MatrixImpl, r: MatrixImpl) => l :/ r)
+
+    override def mult(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (l: MatrixImpl, r: MatrixImpl) => l * r)
+
+    override def add1[B: Numeric](lhs: MatrixDouble, rhs: B) = :~>(lhs, rhs, (l: MatrixImpl, r: B) => BreezeDenseMatrix.adddouble(l.copy, r))
+
+    override def sub1[B: Numeric](lhs: MatrixDouble, rhs: B) = :~>(lhs, rhs, (l: MatrixImpl, r: B) => BreezeDenseMatrix.subdouble(l.copy, r))
+
+    override def mul1[B: Numeric](lhs: MatrixDouble, rhs: B) = :~>(lhs, rhs, (l: MatrixImpl, r: B) => BreezeDenseMatrix.muldouble(l.copy, r))
+
+    override def div1[B: Numeric](lhs: MatrixDouble, rhs: B) = :~>(lhs, rhs, (l: MatrixImpl, r: B) => BreezeDenseMatrix.divdouble(l.copy, r))
+
+    override def eq(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (l: MatrixImpl, r: MatrixImpl) => (l :== r).mapValues(boolToDouble))
+
+    override def ne(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (l: MatrixImpl, r: MatrixImpl) => (!(l :== r)).mapValues(boolToDouble))
+
+    override def lt(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (l: MatrixImpl, r: MatrixImpl) => ((l :< r)).mapValues(boolToDouble))
+
+    override def le(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (l: MatrixImpl, r: MatrixImpl) =>
       (((l :< r) :| (l :== r)).mapValues(boolToDouble)))
-    override def ge(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (l:MatrixImpl, r:MatrixImpl)=> ((!(l :< r))).mapValues(boolToDouble))
-    override def gt(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (l:MatrixImpl, r:MatrixImpl)=>
+
+    override def ge(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (l: MatrixImpl, r: MatrixImpl) => ((!(l :< r))).mapValues(boolToDouble))
+
+    override def gt(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (l: MatrixImpl, r: MatrixImpl) =>
       ((!((l :< r) :| (l :== r)))).mapValues(boolToDouble))
-    override def create(rows: Int, colls: Int, data: Array[ElemT]): MatrixDouble = MatrixM(rows, colls,data)
-    override def zero(row: Int, col: Int): MatrixDouble = MatrixM.zero(row,col)
-    override def rand(row: Int, col: Int): MatrixDouble = MatrixM.rand(row,col)
+
+    override def create(rows: Int, colls: Int, data: Array[ElemT]): MatrixDouble = MatrixM(rows, colls, data)
+
+    override def create(rows: Int, colls: Int): MatrixDouble = MatrixM(rows, colls)
+
+    override def zero(row: Int, col: Int): MatrixDouble = MatrixM.zero(row, col)
+
+    override def rand(row: Int, col: Int): MatrixDouble = MatrixM.rand(row, col)
+
     override def eye(size: Int): MatrixDouble = MatrixM.eye(size)
+
     override def diag(data: Array[ElemT]): MatrixDouble = MatrixM.diag(data)
-    override def ones(row: Int, col: Int): MatrixDouble = MatrixM.ones(row,col)
-    override def fill(row: Int, col: Int, value: ElemT): MatrixDouble = MatrixM.fill(row,col,value)
+
+    override def ones(row: Int, col: Int): MatrixDouble = MatrixM.ones(row, col)
+
+    override def fill(row: Int, col: Int, value: ElemT): MatrixDouble = MatrixM.fill(row, col, value)
+
     override def inverse(m: MatrixDouble): MatrixDouble = m.inverse()
+
     override def solve(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = lhs.solve(rhs)
+
     override def transpose(m: MatrixDouble): MatrixDouble = m.transpose()
+
     override def determinant(m: MatrixDouble): Option[ElemT] = m.determinant()
-    override def get(m: MatrixDouble, row: Int, coll: Int): Option[ElemT] = m(row,coll)
+
+    override def get(m: MatrixDouble, row: Int, coll: Int): Option[ElemT] = m(row, coll)
+
     override def concatDown(m: MatrixDouble, down: MatrixDouble): MatrixDouble = m concatDown down
-    override def set(m: MatrixDouble, row: Int, coll: Int, v: ElemT): MatrixDouble = m(row,coll,v)
-    override def toArray(m:MatrixDouble): Option[Array[ElemT]] = m.toArray()
+
+    override def set(m: MatrixDouble, row: Int, coll: Int, v: ElemT): MatrixDouble = m(row, coll, v)
+
+    override def toArray(m: MatrixDouble): Option[Array[ElemT]] = m.toArray()
+
     override def concatRight(m: MatrixDouble, rhs: MatrixDouble): MatrixDouble = m concatRight rhs
+
     override def toDiag(m: MatrixDouble): MatrixDouble = m.toDiag()
-    override def slice[K, L](m: MatrixDouble, row: K, col: L): MatrixDouble = m(row,col)
-    override def csvWrite(fn: String, u: MatrixDouble): Unit = MatrixM.csvwrite(fn,u)
+
+    override def slice[K, L](m: MatrixDouble, row: K, col: L): MatrixDouble = m(row, col)
+
+    override def csvWrite(fn: String, u: MatrixDouble): Unit = MatrixM.csvwrite(fn, u)
+
     override def csvRead(fn: String): MatrixDouble = MatrixM.csvread(fn)
+
+    override def sumRows(m: MatrixDouble): MatrixDouble = m.sumRows()
+
+    override def sumCols(m: MatrixDouble): MatrixDouble = m.sumCols()
+
+    override def sum(m: MatrixDouble): Option[ElemT] = m.sum()
+
+    override def trace(m: MatrixDouble): Option[ElemT] = m.trace()
+
+
   }
 
 }

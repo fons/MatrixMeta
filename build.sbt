@@ -4,7 +4,7 @@ version := "0.1.0-SNAPSHOT"
 
 organization      := "com.kabouterlabs"
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
 publishMavenStyle := true
 
