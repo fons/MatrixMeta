@@ -570,11 +570,11 @@ Process finished with exit code 0
 
 |               | Direct         |   Implicit |
 |---------------|----------------|-------------------
-| Empty Matrix  |   MatrixM(rows,colls) | matrix(rows,colls)
-| Initialize matrix with Array |  MatrixM(rows,colls,data) | matrix(rows,colls,data)
+| Empty Matrix  |   MatrixM(row,coll) | matrix(row,coll)
+| Initialize matrix with Array |  MatrixM(row,coll,data) | matrix(row,coll,data)
 | Matrix initialized with 0 | MatrixM.zero(row,coll) | zero(row,coll)
 | Matrix initialized with 1 | MatrixM.ones(row,coll) | ones(row,coll)
-| Identity Matrix of size d : MatrixM.eye(dim) | eye(dim)
+| Identity Matrix of size d | MatrixM.eye(dim) | eye(dim)
 | Matrix with random values | MatrixM.rand(row,coll) | rand(row,coll)
 | Diagonal matrix initialized with data array D | MatrixM.diag(D) | diag(D)
 | Fill matrix with value V | MatrixM.fill(row,coll, V) | fill(row,coll,V) 
