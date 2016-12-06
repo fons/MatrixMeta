@@ -366,7 +366,7 @@ object ArmadilloJavaMatImplicit {
 
     override def diag(data: Array[ElemT]): MatrixDouble = MatrixM.diag(data)
 
-    override def ones(row: Int, col: Int): MatrixDouble = MatrixM.ones(row, col)
+    override def one(row: Int, col: Int): MatrixDouble = MatrixM.one(row, col)
 
     override def fill(row: Int, col: Int, value: ElemT): MatrixDouble = MatrixM.fill(row, col, value)
 
@@ -403,6 +403,9 @@ object ArmadilloJavaMatImplicit {
     override def sum(m: MatrixDouble): Option[ElemT] = m.sum()
 
     override def trace(m: MatrixDouble): Option[ElemT] = m.trace()
+
+    override def none  = MatrixM.none
+
   }
 
 }

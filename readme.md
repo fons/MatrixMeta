@@ -39,7 +39,7 @@ case class MatrixExample[T](implicit evmatrix: MatrixOperationsTC[T]) {
     println(m2)
     val m3 = evmatrix.fill(10, 20, -88.89)
     println(m3)
-    val m4 = evmatrix.ones(10, 20)
+    val m4 = evmatrix.one(10, 20)
     println(m4)
     val m6 = m3 :+ m3
 
@@ -572,7 +572,13 @@ Process finished with exit code 0
 |---------------|----------------|-------------------
 | Empty Matrix  |   MatrixM(rows,colls) | matrix(rows,colls)
 | Initialize matrix with Array |  MatrixM(rows,colls,data) | matrix(rows,colls,data)
-|
+| Matrix initialized with 0 | MatrixM.zero(row,coll) | zero(row,coll)
+| Matrix initialized with 1 | MatrixM.ones(row,coll) | ones(row,coll)
+| Identity Matrix of size d : MatrixM.eye(dim) | eye(dim)
+| Matrix with random values | MatrixM.rand(row,coll) | rand(row,coll)
+| Diagonal matrix initialized with data array D | MatrixM.diag(D) | diag(D)
+| Fill matrix with value V | MatrixM.fill(row,coll, V) | fill(row,coll,V) 
+| No matrix created  | MatrixM.none | none 
  
 
 

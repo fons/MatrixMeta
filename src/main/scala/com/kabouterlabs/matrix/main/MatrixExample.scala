@@ -38,6 +38,7 @@ case class MatrixExample[T](implicit evmatrix: MatrixOperationsTC[T]) {
 
   def apply(): Unit = {
     val m1a = matrix(3, 3, Array(5, 6, 7, 8, 9, 8, 7, 6, 5))
+    val m56 = matrix(3,3)
     val m2a = fill(3, 3, 78.23)
     val m3a = m1a |* m2a :* m2a
     println(m1a)
@@ -55,7 +56,7 @@ case class MatrixExample[T](implicit evmatrix: MatrixOperationsTC[T]) {
     println(m2)
     val m3 = evmatrix.fill(10, 20, -88.89)
     println(m3)
-    val m4 = evmatrix.ones(10, 20)
+    val m4 = evmatrix.one(10, 20)
     println(m4)
     val m6 = m3 :+ m3
 

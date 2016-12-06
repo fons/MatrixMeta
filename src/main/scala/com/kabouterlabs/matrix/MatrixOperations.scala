@@ -82,7 +82,9 @@ object MatrixOperations {
 
     def diag(data: Array[Double]): A
 
-    def ones(row: Int, col: Int): A
+    def one(row: Int, col: Int): A
+
+    def none
 
     def fill(row: Int, col: Int, value: Double): A
 
@@ -243,6 +245,8 @@ object MatrixOperations {
 
   def matrix[A](row: Int, col: Int, data: Array[Double])(implicit ev: MatrixOperationsTC[A]) = ev.create(row, col, data)
 
+  def matrix[A](row :Int, col :Int)(implicit ev: MatrixOperationsTC[A]) = ev.create(row,col)
+
   def zero[A](row: Int, col: Int)(implicit ev: MatrixOperationsTC[A]) = ev.zero(row, col)
 
   def eye[A](size: Int)(implicit ev: MatrixOperationsTC[A]): A = ev.eye(size)
@@ -251,7 +255,7 @@ object MatrixOperations {
 
   def diag[A](data: Array[Double])(implicit ev: MatrixOperationsTC[A]): A = ev.diag(data)
 
-  def ones[A](row: Int, col: Int)(implicit ev: MatrixOperationsTC[A]): A = ev.ones(row, col)
+  def one[A](row: Int, col: Int)(implicit ev: MatrixOperationsTC[A]): A = ev.one(row, col)
 
   def fill[A](row: Int, col: Int, value: Double)(implicit ev: MatrixOperationsTC[A]): A = ev.fill(row, col, value)
 

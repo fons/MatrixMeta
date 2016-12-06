@@ -28,6 +28,7 @@
 package com.kabouterlabs.matrix.main
 
 import com.kabouterlabs.matrix.MatrixM
+import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
 
 /**
   * Created by fons on 3/13/16.
@@ -52,6 +53,7 @@ object Use
       new MatrixExample
     }
 
+
 }
 
 object Main extends App {
@@ -63,6 +65,9 @@ object Main extends App {
   Use.run2()()
   val t = Use.run3()
   t()
+  println(MatrixM.one(5,4))
+  println(MatrixM.rand(5,4))
+  println(MatrixM.none)
   println("DONE")
 
 }

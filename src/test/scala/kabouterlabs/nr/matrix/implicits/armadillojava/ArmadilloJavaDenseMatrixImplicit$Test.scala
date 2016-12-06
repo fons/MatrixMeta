@@ -109,10 +109,10 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
 
   it should "be able to create a matrix of ones" in {
     assertResult(Some(5*5)) {
-      MatrixM.ones(5,5).sum()
+      MatrixM.one(5,5).sum()
     }
     assertResult(Some(5*5)) {
-      (MatrixM.ones(5, 5) :== MatrixM.ones(5, 5).transpose()).sum()
+      (MatrixM.one(5, 5) :== MatrixM.one(5, 5).transpose()).sum()
     }
 
   }
@@ -121,7 +121,7 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
 
   it should "be able to create a matrix filled with a specific value" in {
     val sz = 66
-    val l0 = MatrixM.ones(sz,sz)
+    val l0 = MatrixM.one(sz,sz)
     val k0 = MatrixM.fill(1,sz,1.0/sz) concatDown MatrixM.fill(sz-1,sz,0)
     val r =l0 |* k0
 
@@ -547,7 +547,7 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
   //ignore
   it should "not be able to invert a singular matrix" in {
 
-    val m = MatrixM.ones(5,5)
+    val m = MatrixM.one(5,5)
     val i = m.inverse()
     i.matrix match {
       case Some(m) => assert(1==2,"cannot invert singular matrix")
@@ -559,7 +559,7 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
   it should "be able to invert a large matrix " in {
     assertResult(Some(true), "unable to invert a reasonbly large matrix") {
       val sz = 250
-      val l0 = MatrixM.ones(sz,sz)  :- MatrixM.eye(sz)
+      val l0 = MatrixM.one(sz,sz)  :- MatrixM.eye(sz)
       val k0 = l0.inverse()
       val r = k0(0,::).toArray().map(_.sum)
       r.map(1.0 / _).map(_ - (sz-1)).map(_ < 0.0000001)

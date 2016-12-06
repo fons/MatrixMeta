@@ -60,7 +60,7 @@ object MatrixM {
 
   def diag(data: Array[Double])(implicit companion: CompanionT): companion.MatrixImplT = companion.diag(data)
 
-  def ones(row: Int, col: Int)(implicit companion: CompanionT): companion.MatrixImplT = companion.ones(row, col)
+  def one(row: Int, col: Int)(implicit companion: CompanionT): companion.MatrixImplT = companion.ones(row, col)
 
   def fill(row: Int, col: Int, value: Double)(implicit companion: CompanionT): companion.MatrixImplT = companion.fill(row, col, value)
 

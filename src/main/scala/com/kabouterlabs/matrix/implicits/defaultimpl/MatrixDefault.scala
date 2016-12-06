@@ -97,7 +97,7 @@ object MatrixDefaultImplicit {
 
     override def diag(data: Array[ElemT]): MatrixDouble = MatrixM.none
 
-    override def ones(row: Int, col: Int): MatrixDouble = MatrixM.none
+    override def one(row: Int, col: Int): MatrixDouble = MatrixM.none
 
     override def fill(row: Int, col: Int, value: ElemT): MatrixDouble = MatrixM.none
 
@@ -136,6 +136,8 @@ object MatrixDefaultImplicit {
     override def sum(m: MatrixDouble): Option[ElemT] = None
 
     override def trace(m: MatrixDouble): Option[ElemT] = None
+
+    override def none  = MatrixM.none
 
   }
 
