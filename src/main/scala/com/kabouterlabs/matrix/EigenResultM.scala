@@ -60,13 +60,11 @@ object EigenResultM {
       new EigenResultM[U](Some(f()))
     }
     catch {
-      case e: Throwable => {
+      case e: Throwable =>
         val sw = new StringWriter
         e.printStackTrace(new PrintWriter(sw))
         println("exception caught :" + e + sw)
         new EigenResultM[U](None)
-      }
-
     }
   }
 }

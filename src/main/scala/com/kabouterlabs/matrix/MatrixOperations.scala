@@ -172,11 +172,11 @@ object MatrixOperations {
 
   implicit class MatrixSelfOps$[A](lhs: A)(implicit ev: MatrixOperationsTC[A]) {
 
-    def inverse(): A = ev.inverse(lhs)
+    def inverse: A = ev.inverse(lhs)
 
-    def transpose(): A = ev.transpose(lhs)
+    def transpose: A = ev.transpose(lhs)
 
-    def determinant(): Option[Double] = ev.determinant(lhs)
+    def determinant: Option[Double] = ev.determinant(lhs)
 
     def slice[K, L](row: K, col: L): A = ev.slice(lhs, row, col)
 
@@ -184,17 +184,17 @@ object MatrixOperations {
 
     def set(row: Int, coll: Int, v: Double): A = ev.set(lhs, row, coll, v)
 
-    def toDiag(): A = ev.toDiag(lhs)
+    def toDiag: A = ev.toDiag(lhs)
 
     def csvWrite(fn: String): Unit = ev.csvWrite(fn, lhs)
 
-    def sumRows() = ev.sumRows(lhs)
+    def sumRows = ev.sumRows(lhs)
 
-    def sumCols() = ev.sumCols(lhs)
+    def sumCols = ev.sumCols(lhs)
 
-    def trace() = ev.trace(lhs)
+    def trace = ev.trace(lhs)
 
-    def sum() = ev.sum(lhs)
+    def sum = ev.sum(lhs)
 
   }
 
@@ -235,7 +235,7 @@ object MatrixOperations {
 
   def solve[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs solve rhs
 
-  def inverse[A: MatrixOperationsTC](lhs: A): A = lhs.inverse()
+  def inverse[A: MatrixOperationsTC](lhs: A): A = lhs.inverse
 
   def slice[A: MatrixOperationsTC, K, L](lhs: A, row: K, col: L): A = lhs.slice(row, col)
 

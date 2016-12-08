@@ -34,14 +34,14 @@ trait LinearAlgebraT {
   type MatrixRetTypeT
   type EigenResultT
 
-  def inverse(): MatrixRetTypeT
+  def inverse: MatrixRetTypeT
 
-  def transpose(): MatrixRetTypeT
+  def transpose: MatrixRetTypeT
 
-  def determinant(): Option[Double]
+  def determinant: Option[Double]
 
   def solve(rhs: MatrixRetTypeT): MatrixRetTypeT
 
-  def eig(): EigenResultT
+  def eig: EigenResultT
 }
 

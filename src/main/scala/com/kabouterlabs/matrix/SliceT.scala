@@ -38,13 +38,13 @@ trait SliceT[MatrixImplT] {
 
   def apply[K, L](row: K, col: L): MatrixImplT
 
-  def toArray(): Option[Array[Double]]
+  def toArray: Option[Array[Double]]
 
   def concatRight(matrix: MatrixImplT): MatrixImplT
 
   def concatDown(matrix: MatrixImplT): MatrixImplT
 
-  def toDiag(): MatrixImplT
+  def toDiag: MatrixImplT
 
 }
 

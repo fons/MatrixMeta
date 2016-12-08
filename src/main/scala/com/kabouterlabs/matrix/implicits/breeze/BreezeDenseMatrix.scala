@@ -30,7 +30,7 @@ package com.kabouterlabs.matrix.implicits.breeze
 import java.io.{File, PrintWriter, StringWriter}
 
 
-import breeze.linalg.{DenseMatrix, DenseVector, det, inv, *, sum}
+import breeze.linalg.{DenseMatrix, DenseVector, det, inv, *}
 import com.kabouterlabs.matrix.MatrixOperations._
 
 import com.kabouterlabs.matrix._
@@ -50,12 +50,11 @@ private object BreezeDenseMatrix {
       Some(new DenseMatrix[B](rows, colls, data))
     }
     catch {
-      case e: Throwable => {
+      case e: Throwable =>
         val sw = new StringWriter
         e.printStackTrace(new PrintWriter(sw))
         println("exception caught :" + e + sw)
         None
-      }
     }
   }
 
@@ -64,12 +63,11 @@ private object BreezeDenseMatrix {
       Some(DenseMatrix.zeros[Double](rows, cols))
     }
     catch {
-      case e: Throwable => {
+      case e: Throwable =>
         val sw = new StringWriter
         e.printStackTrace(new PrintWriter(sw))
         println("exception caught :" + e + sw)
         None
-      }
     }
   }
 
@@ -146,13 +144,13 @@ object BreezeDenseMatrixImplicit {
 
 
   implicit class AggregationT$implicit(matrix: MatrixDouble) extends AggregateT[MatrixDouble] {
-    override def sumRows(): MatrixDouble = matrix.map1((m: MatrixImpl) => breeze.linalg.sum(m(::, *)).toDenseMatrix)
+    override def sumRows: MatrixDouble = matrix.map1((m: MatrixImpl) => breeze.linalg.sum(m(::, *)).toDenseMatrix)
 
-    override def sumCols(): MatrixDouble = matrix.map1((m: MatrixImpl) => breeze.linalg.sum(m(*, ::)).toDenseMatrix.t)
+    override def sumCols: MatrixDouble = matrix.map1((m: MatrixImpl) => breeze.linalg.sum(m(*, ::)).toDenseMatrix.t)
 
-    override def trace(): Option[ElemT] = matrix.safeMap(breeze.linalg.trace(_))
+    override def trace: Option[ElemT] = matrix.safeMap(breeze.linalg.trace(_))
 
-    override def sum(): Option[ElemT] = matrix.safeMap(breeze.linalg.sum(_))
+    override def sum: Option[ElemT] = matrix.safeMap(breeze.linalg.sum(_))
 
   }
 
@@ -161,9 +159,9 @@ object BreezeDenseMatrixImplicit {
 
     override def apply(row: Int, coll: Int, v: ElemT): MatrixDouble = matrix.map1((m) => m(row to row, coll to coll) := v)
 
-    override def toDiag(): MatrixDouble = matrix.map1((m: MatrixImpl) => m :* DenseMatrix.eye[Double](m.rows))
+    override def toDiag: MatrixDouble = matrix.map1((m: MatrixImpl) => m :* DenseMatrix.eye[Double](m.rows))
 
-    override def toArray(): Option[Array[ElemT]] = matrix.safeMap(_.toArray)
+    override def toArray: Option[Array[ElemT]] = matrix.safeMap(_.toArray)
 
     def name = "breeze double matrix" + matrix.toString
 
@@ -193,15 +191,15 @@ object BreezeDenseMatrixImplicit {
     override type MatrixRetTypeT = MatrixDouble
     override type EigenResultT = BreezeEigenResult
 
-    override def eig(): EigenResultT = EigenResultM.alloc(matrix.matrix.map(breeze.linalg.eig(_)))
+    override def eig: EigenResultT = EigenResultM.alloc(matrix.matrix.map(breeze.linalg.eig(_)))
 
     override def solve(rhs: MatrixDouble): MatrixDouble = for (l<- matrix; r <-rhs) yield MatrixM(()=> l \ r)
 
-    override def inverse(): MatrixRetTypeT = for (m<-matrix) yield MatrixM(()=>inv(m))//matrix.flatMap(inv(_))
+    override def inverse: MatrixRetTypeT = for (m<-matrix) yield MatrixM(()=>inv(m))//matrix.flatMap(inv(_))
 
-    override def transpose(): MatrixDouble = matrix.map1(_.t)
+    override def transpose: MatrixDouble = matrix.map1(_.t)
 
-    override def determinant(): Option[ElemT] = matrix.safeMap(det(_))
+    override def determinant: Option[ElemT] = matrix.safeMap(det(_))
   }
 
   implicit object SerializeT$implicit extends SerializeT[MatrixDouble] {
@@ -213,21 +211,21 @@ object BreezeDenseMatrixImplicit {
   implicit class EigenResultAccessT$(result: BreezeEigenResult) extends EigenAccessT[MatrixDouble] {
     def name = "jeigen breeze dense matrix result"
 
-    override def values(): MatrixDouble = MatrixM(result.result.map((r) => DenseMatrix.vertcat(r.eigenvalues.toDenseMatrix, r.eigenvectorsComplex.toDenseMatrix).t))
+    override def values: MatrixDouble = MatrixM(result.result.map((r) => DenseMatrix.vertcat(r.eigenvalues.toDenseMatrix, r.eigenvectorsComplex.toDenseMatrix).t))
 
     //TODO : This will not handle complex eigen vectors.
-    override def vectors(): MatrixDouble = MatrixM(result.result.map((r) => r.eigenvectors))
+    override def vectors: MatrixDouble = MatrixM(result.result.map((r) => r.eigenvectors))
   }
 
   implicit object MatrixOperationsTC$implicit$ extends MatrixOperationsTC[MatrixDouble] {
 
     override type EigenResultT = BreezeEigenResult
 
-    override def eig(m: MatrixDouble): EigenResultT = m.eig()
+    override def eig(m: MatrixDouble): EigenResultT = m.eig
 
-    override def vectors(r: EigenResultT): MatrixDouble = r.vectors()
+    override def vectors(r: EigenResultT): MatrixDouble = r.vectors
 
-    override def values(r: EigenResultT): MatrixDouble = r.values()
+    override def values(r: EigenResultT): MatrixDouble = r.values
 
     override def add(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (l <-lhs; r <-rhs) yield MatrixM(()=>(l+r))
 
@@ -276,13 +274,13 @@ object BreezeDenseMatrixImplicit {
 
     override def fill(row: Int, col: Int, value: ElemT): MatrixDouble = MatrixM.fill(row, col, value)
 
-    override def inverse(m: MatrixDouble): MatrixDouble = m.inverse()
+    override def inverse(m: MatrixDouble): MatrixDouble = m.inverse
 
     override def solve(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = lhs.solve(rhs)
 
-    override def transpose(m: MatrixDouble): MatrixDouble = m.transpose()
+    override def transpose(m: MatrixDouble): MatrixDouble = m.transpose
 
-    override def determinant(m: MatrixDouble): Option[ElemT] = m.determinant()
+    override def determinant(m: MatrixDouble): Option[ElemT] = m.determinant
 
     override def get(m: MatrixDouble, row: Int, coll: Int): Option[ElemT] = m(row, coll)
 
@@ -290,11 +288,11 @@ object BreezeDenseMatrixImplicit {
 
     override def set(m: MatrixDouble, row: Int, coll: Int, v: ElemT): MatrixDouble = m(row, coll, v)
 
-    override def toArray(m: MatrixDouble): Option[Array[ElemT]] = m.toArray()
+    override def toArray(m: MatrixDouble): Option[Array[ElemT]] = m.toArray
 
     override def concatRight(m: MatrixDouble, rhs: MatrixDouble): MatrixDouble = m concatRight rhs
 
-    override def toDiag(m: MatrixDouble): MatrixDouble = m.toDiag()
+    override def toDiag(m: MatrixDouble): MatrixDouble = m.toDiag
 
     override def slice[K, L](m: MatrixDouble, row: K, col: L): MatrixDouble = m(row, col)
 
@@ -302,13 +300,13 @@ object BreezeDenseMatrixImplicit {
 
     override def csvRead(fn: String): MatrixDouble = MatrixM.csvread(fn)
 
-    override def sumRows(m: MatrixDouble): MatrixDouble = m.sumRows()
+    override def sumRows(m: MatrixDouble): MatrixDouble = m.sumRows
 
-    override def sumCols(m: MatrixDouble): MatrixDouble = m.sumCols()
+    override def sumCols(m: MatrixDouble): MatrixDouble = m.sumCols
 
-    override def sum(m: MatrixDouble): Option[ElemT] = m.sum()
+    override def sum(m: MatrixDouble): Option[ElemT] = m.sum
 
-    override def trace(m: MatrixDouble): Option[ElemT] = m.trace()
+    override def trace(m: MatrixDouble): Option[ElemT] = m.trace
 
     override def none  = MatrixM.none
   }

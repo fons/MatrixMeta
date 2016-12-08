@@ -34,7 +34,7 @@ import scala.annotation.implicitNotFound
   */
 @implicitNotFound("unable to get eigen values and vectors; EigenAccessT not implemented")
 trait EigenAccessT[U] {
-  def values(): U
+  def values: U
 
-  def vectors(): U
+  def vectors: U
 }

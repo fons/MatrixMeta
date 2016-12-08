@@ -184,21 +184,18 @@ object JeigenDenseMatrixImplicit {
   }
 
   implicit class SliceT$implicit(matrix: MatrixDouble) extends SliceT[MatrixDouble] {
-    private def @#(matrix: MatrixDouble, a1: Int, a2: Int, a3: Int, a4: Int, f: (MatrixImpl, Int, Int, Int, Int) => MatrixImpl): MatrixDouble = {
-      matrix.matrix match {
-        case Some(matrixm) => MatrixM(() => f(matrixm, a1, a2, a3, a4))
-        case None => matrix
-      }
-    }
+    private def @#(matrix: MatrixDouble, a1: Int, a2: Int, a3: Int, a4: Int, f: (MatrixImpl, Int, Int, Int, Int) => MatrixImpl): MatrixDouble =
+      for (m <- matrix) yield MatrixM(() => f(m, a1, a2, a3, a4))
+
     override def apply(row: Int, coll: Int, v: ElemT): MatrixDouble =  matrix.map1((m: DenseMatrix) => {m.set(row, coll, v); m})
 
-    override def toDiag(): MatrixDouble = matrix.map1((m: DenseMatrix) => m.mul(jeigen.Shortcuts.eye(m.rows)))
+    override def toDiag: MatrixDouble = matrix.map1((m: DenseMatrix) => m.mul(jeigen.Shortcuts.eye(m.rows)))
 
     override def concatRight(rhs: MatrixDouble): MatrixDouble =   for (lhsm <- matrix; rhsm<-rhs) yield {MatrixM(()=>lhsm.concatRight(rhsm))}
 
     override def concatDown(rhs: MatrixDouble): MatrixDouble = for (lhsm <- matrix; rhsm<-rhs) yield {MatrixM(()=>lhsm.concatDown(rhsm))}
 
-    override def toArray(): Option[Array[ElemT]] = matrix.safeMap(_.getValues)
+    override def toArray: Option[Array[ElemT]] = matrix.safeMap(_.getValues)
 
     override def apply(row: Int, coll: Int): Option[Double] = matrix.safeMap(_.get(row,coll))
 
@@ -219,27 +216,21 @@ object JeigenDenseMatrixImplicit {
     override type MatrixRetTypeT = MatrixDouble
     override type EigenResultT = JeigenEigenResult
 
-    override def inverse(): MatrixRetTypeT = matrix.map1((m: DenseMatrix) => m.fullPivHouseholderQRSolve(jeigen.Shortcuts.eye(m.cols)))
+    override def inverse: MatrixRetTypeT = matrix.map1((m: DenseMatrix) => m.fullPivHouseholderQRSolve(jeigen.Shortcuts.eye(m.cols)))
 
     //TODO : can be optimized based on matrix type..
     override def solve(rhs: MatrixDouble): MatrixRetTypeT = for (lhsm <- matrix; rhsm<-rhs) yield {MatrixM(()=>lhsm.fullPivHouseholderQRSolve(rhsm))}
 
-    override def eig(): EigenResultT = EigenResultM.alloc(matrix.matrix.map(_.eig()))
+    override def eig: EigenResultT = EigenResultM.alloc(matrix.matrix.map(_.eig()))
 
-    override def transpose(): MatrixRetTypeT = matrix.map1(_.t())
+    override def transpose: MatrixRetTypeT = matrix.map1(_.t())
 
-    override def determinant(): Option[Double] = matrix.safeMap(_.eig().values.real().getValues().foldLeft[Double](1.0)(_ * _))
+    override def determinant: Option[Double] = matrix.safeMap(_.eig().values.real().getValues().foldLeft[Double](1.0)(_ * _))
 
   }
 
   implicit object SerializeT$implicit extends SerializeT[MatrixDouble] {
-    override def csvWrite(fn: String, matrix: MatrixDouble): Unit = {
-      matrix.matrix match {
-        case Some(m) => JeigenDenseMatrix.csvwrite(new File(fn), m)
-        case None => {}
-      }
-    }
-
+    override def csvWrite(fn: String, matrix: MatrixDouble): Unit =   matrix.map(JeigenDenseMatrix.csvwrite(new File(fn), _))
 
     override def csvRead(fn: String): MatrixDouble = MatrixM(() => JeigenDenseMatrix.csvread(new File(fn)))
   }
@@ -249,9 +240,9 @@ object JeigenDenseMatrixImplicit {
   implicit class EigenAccessT$implicit(result: JeigenEigenResult) extends EigenAccessT[MatrixDouble] {
     def name = "jeigen result"
 
-    override def vectors(): MatrixDouble = MatrixM(result.result.map((r) => r.vectors.real().concatRight(r.vectors.imag())))
+    override def vectors: MatrixDouble = MatrixM(result.result.map((r) => r.vectors.real().concatRight(r.vectors.imag())))
 
-    override def values(): MatrixDouble = MatrixM(result.result.map((r) => r.values.real().concatRight(r.values.imag())))
+    override def values: MatrixDouble = MatrixM(result.result.map((r) => r.values.real().concatRight(r.values.imag())))
 
   }
 
@@ -259,11 +250,11 @@ object JeigenDenseMatrixImplicit {
 
     override type EigenResultT = JeigenEigenResult
 
-    override def eig(m: MatrixDouble): EigenResultT = m.eig()
+    override def eig(m: MatrixDouble): EigenResultT = m.eig
 
-    override def vectors(r: EigenResultT): MatrixDouble = r.vectors()
+    override def vectors(r: EigenResultT): MatrixDouble = r.vectors
 
-    override def values(r: EigenResultT): MatrixDouble = r.values()
+    override def values(r: EigenResultT): MatrixDouble = r.values
 
     override def add(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm<-rhs) yield {MatrixM(()=>lhsm.add(rhsm))}
 
@@ -311,13 +302,13 @@ object JeigenDenseMatrixImplicit {
 
     override def fill(row: Int, col: Int, value: ElemT): MatrixDouble = MatrixM.fill(row, col, value)
 
-    override def inverse(m: MatrixDouble): MatrixDouble = m.inverse()
+    override def inverse(m: MatrixDouble): MatrixDouble = m.inverse
 
     override def solve(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = lhs.solve(rhs)
 
-    override def transpose(m: MatrixDouble): MatrixDouble = m.transpose()
+    override def transpose(m: MatrixDouble): MatrixDouble = m.transpose
 
-    override def determinant(m: MatrixDouble): Option[ElemT] = m.determinant()
+    override def determinant(m: MatrixDouble): Option[ElemT] = m.determinant
 
     override def get(m: MatrixDouble, row: Int, coll: Int): Option[ElemT] = m(row, coll)
 
@@ -325,11 +316,11 @@ object JeigenDenseMatrixImplicit {
 
     override def set(m: MatrixDouble, row: Int, coll: Int, v: ElemT): MatrixDouble = m(row, coll, v)
 
-    override def toArray(m: MatrixDouble): Option[Array[ElemT]] = m.toArray()
+    override def toArray(m: MatrixDouble): Option[Array[ElemT]] = m.toArray
 
     override def concatRight(m: MatrixDouble, rhs: MatrixDouble): MatrixDouble = m concatRight rhs
 
-    override def toDiag(m: MatrixDouble): MatrixDouble = m.toDiag()
+    override def toDiag(m: MatrixDouble): MatrixDouble = m.toDiag
 
     override def slice[K, L](m: MatrixDouble, row: K, col: L): MatrixDouble = m(row, col)
 
@@ -337,13 +328,13 @@ object JeigenDenseMatrixImplicit {
 
     override def csvRead(fn: String): MatrixDouble = MatrixM.csvread(fn)
 
-    override def sumRows(m: MatrixDouble): MatrixDouble = m.sumRows()
+    override def sumRows(m: MatrixDouble): MatrixDouble = m.sumRows
 
-    override def sumCols(m: MatrixDouble): MatrixDouble = m.sumCols()
+    override def sumCols(m: MatrixDouble): MatrixDouble = m.sumCols
 
-    override def sum(m: MatrixDouble): Option[ElemT] = m.sum()
+    override def sum(m: MatrixDouble): Option[ElemT] = m.sum
 
-    override def trace(m: MatrixDouble): Option[ElemT] = m.trace()
+    override def trace(m: MatrixDouble): Option[ElemT] = m.trace
 
     override def none  = MatrixM.none
 

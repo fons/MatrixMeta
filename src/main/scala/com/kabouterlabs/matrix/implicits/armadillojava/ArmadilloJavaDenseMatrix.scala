@@ -63,14 +63,14 @@ private object ArmadilloJavaMat {
       Some(new Mat(f.toArray))
     }
     catch {
-      case e: Throwable => {
+      case e: Throwable =>
         val sw = new StringWriter
         e.printStackTrace(new PrintWriter(sw))
         println("exception caught :" + e + sw)
         None
       }
     }
-  }
+
 
   def apply(rows: Int, colls: Int): Option[Mat] = {
     try {
@@ -78,20 +78,17 @@ private object ArmadilloJavaMat {
       Some(org.armadillojava.Arma.zeros(rows, colls))
     }
     catch {
-      case e: Throwable => {
+      case e: Throwable =>
         val sw = new StringWriter
         e.printStackTrace(new PrintWriter(sw))
         println("exception caught :" + e + sw)
         None
-      }
     }
   }
 
   def csvwrite(file: File, matrix: Mat): Unit = {
     val pw = new PrintWriter(file)
-    for (i <- Range(0, matrix.n_rows)) {
-      pw.write(matrix.row(i).memptr().mkString(",") ++ "\n")
-    }
+    for (i <- Range(0, matrix.n_rows)) pw.write(matrix.row(i).memptr().mkString(",") ++ "\n")
     pw.close()
   }
 
@@ -139,13 +136,8 @@ object ArmadilloJavaMatImplicit {
   type MatrixDouble = MatrixM[MatrixImpl]
   type ArmadilloEigenResult = EigenResultM[org.armadillojava.Col]
 
-  private def @#(matrix: MatrixDouble, a1: Int, a2: Int, a3: Int, a4: Int, f: (MatrixImpl, Int, Int, Int, Int) => MatrixImpl): MatrixDouble = {
-    matrix.matrix match {
-
-      case Some(matrixm) => MatrixM(() => f(matrixm, a1, a2, a3, a4))
-      case None => matrix
-    }
-  }
+  private def @#(matrix: MatrixDouble, a1: Int, a2: Int, a3: Int, a4: Int, f: (MatrixImpl, Int, Int, Int, Int) => MatrixImpl): MatrixDouble =
+    for (m <- matrix) yield MatrixM(() => f(m, a1, a2, a3, a4))
 
   //--------------------------------------------------------------------------------------------------------------
   //
@@ -182,27 +174,29 @@ object ArmadilloJavaMatImplicit {
 
 
   implicit class AggregationT$implicit(matrix: MatrixDouble) extends AggregateT[MatrixDouble] {
-    override def sumRows(): MatrixDouble = matrix.map1((m: Mat) => org.armadillojava.Arma.cumsum(m, 0).rows(m.n_rows - 1, m.n_rows - 1))
+    override def sumRows: MatrixDouble = matrix.map1((m: Mat) => org.armadillojava.Arma.cumsum(m, 0).rows(m.n_rows - 1, m.n_rows - 1))
 
-    override def sumCols(): MatrixDouble = matrix.map1((m: Mat) => org.armadillojava.Arma.cumsum(m, 1).cols(m.n_cols - 1, m.n_cols - 1))
+    override def sumCols: MatrixDouble = matrix.map1((m: Mat) => org.armadillojava.Arma.cumsum(m, 1).cols(m.n_cols - 1, m.n_cols - 1))
 
-    override def trace(): Option[ElemT] = matrix.safeMap(org.armadillojava.Arma.trace(_))
+    override def trace = matrix.safeMap(org.armadillojava.Arma.trace(_))
 
-    override def sum(): Option[ElemT] = matrix.safeMap(org.armadillojava.Arma.accu(_))
+    override def sum: Option[ElemT] = matrix.safeMap(org.armadillojava.Arma.accu(_))
 
   }
 
   implicit class SliceT$implicit(matrix: MatrixDouble) extends SliceT[MatrixDouble] {
+    private def @#(matrix: MatrixDouble, a1: Int, a2: Int, a3: Int, a4: Int, f: (MatrixImpl, Int, Int, Int, Int) => MatrixImpl): MatrixDouble =
+      for (m <- matrix) yield MatrixM(() => f(m, a1, a2, a3, a4))
 
     override def apply(row: Int, coll: Int, v: ElemT): MatrixDouble = matrix.map1((m: Mat) => {m.at(row, coll, org.armadillojava.Op.EQUAL, v); m})
 
-    override def toDiag(): MatrixDouble = matrix.map1((m: Mat) => org.armadillojava.Arma.diagmat(m))
+    override def toDiag: MatrixDouble = matrix.map1((m: Mat) => org.armadillojava.Arma.diagmat(m))
 
     override def concatRight(rhs: MatrixDouble): MatrixDouble = for(l<-matrix; r<- rhs) yield  MatrixM(()=>org.armadillojava.Arma.join_horiz(l, r))
 
     override def concatDown(rhs: MatrixDouble): MatrixDouble =  for(l<-matrix; r<- rhs) yield  MatrixM(()=>org.armadillojava.Arma.join_vert(l, r))
 
-    override def toArray(): Option[Array[ElemT]] = matrix.safeMap(_.memptr())
+    override def toArray: Option[Array[ElemT]] = matrix.safeMap(_.memptr())
 
     override def apply(row: Int, coll: Int): Option[Double] = matrix.safeMap(_.at(row,coll))
 
@@ -224,16 +218,16 @@ object ArmadilloJavaMatImplicit {
     override type MatrixRetTypeT = MatrixDouble
     override type EigenResultT = ArmadilloEigenResult
 
-    override def inverse(): MatrixRetTypeT = for (m<-matrix) yield MatrixM(()=>m.i())
+    override def inverse: MatrixRetTypeT = for (m<-matrix) yield MatrixM(()=>m.i())
 
     //TODO : can be optimized based on matrix type..
     override def solve(rhs: MatrixDouble): MatrixRetTypeT = for(l<-matrix;r<-rhs) yield MatrixM(()=>org.armadillojava.Arma.solve(l, r))
 
-    override def eig(): EigenResultT = EigenResultM.alloc(None)
+    override def eig: EigenResultT = EigenResultM.alloc(None)
 
-    override def transpose(): MatrixRetTypeT = matrix.map1((m: Mat) => m.t)
+    override def transpose: MatrixRetTypeT = matrix.map1((m: Mat) => m.t)
 
-    override def determinant(): Option[Double] = matrix.safeMap(org.armadillojava.Arma.det(_))
+    override def determinant: Option[Double] = matrix.safeMap(org.armadillojava.Arma.det(_))
 
   }
 
@@ -307,13 +301,13 @@ object ArmadilloJavaMatImplicit {
 
     override def fill(row: Int, col: Int, value: ElemT): MatrixDouble = MatrixM.fill(row, col, value)
 
-    override def inverse(m: MatrixDouble): MatrixDouble = m.inverse()
+    override def inverse(m: MatrixDouble): MatrixDouble = m.inverse
 
     override def solve(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = lhs.solve(rhs)
 
-    override def transpose(m: MatrixDouble): MatrixDouble = m.transpose()
+    override def transpose(m: MatrixDouble): MatrixDouble = m.transpose
 
-    override def determinant(m: MatrixDouble): Option[ElemT] = m.determinant()
+    override def determinant(m: MatrixDouble): Option[ElemT] = m.determinant
 
     override def get(m: MatrixDouble, row: Int, coll: Int): Option[ElemT] = m(row, coll)
 
@@ -321,11 +315,11 @@ object ArmadilloJavaMatImplicit {
 
     override def set(m: MatrixDouble, row: Int, coll: Int, v: ElemT): MatrixDouble = m(row, coll, v)
 
-    override def toArray(m: MatrixDouble): Option[Array[ElemT]] = m.toArray()
+    override def toArray(m: MatrixDouble): Option[Array[ElemT]] = m.toArray
 
     override def concatRight(m: MatrixDouble, rhs: MatrixDouble): MatrixDouble = m concatRight rhs
 
-    override def toDiag(m: MatrixDouble): MatrixDouble = m.toDiag()
+    override def toDiag(m: MatrixDouble): MatrixDouble = m.toDiag
 
     override def slice[K, L](m: MatrixDouble, row: K, col: L): MatrixDouble = m(row, col)
 
@@ -333,13 +327,13 @@ object ArmadilloJavaMatImplicit {
 
     override def csvRead(fn: String): MatrixDouble = MatrixM.csvread(fn)
 
-    override def sumRows(m: MatrixDouble): MatrixDouble = m.sumRows()
+    override def sumRows(m: MatrixDouble): MatrixDouble = m.sumRows
 
-    override def sumCols(m: MatrixDouble): MatrixDouble = m.sumCols()
+    override def sumCols(m: MatrixDouble): MatrixDouble = m.sumCols
 
-    override def sum(m: MatrixDouble): Option[ElemT] = m.sum()
+    override def sum(m: MatrixDouble): Option[ElemT] = m.sum
 
-    override def trace(m: MatrixDouble): Option[ElemT] = m.trace()
+    override def trace(m: MatrixDouble): Option[ElemT] = m.trace
 
     override def none  = MatrixM.none
 

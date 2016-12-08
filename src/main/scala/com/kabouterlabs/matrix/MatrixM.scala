@@ -49,14 +49,14 @@ case class MatrixM[V](matrix: Option[V]) {
       matrix.map(f(_))
     }
     catch {
-      case e: Throwable => {
+      case e: Throwable =>
         val sw = new StringWriter
         e.printStackTrace(new PrintWriter(sw))
         println("exception caught :" + e + sw)
         None
-      }
     }
   }
+
   def map1[W](f:V=>W) : MatrixM[W] = {
     matrix match {
       case Some(matrixm) => MatrixM(matrix.map(f(_)))
@@ -73,12 +73,11 @@ case class MatrixM[V](matrix: Option[V]) {
           f(_matrix_)
         }
         catch {
-          case e: Throwable => {
+          case e: Throwable =>
             val sw = new StringWriter
             e.printStackTrace(new PrintWriter(sw))
             println("exception caught :" + e + sw)
             MatrixM.none
-          }
         }
       }
     }
