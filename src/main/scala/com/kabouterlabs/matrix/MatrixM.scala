@@ -29,13 +29,60 @@ package com.kabouterlabs.matrix
 
 import java.io.{PrintWriter, StringWriter}
 
+
+
 /**
   * Created by fons on 3/19/16.
   */
 
-
+//case class TestIt[A](n:A){
+//  def map[B](f:A=>B):B = f(n)
+//  def flatMap[B](f:A=>TestIt[B]):TestIt[B] = f(n)
+//
+//}
 case class MatrixM[V](matrix: Option[V]) {
   override def toString = "{" + matrix.getOrElse(None).getClass.getName + "\n" + matrix.getOrElse(None).toString + "}"
+  //def map[W](f:Option[V]=>Option[W]):Option[W] = f(matrix)
+  //def map[W](f:Option[V]=>W):Option[W] = Some(f(matrix))
+  def safeMap[W](f: V => W): Option[W] = {
+    try {
+      matrix.map(f(_))
+    }
+    catch {
+      case e: Throwable => {
+        val sw = new StringWriter
+        e.printStackTrace(new PrintWriter(sw))
+        println("exception caught :" + e + sw)
+        None
+      }
+    }
+  }
+  def map1[W](f:V=>W) : MatrixM[W] = {
+    matrix match {
+      case Some(matrixm) => MatrixM(matrix.map(f(_)))
+      case None => MatrixM.none
+    }
+  }
+  def map[W](f:V=>W):W = matrix.map(f(_)).get
+
+  def flatMap[W](f:V=>MatrixM[W]):MatrixM[W] = {
+    matrix match {
+      case None => MatrixM.none
+      case Some(_matrix_) => {
+        try {
+          f(_matrix_)
+        }
+        catch {
+          case e: Throwable => {
+            val sw = new StringWriter
+            e.printStackTrace(new PrintWriter(sw))
+            println("exception caught :" + e + sw)
+            MatrixM.none
+          }
+        }
+      }
+    }
+  }
 }
 
 object MatrixM {

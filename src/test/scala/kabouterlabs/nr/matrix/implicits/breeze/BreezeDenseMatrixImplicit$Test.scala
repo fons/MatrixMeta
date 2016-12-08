@@ -525,6 +525,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
       -489.00000 + 139.00000 -1668.00000)
 
     assertResult(Some(3.0)) {
+
       (MatrixM(3, 3, r).sumCols() :== MatrixM(3, 1, t)).sum()
     }
 

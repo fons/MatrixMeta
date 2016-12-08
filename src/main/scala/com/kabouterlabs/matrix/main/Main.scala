@@ -28,7 +28,8 @@
 package com.kabouterlabs.matrix.main
 
 import com.kabouterlabs.matrix.MatrixM
-import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
+import com.kabouterlabs.matrix.MatrixOperations._
+import com.kabouterlabs.matrix.implicits.breeze.BreezeDenseMatrixImplicit._
 
 /**
   * Created by fons on 3/13/16.
@@ -56,10 +57,15 @@ object Use
 
 }
 
+case class TestIt[A](n:A){
+  def map[B](f:A=>B):B = f(n)
+  def flatMap[B](f:A=>TestIt[B]):TestIt[B] = f(n)
+
+}
 object Main extends App {
 
 
-  MatrixM(2,2)
+  val mat1 = MatrixM(2,2)
 
   Use.run1()()
   Use.run2()()
@@ -68,7 +74,41 @@ object Main extends App {
   println(MatrixM.one(5,4))
   println(MatrixM.rand(5,4))
   println(MatrixM.none)
+  val n1 = Option(23.0)
+  val n2 = Option(45.6)
+  val c = for (a <- n1; b <- n2) yield {
+    a*b
+  }
+  println(n1,n2,c)
   println("DONE")
+  val m1 = new TestIt(78)
+  val m2 = new TestIt(89)
+  for (a <- m1; b <- m2) yield {
+    //println(a,b3)
+    new TestIt(a*b)
+  }
+
+  val mat2 = MatrixM.one(2,2)
+  val mat3 = MatrixM.rand(2,4)
+  println(mat2)
+  val r000 = Array[Double](434.00000, 417.00000,  -489.00000,  501.00000,   527.00000,   139.00000,
+    959.00000,  1434.00000,  -1668.00000,   1068.00000,   1361.00000,   -506.00000,
+    -39.00000, -322.00000, 1047.00000, 118.00000, -2.00000, 1672.00000)
+  val t000 = Array[Double](434.00000 + 501.00000 + 959.00000,
+    417.00000 + 527.00000 + 1434.00000,
+    -489.00000 + 139.00000 -1668.00000)
+
+
+    val a = MatrixM(3, 3, r000).sumCols()
+    val b = MatrixM(3, 1, t000)
+    val c0 = (a :== b)//.sum()
+
+    println(a,b,c0)
+
+  for (x1 <- a; x2 <-b) yield {
+      a :== b
+  }
+  //mat3 |* mat2
 
 }
 

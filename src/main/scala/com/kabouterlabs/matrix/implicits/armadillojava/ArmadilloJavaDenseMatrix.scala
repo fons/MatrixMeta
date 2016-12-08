@@ -35,7 +35,7 @@ import java.io.{PrintWriter, StringWriter, File}
 
 import com.kabouterlabs.matrix.AggregateT
 import com.kabouterlabs.matrix.CompanionT
-import com.kabouterlabs.matrix.EigenAccessT
+
 import com.kabouterlabs.matrix.EigenResultM
 import com.kabouterlabs.matrix.FactoryT
 import com.kabouterlabs.matrix.LinearAlgebraT
@@ -139,49 +139,6 @@ object ArmadilloJavaMatImplicit {
   type MatrixDouble = MatrixM[MatrixImpl]
   type ArmadilloEigenResult = EigenResultM[org.armadillojava.Col]
 
-
-  private def ->(matrix: MatrixDouble, f: (MatrixImpl) => MatrixImpl): MatrixDouble = {
-    matrix.matrix match {
-      case Some(matrixm) => MatrixM(() => f(matrixm))
-      case None => matrix
-    }
-  }
-
-  private def ~->[U](matrix: MatrixDouble, f: (MatrixImpl) => U): Option[U] = {
-    matrix.matrix match {
-      case None => None
-      case Some(matrixm) => {
-        try {
-          Some(f(matrixm))
-        }
-        catch {
-          case e: Throwable => {
-            val sw = new StringWriter
-            e.printStackTrace(new PrintWriter(sw))
-            println("exception caught :" + e + sw)
-            None
-          }
-        }
-
-      }
-    }
-  }
-
-
-  private def ~>(lhs: MatrixDouble, rhs: MatrixDouble, f: (MatrixImpl, MatrixImpl) => MatrixImpl): MatrixDouble = {
-    (lhs.matrix, rhs.matrix) match {
-      case (Some(lhsm: MatrixImpl), Some(rhsm: MatrixImpl)) => MatrixM(() => f(lhsm, rhsm))
-      case (_, _) => MatrixM.none
-    }
-  }
-
-  private def :~>[B](lhs: MatrixDouble, rhs: B, f: (MatrixImpl, B) => MatrixImpl): MatrixDouble = {
-    (lhs.matrix, rhs) match {
-      case (Some(lhsm: MatrixImpl), rhsm) => MatrixM(() => f(lhsm, rhsm))
-      case (_, _) => MatrixM.none
-    }
-  }
-
   private def @#(matrix: MatrixDouble, a1: Int, a2: Int, a3: Int, a4: Int, f: (MatrixImpl, Int, Int, Int, Int) => MatrixImpl): MatrixDouble = {
     matrix.matrix match {
 
@@ -225,35 +182,29 @@ object ArmadilloJavaMatImplicit {
 
 
   implicit class AggregationT$implicit(matrix: MatrixDouble) extends AggregateT[MatrixDouble] {
-    override def sumRows(): MatrixDouble = ->(matrix, (m: Mat) => org.armadillojava.Arma.cumsum(m, 0).rows(m.n_rows - 1, m.n_rows - 1))
+    override def sumRows(): MatrixDouble = matrix.map1((m: Mat) => org.armadillojava.Arma.cumsum(m, 0).rows(m.n_rows - 1, m.n_rows - 1))
 
-    override def sumCols(): MatrixDouble = ->(matrix, (m: Mat) => org.armadillojava.Arma.cumsum(m, 1).cols(m.n_cols - 1, m.n_cols - 1))
+    override def sumCols(): MatrixDouble = matrix.map1((m: Mat) => org.armadillojava.Arma.cumsum(m, 1).cols(m.n_cols - 1, m.n_cols - 1))
 
-    override def trace(): Option[ElemT] = {
-      matrix.matrix match {
-        case Some(m) => Some(org.armadillojava.Arma.trace(m)) //TODO may throw exception
-        case _ => None
-      }
-    }
+    override def trace(): Option[ElemT] = matrix.safeMap(org.armadillojava.Arma.trace(_))
 
-    override def sum(): Option[ElemT] = ~->(matrix, (m: Mat) => org.armadillojava.Arma.accu(m))
+    override def sum(): Option[ElemT] = matrix.safeMap(org.armadillojava.Arma.accu(_))
+
   }
 
   implicit class SliceT$implicit(matrix: MatrixDouble) extends SliceT[MatrixDouble] {
 
-    override def apply(row: Int, coll: Int, v: ElemT): MatrixDouble = ->(matrix, (m: Mat) => {
-      m.at(row, coll, org.armadillojava.Op.EQUAL, v); m
-    })
+    override def apply(row: Int, coll: Int, v: ElemT): MatrixDouble = matrix.map1((m: Mat) => {m.at(row, coll, org.armadillojava.Op.EQUAL, v); m})
 
-    override def toDiag(): MatrixDouble = ->(matrix, (m: Mat) => org.armadillojava.Arma.diagmat(m))
+    override def toDiag(): MatrixDouble = matrix.map1((m: Mat) => org.armadillojava.Arma.diagmat(m))
 
-    override def concatRight(rhs: MatrixDouble): MatrixDouble = ~>(matrix, rhs, (l: Mat, r: Mat) => org.armadillojava.Arma.join_horiz(l, r))
+    override def concatRight(rhs: MatrixDouble): MatrixDouble = for(l<-matrix; r<- rhs) yield  MatrixM(()=>org.armadillojava.Arma.join_horiz(l, r))
 
-    override def concatDown(rhs: MatrixDouble): MatrixDouble = ~>(matrix, rhs, (l: Mat, r: Mat) => org.armadillojava.Arma.join_vert(l, r))
+    override def concatDown(rhs: MatrixDouble): MatrixDouble =  for(l<-matrix; r<- rhs) yield  MatrixM(()=>org.armadillojava.Arma.join_vert(l, r))
 
-    override def toArray(): Option[Array[ElemT]] = ~->(matrix, (m: Mat) => m.memptr())
+    override def toArray(): Option[Array[ElemT]] = matrix.safeMap(_.memptr())
 
-    override def apply(row: Int, coll: Int): Option[Double] = ~->(matrix, (m: Mat) => m.at(row, coll))
+    override def apply(row: Int, coll: Int): Option[Double] = matrix.safeMap(_.at(row,coll))
 
     override def apply[K, L](row: K, col: L): MatrixDouble = (row, col) match {
       case (r: Range, `::`) => @#(matrix, r.start, r.end, 0, 0, (m: Mat, start: Int, end: Int, _, _) => m.rows(start, end))
@@ -273,27 +224,21 @@ object ArmadilloJavaMatImplicit {
     override type MatrixRetTypeT = MatrixDouble
     override type EigenResultT = ArmadilloEigenResult
 
-    override def inverse(): MatrixRetTypeT = ->(matrix, (m: Mat) => m.i())
+    override def inverse(): MatrixRetTypeT = for (m<-matrix) yield MatrixM(()=>m.i())
 
     //TODO : can be optimized based on matrix type..
-    override def solve(rhs: MatrixDouble): MatrixRetTypeT = ~>(matrix, rhs, (l: MatrixImpl, r: MatrixImpl) => org.armadillojava.Arma.solve(l, r))
+    override def solve(rhs: MatrixDouble): MatrixRetTypeT = for(l<-matrix;r<-rhs) yield MatrixM(()=>org.armadillojava.Arma.solve(l, r))
 
     override def eig(): EigenResultT = EigenResultM.alloc(None)
 
-    override def transpose(): MatrixRetTypeT = ->(matrix, (m: Mat) => m.t)
+    override def transpose(): MatrixRetTypeT = matrix.map1((m: Mat) => m.t)
 
-    override def determinant(): Option[Double] = ~->(matrix, (m: Mat) => org.armadillojava.Arma.det(m))
+    override def determinant(): Option[Double] = matrix.safeMap(org.armadillojava.Arma.det(_))
+
   }
 
   implicit object SerializeT$implicit extends SerializeT[MatrixDouble] {
-    override def csvWrite(fn: String, matrix: MatrixDouble): Unit = {
-      matrix.matrix match {
-        case Some(m) => ArmadilloJavaMat.csvwrite(new File(fn), m)
-        case None => {}
-      }
-    }
-
-
+    override def csvWrite(fn: String, matrix: MatrixDouble): Unit =  matrix.map(ArmadilloJavaMat.csvwrite(new File(fn), _))
     override def csvRead(fn: String): MatrixDouble = MatrixM(() => ArmadilloJavaMat.csvread(new File(fn)))
   }
 
@@ -316,43 +261,35 @@ object ArmadilloJavaMatImplicit {
 
     override def values(r: EigenResultT): MatrixDouble = MatrixM.none
 
-    override def add(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (lhsm: Mat, rhsm: Mat) => lhsm.plus(rhsm))
+    override def add(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm <- rhs) yield MatrixM(()=>lhsm.plus(rhsm))
 
-    override def sub(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (lhsm: Mat, rhsm: Mat) => lhsm.minus(rhsm))
+    override def sub(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm <- rhs) yield MatrixM(()=>lhsm.minus(rhsm))
 
-    override def mult(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (lhsm: Mat, rhsm: Mat) => lhsm.times(rhsm))
+    override def mult(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm <- rhs) yield MatrixM(()=>lhsm.times(rhsm))
 
-    override def multe(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (lhsm: Mat, rhsm: Mat) => {
-      lhsm.elemTimes(rhsm)
-    })
+    override def multe(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm <- rhs) yield MatrixM(()=>lhsm.elemTimes(rhsm))
 
-    override def dive(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (lhsm: Mat, rhsm: Mat) => {
-      lhsm.elemDivide(rhsm)
-    })
+    override def dive(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble =for (lhsm <- lhs; rhsm <- rhs) yield MatrixM(()=>lhsm.elemDivide(rhsm))
 
-    override def add1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble =
-      :~>[B](lhs: MatrixDouble, rhs: B, (lhs: Mat, rhs: B) => ArmadilloJavaMat.add(lhs, rhs))
+    override def add1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble = for (lhsm<- lhs) yield MatrixM(()=>ArmadilloJavaMat.add(lhsm,rhs))
 
-    override def sub1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble =
-      :~>[B](lhs: MatrixDouble, rhs: B, (lhs: Mat, rhs: B) => ArmadilloJavaMat.sub(lhs, rhs))
+    override def sub1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble = for (lhsm<- lhs) yield MatrixM(()=>ArmadilloJavaMat.sub(lhsm,rhs))
 
-    override def mul1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble =
-      :~>[B](lhs: MatrixDouble, rhs: B, (lhs: Mat, rhs: B) => ArmadilloJavaMat.mul(lhs, rhs))
+    override def mul1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble = for (lhsm<- lhs) yield MatrixM(()=>ArmadilloJavaMat.mul(lhsm,rhs))
 
-    override def div1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble =
-      :~>[B](lhs: MatrixDouble, rhs: B, (lhs: Mat, rhs: B) => ArmadilloJavaMat.div(lhs, rhs))
+    override def div1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble = for (lhsm<- lhs) yield MatrixM(()=>ArmadilloJavaMat.div(lhsm,rhs))
 
-    override def eq(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (lhsm: Mat, rhsm: Mat) => lhsm.equals(rhsm))
+    override def eq(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm <- rhs) yield MatrixM(()=>lhsm.equals(rhsm))
 
-    override def ne(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (lhsm: Mat, rhsm: Mat) => lhsm.nonEquals(rhsm))
+    override def ne(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm <- rhs) yield MatrixM(()=>lhsm.nonEquals(rhsm))
 
-    override def gt(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (lhsm: Mat, rhsm: Mat) => lhsm.strictGreaterThan(rhsm))
+    override def gt(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm <- rhs) yield MatrixM(()=>lhsm.strictGreaterThan(rhsm))
 
-    override def ge(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (lhsm: Mat, rhsm: Mat) => lhsm.greaterThan(rhsm))
+    override def ge(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm <- rhs) yield MatrixM(()=>lhsm.greaterThan(rhsm))
 
-    override def lt(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (lhsm: Mat, rhsm: Mat) => lhsm.strictLessThan(rhsm))
+    override def lt(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm <- rhs) yield MatrixM(()=>lhsm.strictLessThan(rhsm))
 
-    override def le(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = ~>(lhs, rhs, (lhsm: Mat, rhsm: Mat) => lhsm.lessThan(rhsm))
+    override def le(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm <- rhs) yield MatrixM(()=>lhsm.lessThan(rhsm))
 
     override def create(rows: Int, colls: Int, data: Array[ElemT]): MatrixDouble = MatrixM(rows, colls, data)
 
