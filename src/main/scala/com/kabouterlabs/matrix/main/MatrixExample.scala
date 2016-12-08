@@ -62,9 +62,9 @@ case class MatrixExample[T](implicit evmatrix: MatrixOperationsTC[T]) {
 
     println(m6)
     val m7 = add(m3, m3)
-    val m7a = m6.sumRows()
+    val m7a = m6.sumRows
     println(m7a)
-    val m8 = m6.sumCols()
+    val m8 = m6.sumCols
     println(m8)
 
     val a1 = Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0, 90.0, 33.0, 107.0, -78.0, -23.0, 14.0, 33.0)
@@ -93,14 +93,14 @@ case class MatrixExample[T](implicit evmatrix: MatrixOperationsTC[T]) {
     println(l3a)
     val l4 = l2 concatRight l3a
     println(l4)
-    val l4i = l2.inverse()
+    val l4i = l2.inverse
     inverse(l2) :== l4i
     val l5 = l2 concatDown l3a
     println(l5)
     val cv = l4.slice(::, 0 to 2)
     println(cv)
-    val a = (l4.slice(::, 0 to 2) :== l2).sum()
-    val b = (l4.slice(::, 3 to 5) :== l3a).sum()
+    val a = (l4.slice(::, 0 to 2) :== l2).sum
+    val b = (l4.slice(::, 3 to 5) :== l3a).sum
     val l6a = l4.slice(::, 3 to 5)
     println(l6a)
     println(evmatrix)

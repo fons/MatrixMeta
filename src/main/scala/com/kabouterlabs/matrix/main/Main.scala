@@ -99,7 +99,7 @@ object Main extends App {
     -489.00000 + 139.00000 -1668.00000)
 
 
-    val a = MatrixM(3, 3, r000).sumCols()
+    val a = MatrixM(3, 3, r000).sumCols
     val b = MatrixM(3, 1, t000)
     val c0 = (a :== b)//.sum()
 
@@ -108,7 +108,7 @@ object Main extends App {
   for (x1 <- a; x2 <-b) yield {
       a :== b
   }
-  //mat3 |* mat2
+  mat3 |* mat2
 
 }
 

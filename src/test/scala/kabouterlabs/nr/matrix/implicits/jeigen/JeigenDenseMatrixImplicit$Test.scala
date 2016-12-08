@@ -51,7 +51,7 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
 
   val rows  = 6
   val colls = 3
-  def throwAssert () {
+  def throwAssert  {
     assert(1==2, "ok get a clue")
   }
 
@@ -69,11 +69,11 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val idm = MatrixM.eye(hsize)
 
     assertResult(Some(a1.length.toDouble), "multiplying by the identity should result in the same matrix") {
-      (l3 |* idm :== l3).sum()
+      (l3 |* idm :== l3).sum
     }
 
     assertResult(Some(hsize), "the identity trace should be equal to size") {
-      idm.sum()
+      idm.sum
     }
 
   }
@@ -83,7 +83,7 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val zero = MatrixM.zero(hsize,lsize)
 
     assertResult(Some(a1.length.toDouble)) {
-      (l3 :+ zero :== l3).sum()
+      (l3 :+ zero :== l3).sum
     }
 
   }
@@ -93,7 +93,7 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val id   = MatrixM.eye(7)
     val zero  = MatrixM.zero(7,7)
     assertResult(Some(7.0*7.0)) {
-      (id :- diag :== zero).sum()
+      (id :- diag :== zero).sum
     }
   }
 
@@ -114,10 +114,10 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
 
   it should "be able to create a matrix of ones" in {
     assertResult(Some(5*5)) {
-      MatrixM.one(5,5).sum()
+      MatrixM.one(5,5).sum
     }
     assertResult(Some(5*5)) {
-      (MatrixM.one(5, 5) :== MatrixM.one(5, 5).transpose()).sum()
+      (MatrixM.one(5, 5) :== MatrixM.one(5, 5).transpose).sum
     }
 
   }
@@ -141,10 +141,10 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val l2 = MatrixM(hsize, lsize, a2)
     val r  = MatrixM(hsize, lsize, (a1,a2).zipped.map((l:Double, r:Double)=>l*r))
     assertResult(Some(a1.length.toDouble), "infix and function for element wise multiply op are not compatible") {
-      (l3 :* l2 :== mul(l3, l2)).sum()
+      (l3 :* l2 :== mul(l3, l2)).sum
     }
     assertResult(Some(a2.length.toDouble), "unexpected multiplication result") {
-      (l3 :* l2 :== r).sum()
+      (l3 :* l2 :== r).sum
     }
 
   }
@@ -154,10 +154,10 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val l2 = MatrixM(hsize, lsize, a2)
     val r  = MatrixM(hsize, lsize, (a1,a2).zipped.map((l:Double, r:Double)=>l+r))
     assertResult(Some(a1.length.toDouble), "infix and function for element wise sum are not compatible") {
-      (l3 :+ l2 :== add(l3, l2)).sum()
+      (l3 :+ l2 :== add(l3, l2)).sum
     }
     assertResult(Some(a1.length.toDouble), "unexpected element wise sum result") {
-      (l3 :+ l2 :== r).sum()
+      (l3 :+ l2 :== r).sum
     }
   }
 
@@ -166,10 +166,10 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val l2 = MatrixM(hsize, lsize, a2)
     val r  = MatrixM(hsize, lsize, (a1,a2).zipped.map((l:Double, r:Double)=>l-r))
     assertResult(Some(a1.length.toDouble), "infix and function for element wise sum are not compatible") {
-      (l3 :- l2 :== sub(l3, l2)).sum()
+      (l3 :- l2 :== sub(l3, l2)).sum
     }
     assertResult(Some(a2.length.toDouble), "unexpected element wise subtractiontion result") {
-      (l3 :- l2 :== r).sum()
+      (l3 :- l2 :== r).sum
     }
 
   }
@@ -179,10 +179,10 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val l2 = MatrixM(hsize, lsize, a2)
     val r  = MatrixM(hsize, lsize, (a1,a2).zipped.map((l:Double, r:Double)=>l/r))
     assertResult(Some(a1.length.toDouble), "infix and function for element wise sum are not compatible") {
-      (l3 :\ l2 :== div(l3, l2)).sum()
+      (l3 :\ l2 :== div(l3, l2)).sum
     }
     assertResult(Some(a2.length.toDouble), "unexpected element wise devision result") {
-      (l3 :\ l2 :== r).sum()
+      (l3 :\ l2 :== r).sum
     }
   }
 
@@ -192,11 +192,11 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val l2 = MatrixM(hsize, lsize, a2)
 
     assertResult(Some(a1.length.toDouble), "infix and function for element wise sum are not compatible") {
-      ((l3 :\ l2) :* l2 :== mul(l2, div(l3, l2))).sum()
+      ((l3 :\ l2) :* l2 :== mul(l2, div(l3, l2))).sum
     }
 
     assertResult(Some(false), "element wise div and mult don't commute") {
-      (l2 :* l3 :\ l2 :- l3).sum().map(_ > 0.01)
+      (l2 :* l3 :\ l2 :- l3).sum.map(_ > 0.01)
     }
   }
 
@@ -208,10 +208,10 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
       -3816.5899999999992,5036.540000000001,-4285.96,-10501.95,-2345.94,-8403.93)
     val r  = MatrixM(hsize, lsize, arr)
       assertResult(Some(a1.length.toDouble), "infix and function for matrix multiply are not compatible") {
-      (l3 |* l2 :== mulm(l3, l2)).sum()
+      (l3 |* l2 :== mulm(l3, l2)).sum
     }
     assertResult(Some(a2.length.toDouble), "unexpected matrix multiply result") {
-      (l3 |* l2 :== r).sum()
+      (l3 |* l2 :== r).sum
     }
 
   }
@@ -227,11 +227,11 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val r  = MatrixM(hsize, lsize, a1.map(_ * lv))
 
     assertResult(Some(a1.length.toDouble), "infix and function for value multiply op are not compatible") {
-      (lm ** lv :== mul1(lm, lv)).sum()
+      (lm ** lv :== mul1(lm, lv)).sum
     }
 
     assertResult(Some(a2.length.toDouble), "unexpected value multiplication result") {
-      (lm ** lv :== r).sum()
+      (lm ** lv :== r).sum
     }
 
   }
@@ -242,11 +242,11 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val r  = MatrixM(hsize, lsize, a1.map(_ / lv))
 
     assertResult(Some(a1.length.toDouble), "infix and function for value divide are not compatible") {
-      (lm \\ lv :== div1(lm, lv)).sum()
+      (lm \\ lv :== div1(lm, lv)).sum
     }
 
     assertResult(Some(a2.length.toDouble), "unexpected division result") {
-      (lm \\ lv :== r).sum()
+      (lm \\ lv :== r).sum
     }
 
   }
@@ -258,11 +258,11 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val r  = MatrixM(hsize, lsize, a1.map(_ + lv))
 
     assertResult(Some(a1.length.toDouble), "infix and function for value sum are not compatible") {
-      (lm ++ lv :== add1(lm, lv)).sum()
+      (lm ++ lv :== add1(lm, lv)).sum
     }
 
     assertResult(Some(a2.length.toDouble), "unexpected summation result") {
-      (lm ++ lv :== r).sum()
+      (lm ++ lv :== r).sum
     }
 
   }
@@ -274,11 +274,11 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val r  = MatrixM(hsize, lsize, a1.map(_ - lv))
 
     assertResult(Some(a1.length.toDouble), "infix and function for value subtract are not compatible") {
-      (lm -- lv :== sub1(lm, lv)).sum()
+      (lm -- lv :== sub1(lm, lv)).sum
     }
 
     assertResult(Some(a2.length.toDouble), "unexpected summation result") {
-      (lm -- lv :== r).sum()
+      (lm -- lv :== r).sum
     }
 
   }
@@ -288,11 +288,11 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val lv = 67.34
 
     assertResult(Some(a1.length.toDouble), "div1 and mul1 should commute ") {
-      (((lm \\ lv) ** lv) :== div1(mul1(lm, lv),lv)).sum()
+      (((lm \\ lv) ** lv) :== div1(mul1(lm, lv),lv)).sum
     }
 
     assertResult(Some(a2.length.toDouble), "unexpected div1/mul1 commute result") {
-      (lm \\ lv ** lv :== lm).sum()
+      (lm \\ lv ** lv :== lm).sum
     }
 
   }
@@ -305,18 +305,18 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
   it should "use the infix operator for matrix equality" in {
     val lm = MatrixM(hsize, lsize, a1)
     assertResult(Some(a1.length.toDouble), "infix and function for matrix equality are not compatible") {
-      (lm :== lm :== meq(lm,lm)).sum()
+      (lm :== lm :== meq(lm,lm)).sum
     }
     assertResult(Some(a1.length.toDouble), "unexpected value matrix equality result") {
-      (lm :== lm).sum()
+      (lm :== lm).sum
     }
 
     assertResult(Some(a1.length.toDouble), "unexpected value matrix larger or equal when equal result") {
-      (lm :>= lm).sum()
+      (lm :>= lm).sum
     }
 
     assertResult(Some(a1.length.toDouble), "unexpected value matrix smaller or equal when equal result") {
-      (lm :<= lm).sum()
+      (lm :<= lm).sum
     }
   }
 
@@ -324,11 +324,11 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
   it should "use the infix operator for matrix in-equality" in {
     val lm = MatrixM(hsize, lsize, a1)
     assertResult(Some(a1.length.toDouble), "infix and function for matrix inequality are not compatible") {
-      (lm :!= (lm ** 0.234) :== mne(lm,lm ** 0.234)).sum()
+      (lm :!= (lm ** 0.234) :== mne(lm,lm ** 0.234)).sum
     }
 
     assertResult(Some(a1.length.toDouble), "unexpected value matrix in equality result") {
-      (lm :!= (lm ** 1.34)).sum()
+      (lm :!= (lm ** 1.34)).sum
     }
 
   }
@@ -336,38 +336,38 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
   it should "use the infix operator for matrix smaller or equal " in {
     val lm = MatrixM(hsize, lsize, a1)
     assertResult(Some(a1.length.toDouble), "infix and function for matrix smaller or equal are not compatible") {
-      (lm :<= (lm ** 1.234) :== mle(lm, lm ** 1.234)).sum()
+      (lm :<= (lm ** 1.234) :== mle(lm, lm ** 1.234)).sum
     }
 
     assertResult(Some(a1.length.toDouble), "infix and function for matrix smaller than are not compatible") {
-      (lm :<< (lm ** 1.234) :== mlt(lm, lm ** 1.234)).sum()
+      (lm :<< (lm ** 1.234) :== mlt(lm, lm ** 1.234)).sum
     }
 
     assertResult(Some(a1.filter(_>= 0).length.toDouble), "unexpected value matrix smaller /equal result") {
-      (lm :<= (lm ** 1.34)).sum()
+      (lm :<= (lm ** 1.34)).sum
     }
 
     assertResult(Some(a1.filter(_ > 0).length.toDouble), "unexpected value matrix smaller result") {
-      (lm :<< (lm ** 1.34)).sum()
+      (lm :<< (lm ** 1.34)).sum
     }
   }
 
   it should "use the infix operator for matrix larger or equal " in {
       val lm = MatrixM(hsize, lsize, a1)
       assertResult(Some(a1.length.toDouble), "infix and function for matrix smaller or equal are not compatible") {
-        (lm :>= (lm ** 0.234) :== mge(lm,lm ** 0.234)).sum()
+        (lm :>= (lm ** 0.234) :== mge(lm,lm ** 0.234)).sum
       }
 
       assertResult(Some(a1.length.toDouble), "infix and function for matrix smaller than are not compatible") {
-        (lm :>> (lm ** 0.234) :== mgt(lm,lm ** 0.234)).sum()
+        (lm :>> (lm ** 0.234) :== mgt(lm,lm ** 0.234)).sum
       }
 
       assertResult(Some(a1.filter(_ >= 0).length.toDouble), "unexpected value matrix smaller /equal result") {
-        (lm :>= (lm ** 0.34)).sum()
+        (lm :>= (lm ** 0.34)).sum
       }
 
       assertResult(Some(a1.filter(_> 0).length.toDouble), "unexpected value matrix smaller result") {
-        (lm :>> (lm ** 0.34)).sum()
+        (lm :>> (lm ** 0.34)).sum
       }
 
     }
@@ -384,9 +384,9 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
       959.00000,  1434.00000,  -1668.00000,   1068.00000,   1361.00000,   -506.00000,
       -39.00000, -322.00000, 1047.00000, 118.00000, -2.00000, 1672.00000)
       val k1 = MatrixM(3,3,r)
-      val k2 = MatrixM(3,3,k1.toArray())
+      val k2 = MatrixM(3,3,k1.toArray)
       assertResult(Some(9.0)) {
-        (k1 :== k2).sum()
+        (k1 :== k2).sum
       }
   }
 
@@ -405,8 +405,8 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val l3 = MatrixM(3,3,Array(4.0,5.0,6.0,7.0,8.0,21.0,56.0,-1.0,-9.0))
     val l4 = l2 concatRight l3
     assertResult(Some(18.0)) {
-      val a = (l4(::, 0 to 2) :== l2).sum()
-      val b = (l4(::, 3 to 5) :== l3).sum()
+      val a = (l4(::, 0 to 2) :== l2).sum
+      val b = (l4(::, 3 to 5) :== l3).sum
       (a,b) match {
         case (Some(l), Some(r))=>Some(l+r)
         case _ => None
@@ -428,8 +428,8 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val l3 = MatrixM(3,3,Array(4.0,5.0,6.0,7.0,8.0,21.0,56.0,-1.0,-9.0))
     val l4 = l2 concatDown  l3
     assertResult(Some(18.0)) {
-      val a = (l4(0 to 2, ::) :== l2).sum()
-      val b = (l4(3 to 5, ::) :== l3).sum()
+      val a = (l4(0 to 2, ::) :== l2).sum
+      val b = (l4(3 to 5, ::) :== l3).sum
       (a,b) match {
         case (Some(l), Some(r))=>Some(l+r)
         case _ => None
@@ -441,17 +441,17 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
   it should "be able to be able to extract a diagonal marix" in  {
     val l0 = MatrixM(hsize, hsize, a1)
     val id = MatrixM.eye(hsize)
-    val ld = l0.toDiag()
+    val ld = l0.toDiag
     val s = (for (i <- Range(0, hsize)) yield {l0(i, i)})
     def |+|(l:Option[Double], r:Option[Double]) : Option[Double] = for ( x<- l; y <- r) yield (x+y)
 
     val s1 = s.foldLeft[Option[Double]](Some(0.0))(|+|(_,_))
 
     assertResult(s1) {
-      ld.sum()
+      ld.sum
     }
     assertResult(Some(hsize*hsize.toDouble)) {
-      (l0 :* id :== ld).sum()
+      (l0 :* id :== ld).sum
     }
 
   }
@@ -460,17 +460,17 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
   it should "not be able to extract a diagonal marix from a non-square matrix" in  {
     val l0 = MatrixM(hsize, hsize, a1)
     val id = MatrixM.eye(hsize)
-    val ld = l0.toDiag()
+    val ld = l0.toDiag
     val s = (for (i <- Range(0, hsize)) yield {l0(i, i)})
     def |+|(l:Option[Double], r:Option[Double]) : Option[Double] = for ( x<- l; y <- r) yield (x+y)
 
     val s1 = s.foldLeft[Option[Double]](Some(0.0))(|+|(_,_))
 
     assertResult(s1) {
-      ld.sum()
+      ld.sum
     }
     assertResult(Some(hsize*hsize.toDouble)) {
-      (l0 :* id :== ld).sum()
+      (l0 :* id :== ld).sum
     }
 
   }
@@ -491,13 +491,13 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val l3 = MatrixM(3, 3, Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0))
 
     assertResult(Some(3.0)) {
-      l3.trace()
+      l3.trace
     }
   }
 
   it should "sum over all the elements of a simple matrix" in {
     assertResult(Some(a1.sum)) {
-      MatrixM(hsize, lsize, a1).sum()
+      MatrixM(hsize, lsize, a1).sum
     }
   }
 
@@ -510,7 +510,7 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
       959.00000 + 1434.00000 +  -1668.00000)
 
     assertResult(Some(3.0)) {
-      (MatrixM(3, 3, r).sumRows() :== MatrixM(1, 3, t)).sum()
+      (MatrixM(3, 3, r).sumRows :== MatrixM(1, 3, t)).sum
     }
 
   }
@@ -524,7 +524,7 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
        -489.00000 + 139.00000 -1668.00000)
 
     assertResult(Some(3.0)) {
-      (MatrixM(3, 3, r).sumCols() :== MatrixM(3, 1, t)).sum()
+      (MatrixM(3, 3, r).sumCols :== MatrixM(3, 1, t)).sum
     }
 
   }
@@ -537,16 +537,16 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
 
   it should "be able to get the inverse matrix" in   {
     val l0 = MatrixM(hsize, hsize, a1)
-    val l1 = l0.inverse()
+    val l1 = l0.inverse
     assertResult(Some(true), "matrix times inverse should equal id ") {
-      ((l0 |* l1) :- MatrixM.eye(hsize)).sum().map(_ < 0.00000009)
+      ((l0 |* l1) :- MatrixM.eye(hsize)).sum.map(_ < 0.00000009)
     }
     val k1 = MatrixM(1,4, Array(0.133383283270387,-0.193441867087964,0.0562818261335358,0.156569320793865))
     val k2 = k1 concatDown MatrixM(1,4, Array(-0.00868671218665456,0.0138975529051200,0.0135898861548267, -0.0166114618154203))
     val k3 = k2 concatDown MatrixM(1,4, Array(-0.00693479160027393,   0.0159732440110930, -0.00505488842630576 , -0.00311396044236207))
     val k4 = k3 concatDown MatrixM(1,4, Array(-0.00607112102575925,  -0.0103377723232145,  0.00486333832832704, 0.00668475939273533))
     assertResult(Some(true), "shuould get the actual inverse") {
-      (l1 :- k4).sum().map(_ < 0.000000009 )
+      (l1 :- k4).sum.map(_ < 0.000000009 )
     }
   }
 
@@ -554,7 +554,7 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
   ignore should "not be able to invert a singular matrix" in {
 
     val m = MatrixM.one(5,5)
-    val i = m.inverse()
+    val i = m.inverse
     i.matrix match {
       case Some(m) => assert(1==2,"cannot invert singular matrix")
       case None => assert(1==1)
@@ -566,8 +566,8 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     assertResult(Some(true), "unable to invert a reasonbly large matrix") {
       val sz = 250
       val l0 = MatrixM.one(sz,sz)  :- MatrixM.eye(sz)
-      val k0 = l0.inverse()
-      val r = k0(0,::).toArray().map(_.sum)
+      val k0 = l0.inverse
+      val r = k0(0,::).toArray.map(_.sum)
       r.map(1.0 / _).map(_ - (sz-1)).map(_ < 0.0000001)
     }
   }
@@ -578,7 +578,7 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
 
     val r  = l0.solve(x)
     assertResult(Some(true)) {
-      ((l0 |* r) :- x).sum().map(_ < 0.00000000001)
+      ((l0 |* r) :- x).sum.map(_ < 0.00000000001)
     }
 
   }
@@ -588,10 +588,10 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val r = 100
     val c = 120
     val l0 = MatrixM.rand(r, c)
-    val l1 = l0.transpose()
+    val l1 = l0.transpose
     for (i <- Range(0,r)) {
       assertResult(Some(c)) {
-        (l0(i,::) :== l1(::,i).transpose()).sum()
+        (l0(i,::) :== l1(::,i).transpose).sum
       }
     }
   }
@@ -600,7 +600,7 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val l3  = MatrixM(hsize, lsize, a1)
     val result = -2.35969600000000e6
     assertResult(Some(true)) {
-      l3.determinant().map(_ - result).map(scala.math.abs(_)).map(_ < 0.000001)
+      l3.determinant.map(_ - result).map(scala.math.abs(_)).map(_ < 0.000001)
     }
 
   }
@@ -611,15 +611,15 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val er1 = Array(81.3567339942231, 64.2735390962677, 7.28804710064899, -61.9183201911397)
     val hsize = math.sqrt(a1.length).toInt
     val l3 = MatrixM(hsize, hsize, a1)
-    val e = l3.eig().values()
+    val e = l3.eig.values
 
 
     assertResult(Some(0), "imaginary parts not zero"){
-      e(::,1).toArray().map(_.map(scala.math.abs)).map(_.sum)
+      e(::,1).toArray.map(_.map(scala.math.abs)).map(_.sum)
     }
     val a = 100000
     val s = er1.map(_ * a).map(_.toInt)
-    val t = e(::,0).toArray().map(_.map(_*a).map(_.toInt))
+    val t = e(::,0).toArray.map(_.map(_*a).map(_.toInt))
     for (i <- s) {
       assertResult((Some(true)), "value " + i + "not an eigenvalue") {
         t.map(_.contains(i))
@@ -636,22 +636,22 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val er  = Array(150.958023628061, -65.0496496682086, -7.61918697992639, -7.61918697992639)
     val im  = Array(0.0, 0.0, 84.7958635197412 ,- 84.7958635197412)
     val l3 = MatrixM(hsize, hsize, a2)
-    val e = l3.eig().values()
+    val e = l3.eig.values
 
 
     assertResult(Some(im.map(scala.math.abs(_)).foldLeft(0.0)(_ + _)), "imaginary parts are zero"){
-      e(::,1).toArray().map(_.map(scala.math.abs)).map(_.sum)
+      e(::,1).toArray.map(_.map(scala.math.abs)).map(_.sum)
     }
 
     val a = 100000
-    val t = e(::,0).toArray().map(_.map(_*a).map(_.toInt))
+    val t = e(::,0).toArray.map(_.map(_*a).map(_.toInt))
     for (i <- er.map(_ * a).map(_.toInt)) {
       assertResult((Some(true)), "value " + i + "not a real eigenvalue") {
         t.map(_.contains(i))
       }
     }
 
-    val y = e(::,1).toArray().map(_.map(_*a).map(_.toInt))
+    val y = e(::,1).toArray.map(_.map(_*a).map(_.toInt))
     for (i <- im.map(_ * a).map(_.toInt)) {
       assertResult((Some(true)), "value " + i + " not an imaginary eigenvalue in " + y.map(_.mkString(","))) {
         y.map(_.contains(i))
@@ -663,11 +663,11 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val a1 = Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0, 90.0, 33.0, 107.0, -78.0, -23.0, 14.0, 33.0)
     val hsize = math.sqrt(a1.length).toInt
     val l3 = MatrixM(hsize, hsize, a1)
-    val ev = l3.eig().vectors()
-    val e = l3.eig().values()(::, 0)
+    val ev = l3.eig.vectors
+    val e = l3.eig.values(::, 0)
     for (i <- Range(0, hsize)) {
       assertResult(Some(true), "eigen vector /eigen value out of sync") {
-        ((l3 |* ev(::, i)) :\ ev(::, i) :- MatrixM.fill(hsize, 1, e(i, 0).get)).sum().map(_ < 0.0000001)
+        ((l3 |* ev(::, i)) :\ ev(::, i) :- MatrixM.fill(hsize, 1, e(i, 0).get)).sum.map(_ < 0.0000001)
       }
     }
 
@@ -687,7 +687,7 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val res = m :- k
 
     assertResult(Some(0.0), "unable to (de) serialize csv file") {
-      res.sum()
+      res.sum
     }
 
   }

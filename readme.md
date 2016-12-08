@@ -1,8 +1,9 @@
+
 Table of Contents
 =================
 
-   * [Introduction](#introduction)
-   * [Building](#building)
+* [Introduction](#introduction)
+* [Building](#building)
    * [Testing](#testing)
    * [Matrix Libraries Covered](#matrix-libraries-covered)
    * [API](#api)
@@ -12,6 +13,8 @@ Table of Contents
       * [Output](#output)
 
 Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
+
+---
 
 #Introduction
 
@@ -61,6 +64,12 @@ import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
 
 #API
 
+## Usage
+
+### Use directly
+
+
+
 ## Creation
 
 
@@ -79,7 +88,7 @@ import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
 
 
 
-
+## 
 
 
 
