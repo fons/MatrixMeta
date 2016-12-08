@@ -1,3 +1,8 @@
+[TOC]
+
+------
+
+
 
 #Introduction
 
@@ -8,12 +13,16 @@ The goal is to provide a uniform api for both dense and sparse matrices as well 
 
 #Building
 
-    sbt compile
+```shell
+sbt compile
+```
 
 #Testing
 
-    sbt test
-    
+```shell
+sbt test
+```
+
 #Synopsis
 
 ## Example
@@ -534,10 +543,11 @@ DONE
 
 Process finished with exit code 0
 
+```
 
-````
+  
 
-</code>
+
 
 
 
@@ -545,28 +555,37 @@ Process finished with exit code 0
 # Matrix Libraries Covered
 
   1. [breeze](https://github.com/scalanlp/breeze)
- 
- ```scala
-   import com.kabouterlabs.matrix.implicits.breeze.BreezeDenseMatrixImplicit._
-  ```
-  
+
+```scala
+
+import com.kabouterlabs.matrix.implicits.breeze.BreezeDenseMatrixImplicit._
+```
+
   2. [jeigen](https://github.com/hughperkins/jeigen)
- 
- 
- ```scala
-  import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
-  ```
-  
+
+
+```scala
+
+import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
+
+```
+
   3. [armadillojava](https://github.com/SRAhub/ArmadilloJava)
-  
-    ```scala
+
+```scala
+
     import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaMatImplicit._
 ```
+
+
+
 
 
 #API
 
 ## Creation
+
+
 
 |               | Direct         |   Implicit |
 |---------------|----------------|-------------------
@@ -579,11 +598,15 @@ Process finished with exit code 0
 | Diagonal matrix initialized with data array D | MatrixM.diag(D) | diag(D)
 | Fill matrix with value V | MatrixM.fill(row,coll, V) | fill(row,coll,V) 
 | No matrix created  | MatrixM.none | none 
+
+
+
  
 
 
- 
 
 
 
+```
 
+```
