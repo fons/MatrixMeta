@@ -125,7 +125,7 @@ object Main extends App {
 }
 ```
 ## Output
-```
+```typescript
 INFO: successfully loaded /var/folders/_8/yv63b6sn4wndy7sxxkvqs7880000gn/T/jniloader2467803679675101495netlib-native_system-osx-x86_64.jnilib
 {breeze.linalg.DenseMatrix
 5.0  8.0  7.0  
@@ -543,12 +543,14 @@ DONE
 
 Process finished with exit code 0
 
+​````
 ```
 
-  
 
 
 
+
+------
 
 
 
@@ -579,34 +581,27 @@ import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
 
 
 
-
-
 #API
 
 ## Creation
 
 
 
-|               | Direct         |   Implicit |
-|---------------|----------------|-------------------
-| Empty Matrix  |   MatrixM(row,coll) | matrix(row,coll)
-| Initialize matrix with Array |  MatrixM(row,coll,data) | matrix(row,coll,data)
-| Matrix initialized with 0 | MatrixM.zero(row,coll) | zero(row,coll)
-| Matrix initialized with 1 | MatrixM.ones(row,coll) | ones(row,coll)
-| Identity Matrix of size d | MatrixM.eye(dim) | eye(dim)
-| Matrix with random values | MatrixM.rand(row,coll) | rand(row,coll)
-| Diagonal matrix initialized with data array D | MatrixM.diag(D) | diag(D)
-| Fill matrix with value V | MatrixM.fill(row,coll, V) | fill(row,coll,V) 
-| No matrix created  | MatrixM.none | none 
-
-
-
- 
+|                                          | Direct                    | Implicit              |
+| :--------------------------------------- | ------------------------- | --------------------- |
+| Empty Matrix                             | MatrixM(row,coll)         | matrix(row,coll)      |
+| Initialize matrix with Array             | MatrixM(row,coll,data)    | matrix(row,coll,data) |
+| Matrix initialized with 0                | MatrixM.zero(row,coll)    | zero(row,coll)        |
+| Matrix initialized with 1                | MatrixM.ones(row,coll)    | ones(row,coll)        |
+| Identity Matrix of size d                | MatrixM.eye(dim)          | eye(dim)              |
+| Matrix with random values                | MatrixM.rand(row,coll)    | rand(row,coll)        |
+| Diagonal matrix initialized with data array D | MatrixM.diag(D)           | diag(D)               |
+| Fill matrix with value V                 | MatrixM.fill(row,coll, V) | fill(row,coll,V)      |
+| No matrix created                        | MatrixM.none              | none                  |
 
 
 
 
 
-```
 
-```
+
