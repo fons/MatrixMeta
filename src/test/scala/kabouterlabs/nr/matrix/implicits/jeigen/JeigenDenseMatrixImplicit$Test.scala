@@ -483,6 +483,31 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     }
   }
 
+  it should "be able to create a deep copy of a matrix" in {
+    val l0 = MatrixM.rand(hsize,hsize)
+    val l2 = l0.deepCopy
+
+    assertResult(Some(hsize*hsize)) {
+      (l0 :== l2).sum
+    }
+
+  }
+
+  it should "a deep copy of a matrix can be changed and it will not chnage the original" in {
+    val l0 = MatrixM.rand(hsize,hsize)
+    val l2 = l0.deepCopy
+
+    assertResult(Some(true)) {for (c1 <-l0(1,3); c2 <- l2(1,3)) yield c1 == c2}
+
+    l2(1,3,78.90)
+    assertResult(Some(true)) {for (c1 <-l0(1,3); c2 <- l2(1,3)) yield (c1 != c2) && (c2 == 78.90)}
+
+    assertResult(Some(hsize*hsize - 1)) {
+      (l0 :== l2).sum
+    }
+
+  }
+
   //
   // Section  Aggregation Test : AggregateT
   //------------------------------------------------------------------------------------------------------

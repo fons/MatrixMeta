@@ -46,5 +46,6 @@ trait SliceT[MatrixImplT] {
 
   def toDiag: MatrixImplT
 
+  def deepCopy:MatrixImplT
 }
 

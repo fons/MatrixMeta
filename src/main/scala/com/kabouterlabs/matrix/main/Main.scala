@@ -29,12 +29,9 @@ package com.kabouterlabs.matrix.main
 
 import com.kabouterlabs.matrix.MatrixM
 import com.kabouterlabs.matrix.MatrixOperations._
-import com.kabouterlabs.matrix.implicits.breeze.BreezeDenseMatrixImplicit._
-
-/**
-  * Created by fons on 3/13/16.
-  */
-
+//import com.kabouterlabs.matrix.implicits.breeze.BreezeDenseMatrixImplicit._
+//import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
+import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaMatImplicit._
 
 
 object Use
@@ -65,51 +62,90 @@ case class TestIt[A](n:A){
 object Main extends App {
 
 
-  val mat1 = MatrixM(2,2)
 
-  Use.run1()()
-  Use.run2()()
-  val t = Use.run3()
-  t()
-  println(MatrixM.one(5,4))
-  println(MatrixM.rand(5,4))
-  println(MatrixM.none)
-  val n1 = Option(23.0)
-  val n2 = Option(45.6)
-  val c = for (a <- n1; b <- n2) yield {
-    a*b
-  }
-  println(n1,n2,c)
-  println("DONE")
-  val m1 = new TestIt(78)
-  val m2 = new TestIt(89)
-  for (a <- m1; b <- m2) yield {
-    //println(a,b3)
-    new TestIt(a*b)
-  }
-
-  val mat2 = MatrixM.one(2,2)
-  val mat3 = MatrixM.rand(2,4)
-  println(mat2)
-  val r000 = Array[Double](434.00000, 417.00000,  -489.00000,  501.00000,   527.00000,   139.00000,
-    959.00000,  1434.00000,  -1668.00000,   1068.00000,   1361.00000,   -506.00000,
-    -39.00000, -322.00000, 1047.00000, 118.00000, -2.00000, 1672.00000)
-  val t000 = Array[Double](434.00000 + 501.00000 + 959.00000,
-    417.00000 + 527.00000 + 1434.00000,
-    -489.00000 + 139.00000 -1668.00000)
+//  Use.run1()()
+//  Use.run2()()
+//  val t = Use.run3()
+//  t()
 
 
-    val a = MatrixM(3, 3, r000).sumCols
-    val b = MatrixM(3, 1, t000)
-    val c0 = (a :== b)//.sum()
+//  println(MatrixM.one(5,4))
+//  println(MatrixM.rand(5,4))
+//  println(MatrixM.none)
+//  val n1 = Option(23.0)
+//  val n2 = Option(45.6)
+//  val c = for (a <- n1; b <- n2) yield {
+//    a*b
+//  }
+//  println(n1,n2,c)
+//  println("DONE")
+//  val m1 = new TestIt(78)
+//  val m2 = new TestIt(89)
+//  for (a <- m1; b <- m2) yield {
+//    //println(a,b3)
+//    new TestIt(a*b)
+//  }
+//
+//  val mat1 = MatrixM(2,2)
+//  val mat2 = MatrixM.one(2,2)
+//  val mat3 = MatrixM.rand(2,4)
+//
+//  val r000 = Array[Double](434.00000, 417.00000,  -489.00000,  501.00000,   527.00000,   139.00000,
+//    959.00000,  1434.00000,  -1668.00000,   1068.00000,   1361.00000,   -506.00000,
+//    -39.00000, -322.00000, 1047.00000, 118.00000, -2.00000, 1672.00000)
+//  val mat4 = MatrixM(3, 3, r000)
+//  println(mat1,mat2,mat3,mat4)
 
-    println(a,b,c0)
+  //  val t000 = Array[Double](434.00000 + 501.00000 + 959.00000,
+//    417.00000 + 527.00000 + 1434.00000,
+//    -489.00000 + 139.00000 -1668.00000)
+//
+//
+//    val a = MatrixM(3, 3, r000).sumCols
+//    val b = MatrixM(3, 1, t000)
+//    val c0 = (a :== b)//.sum()
+//
+//    println(a,b,c0)
+//
+//  for (x1 <- a; x2 <-b) yield {
+//
+//  }
+//  mat3 |* mat2
+//
+//  val mm = MatrixM.rand(10,10)
+//  val mc = mm.deepCopy(2,1,89.90)
+//
+//  val s1 = mm(2,1)
+//  val s2 = mc(2,1)
+//
+//  println(s1,s2, mm, mm(::,2))
+//  val mmd = MatrixM.rand(10,10)
+//  val ss = mmd(::,0 to 3)
+//  ss(2,1,909.890)
+//  println(mmd, ss)
 
-  for (x1 <- a; x2 <-b) yield {
-      a :== b
-  }
-  mat3 |* mat2
+  val l2 = rand(3, 3)
+  val l3a = matrix(3, 3, Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0))
+  val s1 = l2 :+ l3a
+  val s2 = l2 :- l3a
+  val s3 = l2 :\ l3a
+  val s4 = l2 :* l3a
+  val s5 = l2 |* l3a
 
+  val s1a = l2 ++ 7.0
+  val s2a = l2 -- 7.0
+  val s3a = l2 ** 7.0
+  val s4a = l2 \\ 7.0
+
+  val ta1 = s1 :== s1a
+  val ta2 = s1 :<= s1a
+  val ta3 = s1 :<<  s1a
+  val ta4 = s1 :>>  s1a
+  val ta5 = s1 :>=  s1a
+  val ta6 = s1 :!=  s1a
+  println(l2,l3a)
+  println("------------")
+  println(s1,s5,s1a,s3a,ta5)
 }
 
 

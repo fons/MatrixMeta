@@ -33,16 +33,9 @@ package com.kabouterlabs.matrix.implicits.armadillojava
 
 import java.io.{PrintWriter, StringWriter, File}
 
-import com.kabouterlabs.matrix.AggregateT
-import com.kabouterlabs.matrix.CompanionT
+import com.kabouterlabs.matrix._
 
-import com.kabouterlabs.matrix.EigenResultM
-import com.kabouterlabs.matrix.FactoryT
-import com.kabouterlabs.matrix.LinearAlgebraT
-import com.kabouterlabs.matrix.MatrixM
 import com.kabouterlabs.matrix.MatrixOperations.MatrixOperationsTC
-import com.kabouterlabs.matrix.SerializeT
-import com.kabouterlabs.matrix.SliceT
 
 import org.armadillojava.{Col, Mat}
 
@@ -187,6 +180,8 @@ object ArmadilloJavaMatImplicit {
   implicit class SliceT$implicit(matrix: MatrixDouble) extends SliceT[MatrixDouble] {
     private def @#(matrix: MatrixDouble, a1: Int, a2: Int, a3: Int, a4: Int, f: (MatrixImpl, Int, Int, Int, Int) => MatrixImpl): MatrixDouble =
       for (m <- matrix) yield MatrixM(() => f(m, a1, a2, a3, a4))
+
+    override def deepCopy: MatrixDouble =  for (m <- matrix) yield MatrixM(m.n_rows, m.n_cols,m.memptr())
 
     override def apply(row: Int, coll: Int, v: ElemT): MatrixDouble = matrix.map1((m: Mat) => {m.at(row, coll, org.armadillojava.Op.EQUAL, v); m})
 

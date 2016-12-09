@@ -157,7 +157,9 @@ object BreezeDenseMatrixImplicit {
 
   implicit class SliceT$implicit(matrix: MatrixDouble) extends SliceT[MatrixDouble] {
 
-    override def apply(row: Int, coll: Int, v: ElemT): MatrixDouble = matrix.map1((m) => m(row to row, coll to coll) := v)
+    override def deepCopy: MatrixDouble = matrix.map1(_.copy)
+
+    override def apply(row: Int, coll: Int, v: ElemT): MatrixDouble = matrix.map1((m) => {m(row to row, coll to coll) := v; m})
 
     override def toDiag: MatrixDouble = matrix.map1((m: MatrixImpl) => m :* DenseMatrix.eye[Double](m.rows))
 
@@ -167,15 +169,15 @@ object BreezeDenseMatrixImplicit {
 
     // breeze supports step 1 size only
     override def apply[K, L](row: K, col: L): MatrixDouble = (row, col) match {
-      case (r: Range, ::) => matrix.map1((m: MatrixImpl) => m(r.start to r.end, ::))
-      case (::, r: Range) => matrix.map1((m: MatrixImpl) => m(::, r.start to r.end))
+      case (r: Range, ::) => matrix.map1(_(r.start to r.end, ::))
+      case (::, r: Range) => matrix.map1(_(::, r.start to r.end))
 
-      case (row: Int, ::) => matrix.map1((m: MatrixImpl) => m(row, ::).t.toDenseMatrix)
-      case (::, col: Int) => matrix.map1((m: MatrixImpl) => m(::, col).toDenseMatrix.t)
+      case (row: Int, ::) => matrix.map1(_(row, ::).t.toDenseMatrix)
+      case (::, col: Int) => matrix.map1(_(::, col).toDenseMatrix.t)
 
-      case (r: Range, c: Range) => matrix.map1((m: MatrixImpl) => m(r.start to r.end, c.start to c.end))
-      case (row: Int, r: Range) => matrix.map1((m: MatrixImpl) => m(row, r.start to r.end).t.toDenseMatrix)
-      case (r: Range, col: Int) => matrix.map1((m: MatrixImpl) => m(r.start to r.end, col).toDenseMatrix)
+      case (r: Range, c: Range) => matrix.map1(_(r.start to r.end, c.start to c.end))
+      case (row: Int, r: Range) => matrix.map1(_(row, r.start to r.end).t.toDenseMatrix)
+      case (r: Range, col: Int) => matrix.map1(_(r.start to r.end, col).toDenseMatrix)
       case (_, _) => matrix
     }
     override def apply(row: Int, col: Int): Option[ElemT] = matrix.safeMap(_(row,col))

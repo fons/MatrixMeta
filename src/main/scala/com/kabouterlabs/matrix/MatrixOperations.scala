@@ -178,11 +178,11 @@ object MatrixOperations {
 
     def determinant: Option[Double] = ev.determinant(lhs)
 
-    def slice[K, L](row: K, col: L): A = ev.slice(lhs, row, col)
+    def apply[K, L](row: K, col: L): A = ev.slice(lhs, row, col)
 
-    def get(row: Int, coll: Int): Option[Double] = ev.get(lhs, row, coll)
+    def apply(row: Int, coll: Int): Option[Double] = ev.get(lhs, row, coll)
 
-    def set(row: Int, coll: Int, v: Double): A = ev.set(lhs, row, coll, v)
+    def apply(row: Int, coll: Int, v: Double): A = ev.set(lhs, row, coll, v)
 
     def toDiag: A = ev.toDiag(lhs)
 
@@ -237,11 +237,11 @@ object MatrixOperations {
 
   def inverse[A: MatrixOperationsTC](lhs: A): A = lhs.inverse
 
-  def slice[A: MatrixOperationsTC, K, L](lhs: A, row: K, col: L): A = lhs.slice(row, col)
+  def slice[A: MatrixOperationsTC, K, L](lhs: A, row: K, col: L): A = lhs(row, col)
 
-  def getValue[A: MatrixOperationsTC](lhs: A, row: Int, coll: Int): Option[Double] = lhs.get(row, coll)
+  def getValue[A: MatrixOperationsTC](lhs: A, row: Int, coll: Int): Option[Double] = lhs(row, coll)
 
-  def setValue[A: MatrixOperationsTC](lhs: A, row: Int, coll: Int, v: Double): A = lhs.set(row, coll, v)
+  def setValue[A: MatrixOperationsTC](lhs: A, row: Int, coll: Int, v: Double): A = lhs(row, coll, v)
 
   def matrix[A](row: Int, col: Int, data: Array[Double])(implicit ev: MatrixOperationsTC[A]) = ev.create(row, col, data)
 
@@ -256,6 +256,8 @@ object MatrixOperations {
   def diag[A](data: Array[Double])(implicit ev: MatrixOperationsTC[A]): A = ev.diag(data)
 
   def one[A](row: Int, col: Int)(implicit ev: MatrixOperationsTC[A]): A = ev.one(row, col)
+
+  def none[A]()(implicit ev: MatrixOperationsTC[A])  = ev.none
 
   def fill[A](row: Int, col: Int, value: Double)(implicit ev: MatrixOperationsTC[A]): A = ev.fill(row, col, value)
 

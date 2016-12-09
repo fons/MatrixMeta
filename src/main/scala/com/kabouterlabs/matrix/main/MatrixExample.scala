@@ -54,9 +54,9 @@ case class MatrixExample[T](implicit evmatrix: MatrixOperationsTC[T]) {
 
     println(m1)
     println(m2)
-    val m3 = evmatrix.fill(10, 20, -88.89)
+    val m3 = fill(10, 20, -88.89)
     println(m3)
-    val m4 = evmatrix.one(10, 20)
+    val m4 = one(10, 20)
     println(m4)
     val m6 = m3 :+ m3
 
@@ -97,13 +97,32 @@ case class MatrixExample[T](implicit evmatrix: MatrixOperationsTC[T]) {
     inverse(l2) :== l4i
     val l5 = l2 concatDown l3a
     println(l5)
-    val cv = l4.slice(::, 0 to 2)
+    val cv = l4(::, 0 to 2)
     println(cv)
-    val a = (l4.slice(::, 0 to 2) :== l2).sum
-    val b = (l4.slice(::, 3 to 5) :== l3a).sum
-    val l6a = l4.slice(::, 3 to 5)
+    val a = (l4(::, 0 to 2) :== l2).sum
+    val b = (l4(::, 3 to 5) :== l3a).sum
+    val l6a = l4(::, 3 to 5)
     println(l6a)
     println(evmatrix)
+
+    val s1 = l2 :+ l3a
+    val s2 = l2 :- l3a
+    val s3 = l2 :\ l3a
+    val s4 = l2 :* l3a
+    val s5 = l2 |* l3a
+
+    val s1a = l2 ++ 7.0
+    val s2a = l2 -- 7.0
+    val s3a = l2 ** 7.0
+    val s4a = l2 \\ 7.0
+
+    val ta1 = s1 :== s1a
+    val ta2 = s1 :<= s1a
+    val ta3 = s1 :<<  s1a
+    val ta4 = s1 :>>  s1a
+    val ta5 = s1 :>=  s1a
+    val ta6 = s1 :!=  s1a
+    println(l2,l3a)
 
   }
 

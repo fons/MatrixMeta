@@ -187,6 +187,8 @@ object JeigenDenseMatrixImplicit {
     private def @#(matrix: MatrixDouble, a1: Int, a2: Int, a3: Int, a4: Int, f: (MatrixImpl, Int, Int, Int, Int) => MatrixImpl): MatrixDouble =
       for (m <- matrix) yield MatrixM(() => f(m, a1, a2, a3, a4))
 
+    override def deepCopy: MatrixDouble = for (m <- matrix) yield MatrixM(m.rows, m.cols,m.getValues())
+
     override def apply(row: Int, coll: Int, v: ElemT): MatrixDouble =  matrix.map1((m: DenseMatrix) => {m.set(row, coll, v); m})
 
     override def toDiag: MatrixDouble = matrix.map1((m: DenseMatrix) => m.mul(jeigen.Shortcuts.eye(m.rows)))

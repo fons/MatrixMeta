@@ -2,13 +2,20 @@
 Table of Contents
 =================
 
+* [Table of Contents](#table-of-contents)
 * [Introduction](#introduction)
-* [Building](#building)
+   * [Building](#building)
    * [Testing](#testing)
    * [Matrix Libraries Covered](#matrix-libraries-covered)
    * [API](#api)
+      * [Usage](#usage)
+         * [API for direct use](#api-for-direct-use)
+         * [API for use as implicit](#api-for-use-as-implicit)
       * [Creation](#creation)
-   * [Synopsis](#synopsis)
+      * [Synopsis](#synopsis)
+      * [Indexing and Slicing](#indexing-and-slicing)
+         * [Synopsis](#synopsis-1)
+   * [Synopsis](#synopsis-2)
       * [Example](#example)
       * [Output](#output)
 
@@ -66,15 +73,79 @@ import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
 
 ## Usage
 
-### Use directly
+### API for direct use
+
+```scala
+import com.kabouterlabs.matrix.MatrixM
+import com.kabouterlabs.matrix.MatrixOperations._
+import com.kabouterlabs.matrix.implicits.breeze.BreezeDenseMatrixImplicit._
+ //or one of the other implicits 
+ 
+```
 
 
+
+### API for use as implicit
+
+```scala
+import com.kabouterlabs.matrix.MatrixOperations._
+
+case class MatrixExample[T](implicit evmatrix: MatrixOperationsTC[T]) {
+  [...]
+}
+
+//then 
+import com.kabouterlabs.matrix.implicits.breeze.BreezeDenseMatrixImplicit._
+new MatrixExample
+// will use breeze as the underlying matrix library
+```
 
 ## Creation
 
+### Synopsis
+
+```scala
+import com.kabouterlabs.matrix.MatrixM
+import com.kabouterlabs.matrix.MatrixOperations._
+import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaMatImplicit._
+  val mat1 = MatrixM(2,2)
+  val mat2 = MatrixM.one(2,2)
+  val mat3 = MatrixM.rand(2,4)
+
+  val r000 = Array[Double](434.00000, 417.00000,  -489.00000,  501.00000,   527.00000,   139.00000,
+    959.00000,  1434.00000,  -1668.00000,   1068.00000,   1361.00000,   -506.00000,
+    -39.00000, -322.00000, 1047.00000, 118.00000, -2.00000, 1672.00000)
+  val mat4 = MatrixM(3, 3, r000)
+  println(mat1,mat2,mat3,mat4)
+```
 
 
-|                                          | Direct                    | Implicit              |
+
+```
+({org.armadillojava.Mat
+(2, 2)-matrix: [
+          0         0
+          0         0
+]},{org.armadillojava.Mat
+(2, 2)-matrix: [
+     1.0000    1.0000
+     1.0000    1.0000
+]},{org.armadillojava.Mat
+(2, 4)-matrix: [
+     0.5774    0.1570    0.4965    0.4801
+     0.4786    0.7773    0.9585    0.3017
+]},{org.armadillojava.Mat
+(3, 3)-matrix: [
+   434.0000  501.0000  959.0000
+   417.0000  527.0000 1434.0000
+  -489.0000  139.0000-1668.0000
+]})
+
+```
+
+### Operations
+
+| Operation                                | Direct                    | Implicit              |
 | :--------------------------------------- | ------------------------- | --------------------- |
 | Empty Matrix                             | MatrixM(row,coll)         | matrix(row,coll)      |
 | Initialize matrix with Array             | MatrixM(row,coll,data)    | matrix(row,coll,data) |
@@ -88,10 +159,192 @@ import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
 
 
 
-## 
+## Indexing and Slicing
+
+### Synopsis
+
+```scala
+val mm = MatrixM.rand(10,10)
+val ss = mm(::,0 to 3)
+println(ss)
+val mm = MatrixM.rand(10,10)
+val mc = mm.deepCopy(2,1,89.90)
+
+val s1 = mm(2,1)
+val s2 = mc(2,1)
+
+println(s1,s2, mm, mm(::,2))
+val mmd = MatrixM.rand(10,10)
+val ss = mmd(::,0 to 3)
+ss(2,1,909.890)
+println(mmd, ss)
+```
 
 
 
+```reStructuredText
+{breeze.linalg.DenseMatrix
+0.2837778444775749   0.8579650113588222   0.3418471653423856   0.9307517078612046  
+0.05949754250565076  0.03158873862870193  0.863421443055354    0.5658424105106379  
+0.6173752477462089   0.5905474153790615   0.4529669744171494   0.2813252987181811  
+0.10652573135517485  0.34370509210435674  0.43048537165122536  0.6268659904851073  
+0.45979000662576897  0.18373298972108065  0.5593474321779575   0.8359163014022442  
+0.8310672643442611   0.38242429289741     0.753462759853414    0.3076126032691908  
+0.482921417268668    0.3111265557321392   0.8801397061735807   0.7895732193230647  
+0.6331731597239412   0.19465081351603875  0.6839996610857064   0.641202992419446   
+0.27553195658567886  0.8455495127829      0.9752823594167976   0.7836903228091154  
+0.6306358214285563   0.9203409695192428   0.17947790404678599  0.172010385465164   }
+
+(Some(0.42567356858385597),Some(89.9),{org.armadillojava.Mat
+(10, 10)-matrix: [
+     0.9443    0.3637    0.3873    0.5389    0.8672    0.9705    0.5294    0.0068    0.7316    0.8691
+     0.6178    0.2015    0.8349    0.4145    0.4907    0.4075    0.1076    0.7748    0.3073    0.4547
+     0.2799    0.4257    0.3322    0.6440    0.5811    0.0056    0.9458    0.6157    0.6868    0.5537
+     0.3688    0.7542    0.7775    0.4294    0.0779    0.0603    0.3285    0.3470    0.1619    0.2664
+     0.1439    0.3660    0.6493    0.2465    0.0338    0.9230    0.0900    0.6601    0.9080    0.4308
+     0.3971    0.7697    0.7752    0.5495    0.8491    0.0195    0.3494    0.4458    0.4480    0.3629
+     0.1676    0.4755    0.7071    0.9824    0.1014    0.1042    0.8003    0.0919    0.6893    0.7565
+     0.1933    0.3919    0.3064    0.0598    0.2035    0.7171    0.0365    0.7063    0.2117    0.6879
+     0.8278    0.4397    0.5193    0.9183    0.9716    0.0650    0.9458    0.0417    0.2354    0.7839
+     0.0329    0.0367    0.9378    0.9337    0.0051    0.4911    0.5642    0.2295    0.5699    0.9362
+]},{org.armadillojava.Mat
+(10, 1)-matrix: [
+     0.3873
+     0.8349
+     0.3322
+     0.7775
+     0.6493
+     0.7752
+     0.7071
+     0.3064
+     0.5193
+     0.9378
+]})
+({org.armadillojava.Mat
+(10, 10)-matrix: [
+     0.9767    0.1935    0.2006    0.0691    0.9723    0.5412    0.7768    0.8709    0.8311    0.3186
+     0.9627    0.0970    0.7743    0.2217    0.5707    0.2462    0.0403    0.6931    0.9136    0.5338
+     0.2679    0.7135    0.0595    0.9683    0.9712    0.6655    0.3541    0.6716    0.9339    0.0543
+     0.3842    0.8059    0.4064    0.8324    0.6826    0.3697    0.0069    0.3120    0.5967    0.2551
+     0.6069    0.9869    0.9313    0.7605    0.1793    0.6175    0.0774    0.8391    0.0227    0.2118
+     0.7545    0.3209    0.3934    0.1288    0.6279    0.6041    0.6899    0.3586    0.5652    0.0706
+     0.6238    0.2390    0.8898    0.6155    0.9154    0.9755    0.8470    0.3526    0.0510    0.2881
+     0.3353    0.2764    0.2377    0.2725    0.8782    0.4053    0.8807    0.0290    0.8166    0.6566
+     0.1242    0.9587    0.4371    0.1380    0.4685    0.6664    0.7524    0.0861    0.9752    0.5224
+     0.3591    0.5362    0.7141    0.6877    0.0248    0.7034    0.3129    0.1988    0.7590    0.0730
+]},{org.armadillojava.Mat
+(10, 4)-matrix: [
+     0.9767    0.1935    0.2006    0.0691
+     0.9627    0.0970    0.7743    0.2217
+     0.2679  909.8900    0.0595    0.9683
+     0.3842    0.8059    0.4064    0.8324
+     0.6069    0.9869    0.9313    0.7605
+     0.7545    0.3209    0.3934    0.1288
+     0.6238    0.2390    0.8898    0.6155
+     0.3353    0.2764    0.2377    0.2725
+     0.1242    0.9587    0.4371    0.1380
+     0.3591    0.5362    0.7141    0.6877
+]})
+```
+
+
+
+### Operations
+
+| Operation                                | Direct and implicit |
+| ---------------------------------------- | ------------------- |
+| deep copy ; Use this if to avoid aliasing | m.deepCopy          |
+| get value  returns Option[Double]        | m(row,coll)         |
+| set value                                | m(row, col, value)  |
+| return a sub matrix reference ;          | m( k to m, d to f)  |
+| extract a column :: is a short cut for the whole range | m(::, 2)            |
+
+
+
+## Matrix Algebraic Operations
+
+### Synopsis
+
+l
+
+```scala
+  val l2 = rand(3, 3)
+  val l3a = matrix(3, 3, Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0))
+  val s1 = l2 :+ l3a
+  val s2 = l2 :- l3a
+  val s3 = l2 :\ l3a
+  val s4 = l2 :* l3a
+  val s5 = l2 |* l3a
+
+  val s1a = l2 ++ 7.0
+  val s2a = l2 -- 7.0
+  val s3a = l2 ** 7.0
+  val s4a = l2 \\ 7.0
+
+  val ta1 = s1 :== s1a
+  val ta2 = s1 :<= s1a
+  val ta3 = s1 :<<  s1a
+  val ta4 = s1 :>>  s1a
+  val ta5 = s1 :>=  s1a
+  val ta6 = s1 :!=  s1a
+  println(l2,l3a)
+  println("------------")
+  println(s1,s5,s1a,s3a,ta5)
+```
+
+
+
+```
+({org.armadillojava.Mat
+(3, 3)-matrix: [
+     0.6720    0.8165    0.8766
+     0.5588    0.6270    0.2185
+     0.4778    0.8910    0.6804
+]},{org.armadillojava.Mat
+(3, 3)-matrix: [
+     4.0000    7.0000   56.0000
+     5.0000    8.0000   -1.0000
+     6.0000   21.0000   -9.0000
+]})
+------------
+({org.armadillojava.Mat
+(3, 3)-matrix: [
+     4.6720    7.8165   56.8766
+     5.5588    8.6270   -0.7815
+     6.4778   21.8910   -8.3196
+]},{org.armadillojava.Mat
+(3, 3)-matrix: [
+    12.0299   29.6440   28.9285
+     6.6812   13.5157   28.7022
+    10.4482   24.7599   19.7425
+]},{org.armadillojava.Mat
+(3, 3)-matrix: [
+     7.6720    7.8165    7.8766
+     7.5588    7.6270    7.2185
+     7.4778    7.8910    7.6804
+]},{org.armadillojava.Mat
+(3, 3)-matrix: [
+     4.7043    5.7152    6.1360
+     3.9119    4.3892    1.5292
+     3.3446    6.2368    4.7625
+]},{org.armadillojava.Mat
+(3, 3)-matrix: [
+          0    1.0000    1.0000
+          0    1.0000         0
+          0    1.0000         0
+]})
+
+```
+
+
+
+### Operations
+
+
+
+lll
+
+lllll
 
 #Synopsis
 
@@ -124,9 +377,9 @@ case class MatrixExample[T](implicit evmatrix: MatrixOperationsTC[T]) {
 
     println(m6)
     val m7 = add(m3, m3)
-    val m7a = m6.sumRows()
+    val m7a = m6.sumRows
     println(m7a)
-    val m8 = m6.sumCols()
+    val m8 = m6.sumCols
     println(m8)
 
     val a1 = Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0, 90.0, 33.0, 107.0, -78.0, -23.0, 14.0, 33.0)
@@ -151,14 +404,14 @@ case class MatrixExample[T](implicit evmatrix: MatrixOperationsTC[T]) {
     println(l3a)
     val l4 = l2 concatRight l3a
     println(l4)
-    val l4i = l2.inverse()
+    val l4i = l2.inverse
     inverse(l2) :== l4i
     val l5 = l2 concatDown l3a
     println(l5)
     val cv = l4.slice(::, 0 to 2)
     println(cv)
-    val a = (l4.slice(::, 0 to 2) :== l2).sum()
-    val b = (l4.slice(::, 3 to 5) :== l3a).sum()
+    val a = (l4.slice(::, 0 to 2) :== l2).sum
+    val b = (l4.slice(::, 3 to 5) :== l3a).sum
     val l6a = l4.slice(::, 3 to 5)
     println(l6a)
     println(evmatrix)
