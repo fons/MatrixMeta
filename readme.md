@@ -1,4 +1,5 @@
 
+
 Table of Contents
 =================
 
@@ -12,10 +13,15 @@ Table of Contents
          * [API for direct use](#api-for-direct-use)
          * [API for use as implicit](#api-for-use-as-implicit)
       * [Creation](#creation)
-      * [Synopsis](#synopsis)
+         * [Synopsis](#synopsis)
+         * [Operations](#operations)
       * [Indexing and Slicing](#indexing-and-slicing)
          * [Synopsis](#synopsis-1)
-   * [Synopsis](#synopsis-2)
+         * [Operations](#operations-1)
+      * [Matrix Algebraic Operations](#matrix-algebraic-operations)
+         * [Synopsis](#synopsis-2)
+         * [Operations](#operations-2)
+   * [Synopsis](#synopsis-3)
       * [Example](#example)
       * [Output](#output)
 
