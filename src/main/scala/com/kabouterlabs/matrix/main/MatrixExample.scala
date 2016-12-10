@@ -99,30 +99,55 @@ case class MatrixExample[T](implicit evmatrix: MatrixOperationsTC[T]) {
     println(l5)
     val cv = l4(::, 0 to 2)
     println(cv)
+    l4.deepCopy :== deepCopy(l4)
+    slice(setValue(l4.deepCopy,1,1,67.90),::,0 to 3)
     val a = (l4(::, 0 to 2) :== l2).sum
     val b = (l4(::, 3 to 5) :== l3a).sum
     val l6a = l4(::, 3 to 5)
     println(l6a)
     println(evmatrix)
 
-    val s1 = l2 :+ l3a
-    val s2 = l2 :- l3a
-    val s3 = l2 :\ l3a
-    val s4 = l2 :* l3a
-    val s5 = l2 |* l3a
+    val s1  = l2 :+ l3a
+    val s1b = add(l2, l3a)
+    val s2  = l2 :- l3a
+    val s2b = subtract(l2, l3a)
+    val s3  = l2 :\ l3a
+    val s3b = divide(l2, l3a)
+    val s4  = l2 :* l3a
+    val s4b = hadamard(l2, l3a)
+    val s5  = l2 |* l3a
+    val s5a = multiply(l2, l3a)
 
-    val s1a = l2 ++ 7.0
-    val s2a = l2 -- 7.0
-    val s3a = l2 ** 7.0
-    val s4a = l2 \\ 7.0
+    val s1a  = l2 ++ 7.0
+    val s1aa = divide1(l2, 7.0)
+    val s2a  = l2 -- 7.0
+    val s2aa = subtract1(l2, 7.0)
+    val s3a  = l2 ** 7.0
+    val s3aa = multiply1(l2, 7.0)
+    val s4a  = l2 \\ 7.0
+    val s4aa = divide1(l2, 7.0)
 
-    val ta1 = s1 :== s1a
+    val ta1  = s1 :== s1a
+    val ta1a = mEqual(s1,s1a)
     val ta2 = s1 :<= s1a
     val ta3 = s1 :<<  s1a
     val ta4 = s1 :>>  s1a
     val ta5 = s1 :>=  s1a
     val ta6 = s1 :!=  s1a
     println(l2,l3a)
+
+    val si  = s1.inverse
+    val sia = inverse(s1)
+    val sd  = s1.determinant
+    val sda = determinant(s1)
+    val st  = s1.transpose
+    val sta = transpose(s1)
+    val tr  = s1.trace
+    val tra = trace(s1)
+    val eig = s1.eigen
+    val eia = eigen(s1)
+    val rs1 = s1.solve(s2)
+    val rs1a =solve(s1,s2)
 
   }
 

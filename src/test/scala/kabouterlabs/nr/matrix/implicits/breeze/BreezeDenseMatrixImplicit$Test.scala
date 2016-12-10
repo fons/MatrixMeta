@@ -142,7 +142,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
     val l2 = MatrixM(hsize, lsize, a2)
     val r  = MatrixM(hsize, lsize, (a1,a2).zipped.map((l:Double, r:Double)=>l*r))
     assertResult(Some(a1.length.toDouble), "infix and function for element wise multiply op are not compatible") {
-      (l3 :* l2 :== mul(l3, l2)).sum
+      (l3 :* l2 :== hadamard(l3, l2)).sum
     }
     assertResult(Some(a2.length.toDouble), "unexpected multiplication result") {
       (l3 :* l2 :== r).sum
@@ -167,7 +167,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
     val l2 = MatrixM(hsize, lsize, a2)
     val r  = MatrixM(hsize, lsize, (a1,a2).zipped.map((l:Double, r:Double)=>l-r))
     assertResult(Some(a1.length.toDouble), "infix and function for element wise sum are not compatible") {
-      (l3 :- l2 :== sub(l3, l2)).sum
+      (l3 :- l2 :== subtract(l3, l2)).sum
     }
     assertResult(Some(a2.length.toDouble), "unexpected element wise subtractiontion result") {
       (l3 :- l2 :== r).sum
@@ -180,7 +180,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
     val l2 = MatrixM(hsize, lsize, a2)
     val r  = MatrixM(hsize, lsize, (a1,a2).zipped.map((l:Double, r:Double)=>l/r))
     assertResult(Some(a1.length.toDouble), "infix and function for element wise sum are not compatible") {
-      (l3 :\ l2 :== div(l3, l2)).sum
+      (l3 :\ l2 :== divide(l3, l2)).sum
     }
     assertResult(Some(a2.length.toDouble), "unexpected element wise devision result") {
       (l3 :\ l2 :== r).sum
@@ -193,10 +193,10 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
     val l2 = MatrixM(hsize, lsize, a2)
 
     assertResult(Some(a1.length.toDouble), "infix and function for element wise sum are not compatible") {
-      ((l3 :\ l2) :* l2 :== mul(l2, div(l3, l2))).sum
+      ((l3 :\ l2) :* l2 :== hadamard(l2, divide(l3, l2))).sum
     }
 
-    assertResult(Some(false), "element wise div and mult don't commute") {
+    assertResult(Some(false), "element wise divide and mult don't commute") {
       (l2 :* l3 :\ l2 :- l3).sum.map(_ > 0.01)
     }
   }
@@ -209,7 +209,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
       -3816.5899999999992,5036.540000000001,-4285.96,-10501.95,-2345.94,-8403.93)
     val r  = MatrixM(hsize, lsize, arr)
     assertResult(Some(a1.length.toDouble), "infix and function for matrix multiply are not compatible") {
-      (l3 |* l2 :== mulm(l3, l2)).sum
+      (l3 |* l2 :== multiply(l3, l2)).sum
     }
     assertResult(Some(a2.length.toDouble), "unexpected matrix multiply result") {
       (l3 |* l2 :== r).sum
@@ -228,7 +228,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
     val r  = MatrixM(hsize, lsize, a1.map(_ * lv))
 
     assertResult(Some(a1.length.toDouble), "infix and function for value multiply op are not compatible") {
-      (lm ** lv :== mul1(lm, lv)).sum
+      (lm ** lv :== multiply1(lm, lv)).sum
     }
 
     assertResult(Some(a2.length.toDouble), "unexpected value multiplication result") {
@@ -243,7 +243,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
     val r  = MatrixM(hsize, lsize, a1.map(_ / lv))
 
     assertResult(Some(a1.length.toDouble), "infix and function for value divide are not compatible") {
-      (lm \\ lv :== div1(lm, lv)).sum
+      (lm \\ lv :== divide1(lm, lv)).sum
     }
      //TODO : sync up with eigen test
 
@@ -276,7 +276,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
     val r  = MatrixM(hsize, lsize, a1.map(_ - lv))
 
     assertResult(Some(a1.length.toDouble), "infix and function for value subtract are not compatible") {
-      (lm -- lv :== sub1(lm, lv)).sum
+      (lm -- lv :== subtract1(lm, lv)).sum
     }
 
     assertResult(Some(a2.length.toDouble), "unexpected summation result") {
@@ -289,11 +289,11 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
     val lm = MatrixM(hsize, lsize, a1)
     val lv = 67.34
     //TODO : sync with eigen test
-    assertResult(Some(true), "div1 and mul1 should commute ") {
-      (((lm \\ lv) ** lv) :- div1(mul1(lm, lv),lv)).sum.map(_ < 0.000001)
+    assertResult(Some(true), "divide1 and multiply1 should commute ") {
+      (((lm \\ lv) ** lv) :- divide1(multiply1(lm, lv),lv)).sum.map(_ < 0.000001)
     }
     //TODO : sync with eigen test
-    assertResult(Some(true), "unexpected div1/mul1 commute result") {
+    assertResult(Some(true), "unexpected divide1/multiply1 commute result") {
       (lm \\ lv ** lv :- lm).sum.map(_ < 0.000001)
     }
 
@@ -307,7 +307,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   it should "use the infix operator for matrix equality" in {
     val lm = MatrixM(hsize, lsize, a1)
     assertResult(Some(a1.length.toDouble), "infix and function for matrix equality are not compatible") {
-      (lm :== lm :== meq(lm,lm)).sum
+      (lm :== lm :== mEqual(lm,lm)).sum
     }
     assertResult(Some(a1.length.toDouble), "unexpected value matrix equality result") {
       (lm :== lm).sum
@@ -326,7 +326,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   it should "use the infix operator for matrix in-equality" in {
     val lm = MatrixM(hsize, lsize, a1)
     assertResult(Some(a1.length.toDouble), "infix and function for matrix inequality are not compatible") {
-      (lm :!= (lm ** 0.234) :== mne(lm,lm ** 0.234)).sum
+      (lm :!= (lm ** 0.234) :== mNotEqual(lm,lm ** 0.234)).sum
     }
 
     assertResult(Some(a1.length.toDouble), "unexpected value matrix in equality result") {
@@ -338,11 +338,11 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   it should "use the infix operator for matrix smaller or equal " in {
     val lm = MatrixM(hsize, lsize, a1)
     assertResult(Some(a1.length.toDouble), "infix and function for matrix smaller or equal are not compatible") {
-      (lm :<= (lm ** 1.234) :== mle(lm, lm ** 1.234)).sum
+      (lm :<= (lm ** 1.234) :== mSmallerEqual(lm, lm ** 1.234)).sum
     }
 
     assertResult(Some(a1.length.toDouble), "infix and function for matrix smaller than are not compatible") {
-      (lm :<< (lm ** 1.234) :== mlt(lm, lm ** 1.234)).sum
+      (lm :<< (lm ** 1.234) :== mSmaller(lm, lm ** 1.234)).sum
     }
 
     assertResult(Some(a1.filter(_>= 0).length.toDouble), "unexpected value matrix smaller /equal result") {
@@ -357,11 +357,11 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   it should "use the infix operator for matrix larger or equal " in {
     val lm = MatrixM(hsize, lsize, a1)
     assertResult(Some(a1.length.toDouble), "infix and function for matrix smaller or equal are not compatible") {
-      (lm :>= (lm ** 0.234) :== mge(lm,lm ** 0.234)).sum
+      (lm :>= (lm ** 0.234) :== mGreaterEqual(lm,lm ** 0.234)).sum
     }
 
     assertResult(Some(a1.length.toDouble), "infix and function for matrix smaller than are not compatible") {
-      (lm :>> (lm ** 0.234) :== mgt(lm,lm ** 0.234)).sum
+      (lm :>> (lm ** 0.234) :== mGreater(lm,lm ** 0.234)).sum
     }
 
     assertResult(Some(a1.filter(_ >= 0).length.toDouble), "unexpected value matrix smaller /equal result") {

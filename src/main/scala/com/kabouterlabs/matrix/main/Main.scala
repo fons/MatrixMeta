@@ -30,8 +30,8 @@ package com.kabouterlabs.matrix.main
 import com.kabouterlabs.matrix.MatrixM
 import com.kabouterlabs.matrix.MatrixOperations._
 //import com.kabouterlabs.matrix.implicits.breeze.BreezeDenseMatrixImplicit._
-//import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
-import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaMatImplicit._
+import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
+//import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaMatImplicit._
 
 
 object Use
@@ -54,10 +54,26 @@ object Use
 
 }
 
-case class TestIt[A](n:A){
-  def map[B](f:A=>B):B = f(n)
-  def flatMap[B](f:A=>TestIt[B]):TestIt[B] = f(n)
+object EigenTest {
 
+
+  def run1() = {
+    import com.kabouterlabs.matrix.implicits.breeze.BreezeDenseMatrixImplicit._
+    val mm1= matrix(3, 3, Array(-3.0, 1.0, -2.0, 0.0, -1.0, -1.0, 2.0, 0.0, 0.0))
+
+    val eigr = eigen(mm1)
+    println(mm1)
+    println("(complex) eigen values : " , eigr._1, "eigen vectors :", eigr._2)
+  }
+  def run2() = {
+    import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
+
+    val mm1= matrix(3, 3, Array(-3.0, 1.0, -2.0, 0.0, -1.0, -1.0, 2.0, 0.0, 0.0))
+
+    val eigr = eigen(mm1)
+    println(mm1)
+    println("(complex) eigen values : " , eigr._1, "eigen vectors :", eigr._2)
+  }
 }
 object Main extends App {
 
@@ -112,8 +128,9 @@ object Main extends App {
 //  }
 //  mat3 |* mat2
 //
-//  val mm = MatrixM.rand(10,10)
-//  val mc = mm.deepCopy(2,1,89.90)
+  val mm = MatrixM.rand(10,10)
+  val mc = mm.deepCopy(2,1,89.90)
+  deepCopy(mc)
 //
 //  val s1 = mm(2,1)
 //  val s2 = mc(2,1)
@@ -125,27 +142,49 @@ object Main extends App {
 //  println(mmd, ss)
 
   val l2 = rand(3, 3)
-  val l3a = matrix(3, 3, Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0))
-  val s1 = l2 :+ l3a
-  val s2 = l2 :- l3a
-  val s3 = l2 :\ l3a
-  val s4 = l2 :* l3a
-  val s5 = l2 |* l3a
+  val l3 = matrix(3, 3, Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0))
+//  val s1  = l2 :+ l3
+//  val s11 = add(l2,l3)
+//  val s2 = l2 :- l3
+//  val s22 = subtract(l2,l3)
+//  val s3 = l2 :\ l3
+//  val s4 = l2 :* l3
+//  val s5 = l2 |* l3
+//
+//  val s1a = l2 ++ 7.0
+//  val s2a = l2 -- 7.0
+//  val s3a = l2 ** 7.0
+//  val s4a = l2 \\ 7.0
+//
+//  val ta1 = s1 :== s1a
+//  val ta2 = s1 :<= s1a
+//  val ta3 = s1 :<<  s1a
+//  val ta4 = s1 :>>  s1a
+//  val ta5 = s1 :>=  s1a
+//  val ta6 = s1 :!=  s1a
+//  println(l2,l3)
+//  println("------------")
+//  println(s1,s5,s1a,s3a,ta5)
+//
+//  val l5 = l2 concatDown l3
+//  l5(0,0,-90000)
+//  println(l2(0,0),l5(0,0))
+//  println(l2.toDiag)
 
-  val s1a = l2 ++ 7.0
-  val s2a = l2 -- 7.0
-  val s3a = l2 ** 7.0
-  val s4a = l2 \\ 7.0
+//  val mm0 = rand(3, 3)
+//  val mm1= matrix(3, 3, Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0))
+//  println("mm0", mm0, "mm1", mm1)
+//  println("mm1.inverse", mm1.inverse,"mm1.transpose", mm1.transpose, "mm1.determinant" ,mm1.determinant, mm0.trace)
+//  val res = mm1.solve(mm0)
+//  println("solving mm1 * res = mm0; res = ", res, "residual : ",(mm1 |* res) :- mm0 )
+//  val eigr = eigen(mm1)
+//
+//  println("(complex) eigen values : " , eigr._1, "eigen vectors :", eigr._2)
+//
+//  val eigm = mm0.eig
+  EigenTest.run1()
+  EigenTest.run2()
 
-  val ta1 = s1 :== s1a
-  val ta2 = s1 :<= s1a
-  val ta3 = s1 :<<  s1a
-  val ta4 = s1 :>>  s1a
-  val ta5 = s1 :>=  s1a
-  val ta6 = s1 :!=  s1a
-  println(l2,l3a)
-  println("------------")
-  println(s1,s5,s1a,s3a,ta5)
 }
 
 

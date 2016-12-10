@@ -1,29 +1,33 @@
 
 
+
+
 Table of Contents
 =================
 
-* [Table of Contents](#table-of-contents)
 * [Introduction](#introduction)
-   * [Building](#building)
-   * [Testing](#testing)
-   * [Matrix Libraries Covered](#matrix-libraries-covered)
-   * [API](#api)
-      * [Usage](#usage)
-         * [API for direct use](#api-for-direct-use)
-         * [API for use as implicit](#api-for-use-as-implicit)
-      * [Creation](#creation)
-         * [Synopsis](#synopsis)
-         * [Operations](#operations)
-      * [Indexing and Slicing](#indexing-and-slicing)
-         * [Synopsis](#synopsis-1)
-         * [Operations](#operations-1)
-      * [Matrix Algebraic Operations](#matrix-algebraic-operations)
-         * [Synopsis](#synopsis-2)
-         * [Operations](#operations-2)
-   * [Synopsis](#synopsis-3)
-      * [Example](#example)
-      * [Output](#output)
+     * [Building](#building)
+     * [Testing](#testing)
+     * [Matrix Libraries Covered](#matrix-libraries-covered)
+* [API Reference](#api-reference)
+     * [Usage](#usage)
+        * [API for direct use](#api-for-direct-use)
+        * [API for use as implicit](#api-for-use-as-implicit)
+     * [Matrix Creation](#matrix-creation)
+        * [Synopsis](#synopsis)
+        * [Operations](#operations)
+     * [Indexing and Slicing](#indexing-and-slicing)
+        * [Synopsis](#synopsis-1)
+        * [Operations](#operations-1)
+     * [Matrix Algebraic Operations](#matrix-algebraic-operations)
+        * [Synopsis](#synopsis-2)
+        * [Operations](#operations-2)
+     * [Linear Algebra](#linear-algebra)
+        * [Synopsis](#synopsis-3)
+        * [Operations](#operations-3)
+* [Synopsis](#synopsis-4)
+     * [Example](#example)
+     * [Output](#output)
 
 Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 
@@ -36,19 +40,19 @@ It uses Scala implicits to enable the user to switch between different implement
 
 The goal is to provide a uniform api for both dense and sparse matrices as well as different packages
 
-#Building
+##Building
 
 ```shell
 sbt compile
 ```
 
-#Testing
+##Testing
 
 ```shell
 sbt test
 ```
 
-# Matrix Libraries Covered
+##Matrix Libraries Covered
 
   1. [breeze](https://github.com/scalanlp/breeze)
 
@@ -73,9 +77,11 @@ import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
     import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaMatImplicit._
 ```
 
+------
 
 
-#API
+
+#API Reference
 
 ## Usage
 
@@ -106,7 +112,7 @@ new MatrixExample
 // will use breeze as the underlying matrix library
 ```
 
-## Creation
+## Matrix Creation
 
 ### Synopsis
 
@@ -151,7 +157,7 @@ import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaMatImplicit.
 
 ### Operations
 
-| Operation                                | Direct                    | Implicit              |
+| Operation                                | Direct                    | Implicit scope        |
 | :--------------------------------------- | ------------------------- | --------------------- |
 | Empty Matrix                             | MatrixM(row,coll)         | matrix(row,coll)      |
 | Initialize matrix with Array             | MatrixM(row,coll,data)    | matrix(row,coll,data) |
@@ -257,21 +263,22 @@ println(mmd, ss)
 
 ### Operations
 
-| Operation                                | Direct and implicit |
-| ---------------------------------------- | ------------------- |
-| deep copy ; Use this if to avoid aliasing | m.deepCopy          |
-| get value  returns Option[Double]        | m(row,coll)         |
-| set value                                | m(row, col, value)  |
-| return a sub matrix reference ;          | m( k to m, d to f)  |
-| extract a column :: is a short cut for the whole range | m(::, 2)            |
+| Operation                                | Class Method               | Function                         |
+| ---------------------------------------- | -------------------------- | -------------------------------- |
+| deep copy ; Use this to avoid aliasing   | A.deepCopy                 | deepCopy(A)                      |
+| get value  returns Option[Double]        | A(row,coll)                | getValue(A)                      |
+| set value                                | A(row, col, value)         | setValue(A,row,col,value)        |
+| return a sub matrix reference ;          | A( r_0 to r_1, c_0 to c_1) | slice(A, r_0 to r_1, c_0 to c_1) |
+| extract a column; :: is a short cut for the whole range | A(::, 2)                   | slice(A, ::, 2)                  |
+| concatenate a matrix to the bottom of the other | A concatDown B             | concatDown(A, B)                 |
+| concatenate a matrix to the right of the other | A concatRight B            | concatRight(A,B)                 |
+| create a matrix with just the diagonal values | a.toDiag                   | toDiag (A)                       |
 
 
 
 ## Matrix Algebraic Operations
 
 ### Synopsis
-
-l
 
 ```scala
   val l2 = rand(3, 3)
@@ -348,9 +355,114 @@ l
 
 
 
-lll
+| Operation                                | Infix   | Function                  |
+| ---------------------------------------- | ------- | ------------------------- |
+| Elementwise addition                     | A :+B   | add(A,B)                  |
+| Elementwise subtraction                  | A :- B  | subtract(A,B)             |
+| Elementwise multiplication               | A :* B  | schur(A,B); hadamard(A,B) |
+| Elementwise division                     | A :\ B  | divide(A,B)               |
+| Matrix multiplication                    | A \|* B | multiply(A,B)             |
+| Add value to every matrix element        | A ++ k  | add1(A,k)                 |
+| Subtract value from every matrix element | A — k   | subtract1(A,k)            |
+| Multiply every matrix element with a value | A ** k  | multply1(A,k)             |
+| Divide every matrix element with a value | A \\\ k | divide1(A,k)              |
 
-lllll
+
+
+## Linear Algebra
+
+### Synopsis
+
+```scala
+val mm0 = rand(3, 3)
+val mm1= matrix(3, 3, Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0))
+println("mm0", mm0, "mm1", mm1)
+println("mm1.inverse", mm1.inverse,"mm1.transpose", mm1.transpose, "mm1.determinant" ,mm1.determinant)
+val res = mm1.solve(mm0)
+println("solving mm1 * res = mm0; res = ", res, "residual : ",(mm1 |* res) :- mm0 )
+val eigr = eigen(mm0)
+println("(complex) eigen values : " , eigr._1, "eigen vectors :", eigr._2)
+```
+
+```reStructuredText
+(mm0,{jeigen.DenseMatrix
+DenseMatrix, 3 * 3:
+
+ 0.09195  0.17065  0.16146 
+ 0.96391  0.06410  0.20932 
+ 0.54790  0.74146  0.11060 
+
+},mm1,{jeigen.DenseMatrix
+DenseMatrix, 3 * 3:
+
+ 4.00000  7.00000 56.00000 
+ 5.00000  8.00000 -1.00000 
+ 6.00000 21.00000 -9.00000 
+
+})
+(mm1.inverse,{jeigen.DenseMatrix
+DenseMatrix, 3 * 3:
+
+-0.01564  0.37994 -0.13953 
+ 0.01196 -0.11408  0.08709 
+ 0.01748 -0.01288 -0.00092 
+
+},mm1.transpose,{jeigen.DenseMatrix
+DenseMatrix, 3 * 3:
+
+ 4.00000  5.00000  6.00000 
+ 7.00000  8.00000 21.00000 
+56.00000 -1.00000 -9.00000 
+
+},mm1.determinant,Some(3074.0095192193585))
+(solving mm1 * res = mm0; res = ,{jeigen.DenseMatrix
+DenseMatrix, 3 * 3:
+
+ 0.28835 -0.08177  0.06158 
+-0.06114  0.05930 -0.01232 
+-0.01131  0.00148  0.00002 
+
+},residual : ,{jeigen.DenseMatrix
+DenseMatrix, 3 * 3:
+
+ 0.00000  0.00000  0.00000 
+ 0.00000  0.00000 -0.00000 
+-0.00000  0.00000 -0.00000 
+
+})
+((complex) eigen values : ,{jeigen.DenseMatrix
+DenseMatrix, 3 * 2:
+
+ 0.85245  0.00000 
+-0.29290  0.16902 
+-0.29290 -0.16902 
+
+},eigen vectors :,{jeigen.DenseMatrix
+DenseMatrix, 3 * 6:
+
+-0.29046  0.21151  0.21151  0.00000  0.02746 -0.02746 
+-0.56098 -0.05410 -0.05410  0.00000 -0.50279  0.50279 
+-0.77520 -0.47572 -0.47572  0.00000  0.68736 -0.68736 
+
+})
+
+```
+
+
+
+### Operations
+
+| Operation                                | Class method    | Function         |
+| ---------------------------------------- | --------------- | ---------------- |
+| Inverse                                  | A.inverse       | inverse(A)       |
+| Transpose                                | A.transpose     | transpose(A)     |
+| Determinant; Returns Option[Double]      | A.determinant   | determinant(A)   |
+| Trace; Returns Option[Double]            | A.trace         | trace(A)         |
+| Solve system A * R = B                   | R = A.solve(B)  | R = solve (A,B)  |
+| Eigen results as special eigen result type | E = A.eig       | E = eig(A)       |
+| Matrix of columns corresponding to the real and imaginary part | E.values        |                  |
+| Matrix with colums corresponding to the real and imaginary part | E.vectors       |                  |
+| Eigen Results as  pair of eigen values and eigen vectors (see below) | (R,V) = A.eigen | (R,V) = eigen(A) |
 
 #Synopsis
 

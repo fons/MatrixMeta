@@ -90,11 +90,11 @@ object BreezeDenseMatrixInt {
   //
   //      def add1[B: Numeric](lhs: WraT, rhs: B) = gh.ops2(lhs, rhs, (l: MaT, r: B) => BreezeDenseMatrix.adddouble(l.copy, r))
   //
-  //      def sub1[B: Numeric](lhs: WraT, rhs: B) = gh.ops2(lhs, rhs, (l: MaT, r: B) => BreezeDenseMatrix.subdouble(l.copy, r))
+  //      def subtract1[B: Numeric](lhs: WraT, rhs: B) = gh.ops2(lhs, rhs, (l: MaT, r: B) => BreezeDenseMatrix.subdouble(l.copy, r))
   //
-  //      def mul1[B: Numeric](lhs: WraT, rhs: B) = gh.ops2(lhs, rhs, (l: MaT, r: B) => BreezeDenseMatrix.muldouble(l.copy, r))
+  //      def multiply1[B: Numeric](lhs: WraT, rhs: B) = gh.ops2(lhs, rhs, (l: MaT, r: B) => BreezeDenseMatrix.muldouble(l.copy, r))
   //
-  //      def div1[B: Numeric](lhs: WraT, rhs: B) = gh.ops2(lhs, rhs, (l: MaT, r: B) => BreezeDenseMatrix.divdouble(l.copy, r))
+  //      def divide1[B: Numeric](lhs: WraT, rhs: B) = gh.ops2(lhs, rhs, (l: MaT, r: B) => BreezeDenseMatrix.divdouble(l.copy, r))
   //    }
   //
   //    implicit object MatrixIntOpsDouble$ extends MatrixOpsByElementT[MatrixInt] {
@@ -107,11 +107,11 @@ object BreezeDenseMatrixInt {
   //
   //      def add1[B: Numeric](lhs: WraT, rhs: B) = gh.ops2(lhs, rhs, (l: MaT, r: B) => BreezeDenseMatrix.addint(l.copy, r))
   //
-  //      def sub1[B: Numeric](lhs: WraT, rhs: B) = gh.ops2(lhs, rhs, (l: MaT, r: B) => BreezeDenseMatrix.subint(l.copy, r))
+  //      def subtract1[B: Numeric](lhs: WraT, rhs: B) = gh.ops2(lhs, rhs, (l: MaT, r: B) => BreezeDenseMatrix.subint(l.copy, r))
   //
-  //      def mul1[B: Numeric](lhs: WraT, rhs: B) = gh.ops2(lhs, rhs, (l: MaT, r: B) => BreezeDenseMatrix.mulint(l.copy, r))
+  //      def multiply1[B: Numeric](lhs: WraT, rhs: B) = gh.ops2(lhs, rhs, (l: MaT, r: B) => BreezeDenseMatrix.mulint(l.copy, r))
   //
-  //      def div1[B: Numeric](lhs: WraT, rhs: B) = gh.ops2(lhs, rhs, (l: MaT, r: B) => BreezeDenseMatrix.divint(l.copy, r))
+  //      def divide1[B: Numeric](lhs: WraT, rhs: B) = gh.ops2(lhs, rhs, (l: MaT, r: B) => BreezeDenseMatrix.divint(l.copy, r))
   //    }
   //
   //

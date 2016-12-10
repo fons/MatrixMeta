@@ -49,6 +49,8 @@ object MatrixDefaultImplicit {
 
   implicit object MatrixOperationsTC$implicit$ extends MatrixOperationsTC[MatrixDouble] {
 
+    override def deepCopy(lhs: MatrixDouble): MatrixDouble = MatrixM.none
+
     override type EigenResultT = Option[Double]
 
     override def eig(m: MatrixDouble): Option[Double] = None
@@ -56,6 +58,8 @@ object MatrixDefaultImplicit {
     override def vectors(r: EigenResultT): MatrixDouble = MatrixM.none
 
     override def values(r: EigenResultT): MatrixDouble = MatrixM.none
+
+    override def eigen(m: MatrixDouble): (MatrixDouble, MatrixDouble) = (MatrixM.none, MatrixM.none)
 
     override def add(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = MatrixM.none
 

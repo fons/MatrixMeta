@@ -86,13 +86,13 @@ trait MatrixImplicit$TestT[U] extends Matchers {
   it should "the infix operator for element wise subtract" in {
     val l3 = MatrixM(3,3,Array(4.0,5.0,6.0,7.0,8.0,21.0,56.0,-1.0,-9.0))
     val l2 = MatrixM(rows,colls,t)
-    val l0 = sub(l3,l2)
+    val l0 = subtract(l3,l2)
   }
 
   it should "use the infix operator for element wise divide" in {
     val l3 = MatrixM(3,3,Array(4.0,5.0,6.0,7.0,8.0,21.0,56.0,-1.0,-9.0))
     val l2 = MatrixM(rows,colls,t)
-    val l0 = div(l3,l2)
+    val l0 = divide(l3,l2)
 
   }
 

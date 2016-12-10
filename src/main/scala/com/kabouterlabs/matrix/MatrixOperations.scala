@@ -96,6 +96,8 @@ object MatrixOperations {
 
     def solve(lhs: A, rhs: A): A
 
+    def deepCopy(lhs:A):A
+
     def get(m: A, row: Int, coll: Int): Option[Double]
 
     def set(m: A, row: Int, coll: Int, v: Double): A
@@ -127,6 +129,8 @@ object MatrixOperations {
     def vectors(r: EigenResultT): A
 
     def values(r: EigenResultT): A
+
+    def eigen(m:A): (A,A)
   }
 
 
@@ -178,6 +182,8 @@ object MatrixOperations {
 
     def determinant: Option[Double] = ev.determinant(lhs)
 
+    def deepCopy = ev.deepCopy(lhs)
+
     def apply[K, L](row: K, col: L): A = ev.slice(lhs, row, col)
 
     def apply(row: Int, coll: Int): Option[Double] = ev.get(lhs, row, coll)
@@ -195,39 +201,44 @@ object MatrixOperations {
     def trace = ev.trace(lhs)
 
     def sum = ev.sum(lhs)
+    def eigen : (A, A) = {val e = ev.eig(lhs); (ev.values(e), ev.vectors(e))}
 
   }
 
 
   def add[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs :+ rhs
 
-  def sub[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs :- rhs
+  def subtract[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs :- rhs
 
-  def mulm[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs |* rhs
+  def multiply[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs |* rhs
 
-  def mul[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs :* rhs
+  def hadamard[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs :* rhs
 
-  def div[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs :\ rhs
+  def schur[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs :* rhs
+
+  def divide[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs :\ rhs
 
   def add1[A: MatrixOperationsTC, B: Numeric](lhs: A, rhs: B) = lhs ++ rhs
 
-  def sub1[A: MatrixOperationsTC, B: Numeric](lhs: A, rhs: B) = lhs -- rhs
+  def subtract1[A: MatrixOperationsTC, B: Numeric](lhs: A, rhs: B) = lhs -- rhs
 
-  def mul1[A: MatrixOperationsTC, B: Numeric](lhs: A, rhs: B) = lhs ** rhs
+  def multiply1[A: MatrixOperationsTC, B: Numeric](lhs: A, rhs: B) = lhs ** rhs
 
-  def div1[A: MatrixOperationsTC, B: Numeric](lhs: A, rhs: B) = lhs \\ rhs
+  def divide1[A: MatrixOperationsTC, B: Numeric](lhs: A, rhs: B) = lhs \\ rhs
 
-  def meq[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs :== rhs
+  def mEqual[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs :== rhs
 
-  def mne[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs :!= rhs
+  def mNotEqual[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs :!= rhs
 
-  def mge[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs :>= rhs
+  def mGreaterEqual[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs :>= rhs
 
-  def mle[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs :<= rhs
+  def mSmallerEqual[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs :<= rhs
 
-  def mgt[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs :>> rhs
+  def mGreater[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs :>> rhs
 
-  def mlt[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs :<< rhs
+  def mSmaller[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs :<< rhs
+
+  def toDiag[A : MatrixOperationsTC](lhs:A):A = lhs.toDiag
 
   def concatRight[A: MatrixOperationsTC](lhs: A, rhs: A) = lhs concatRight rhs
 
@@ -237,7 +248,15 @@ object MatrixOperations {
 
   def inverse[A: MatrixOperationsTC](lhs: A): A = lhs.inverse
 
+  def transpose[A: MatrixOperationsTC](lhs: A): A = lhs.transpose
+
+  def trace[A: MatrixOperationsTC](lhs: A) = lhs.trace
+
+  def determinant[A: MatrixOperationsTC](lhs: A) = lhs.determinant
+
   def slice[A: MatrixOperationsTC, K, L](lhs: A, row: K, col: L): A = lhs(row, col)
+
+  def deepCopy[A: MatrixOperationsTC](lhs: A): A = lhs.deepCopy
 
   def getValue[A: MatrixOperationsTC](lhs: A, row: Int, coll: Int): Option[Double] = lhs(row, coll)
 
@@ -263,8 +282,7 @@ object MatrixOperations {
 
   def csvRead[A](fn: String)(implicit ev: MatrixOperationsTC[A]): A = ev.csvRead(fn)
 
-  def eigen[A](lhs: A)(implicit ev: MatrixOperationsTC[A]): (A, A) = {
-    val e = ev.eig(lhs); (ev.values(e), ev.vectors(e))
-  }
+  def eigen[A](lhs: A)(implicit ev: MatrixOperationsTC[A]): (A, A) = {val e = ev.eig(lhs); (ev.values(e), ev.vectors(e))}
+
 
 }

@@ -221,6 +221,8 @@ object BreezeDenseMatrixImplicit {
 
   implicit object MatrixOperationsTC$implicit$ extends MatrixOperationsTC[MatrixDouble] {
 
+    override def deepCopy(lhs: MatrixDouble): MatrixDouble = lhs.deepCopy
+
     override type EigenResultT = BreezeEigenResult
 
     override def eig(m: MatrixDouble): EigenResultT = m.eig
@@ -228,6 +230,8 @@ object BreezeDenseMatrixImplicit {
     override def vectors(r: EigenResultT): MatrixDouble = r.vectors
 
     override def values(r: EigenResultT): MatrixDouble = r.values
+
+    override def eigen(m:MatrixDouble): (MatrixDouble, MatrixDouble) = {val l = m.eig; (l.values, l.vectors)}
 
     override def add(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (l <-lhs; r <-rhs) yield MatrixM(()=>(l+r))
 
