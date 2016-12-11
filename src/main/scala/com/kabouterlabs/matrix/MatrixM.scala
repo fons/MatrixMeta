@@ -29,21 +29,9 @@ package com.kabouterlabs.matrix
 
 import java.io.{PrintWriter, StringWriter}
 
-
-
-/**
-  * Created by fons on 3/19/16.
-  */
-
-//case class TestIt[A](n:A){
-//  def map[B](f:A=>B):B = f(n)
-//  def flatMap[B](f:A=>TestIt[B]):TestIt[B] = f(n)
-//
-//}
 case class MatrixM[V](matrix: Option[V]) {
   override def toString = "{" + matrix.getOrElse(None).getClass.getName + "\n" + matrix.getOrElse(None).toString + "}"
-  //def map[W](f:Option[V]=>Option[W]):Option[W] = f(matrix)
-  //def map[W](f:Option[V]=>W):Option[W] = Some(f(matrix))
+
   def safeMap[W](f: V => W): Option[W] = {
     try {
       matrix.map(f(_))
@@ -92,8 +80,8 @@ object MatrixM {
 
   def apply(row: Int, col: Int, data: Option[Array[Double]])(implicit factory: FactoryT) = {
     data match {
-      case Some(_data_) => new MatrixM[factory.MatrixImplT](factory(row, col, _data_))
-      case None => new MatrixM[factory.MatrixImplT](None)
+      case Some(_data_) => MatrixM[factory.MatrixImplT]({factory(row, col, _data_)})
+      case None => MatrixM[factory.MatrixImplT]({None})
     }
   }
 
@@ -118,22 +106,8 @@ object MatrixM {
 
   def none[U] = new MatrixM[U](None)
 
-//  def apply[U](u: U): MatrixM[U] = {
-//    try {
-//      new MatrixM[U](Some(u))
-//    }
-//    catch {
-//      case e: Throwable => {
-//        val sw = new StringWriter
-//        e.printStackTrace(new PrintWriter(sw))
-//        println("exception caught :" + e + sw)
-//        new MatrixM[U](None)
-//      }
-//    }
-//  }
 
-
-  def apply[U](f:  => U): MatrixM[U] = {
+  def apply[U](f: => U): MatrixM[U] = {
     try {
       new MatrixM[U](Some(f))
     }
