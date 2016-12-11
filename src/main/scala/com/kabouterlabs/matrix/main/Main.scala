@@ -74,6 +74,10 @@ object EigenTest {
     println(mm1)
     println("(complex) eigen values : " , eigr._1, "eigen vectors :", eigr._2)
   }
+  def run3(f: =>Unit) = {
+    println("hello")
+    f
+  }
 }
 object Main extends App {
 
@@ -171,19 +175,21 @@ object Main extends App {
 //  println(l2(0,0),l5(0,0))
 //  println(l2.toDiag)
 
-//  val mm0 = rand(3, 3)
-//  val mm1= matrix(3, 3, Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0))
-//  println("mm0", mm0, "mm1", mm1)
-//  println("mm1.inverse", mm1.inverse,"mm1.transpose", mm1.transpose, "mm1.determinant" ,mm1.determinant, mm0.trace)
-//  val res = mm1.solve(mm0)
-//  println("solving mm1 * res = mm0; res = ", res, "residual : ",(mm1 |* res) :- mm0 )
-//  val eigr = eigen(mm1)
-//
-//  println("(complex) eigen values : " , eigr._1, "eigen vectors :", eigr._2)
-//
-//  val eigm = mm0.eig
-  EigenTest.run1()
-  EigenTest.run2()
+  val mm0 = rand(3, 3)
+  val mm1= matrix(3, 3, Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0))
+  println("mm0", mm0, "mm1", mm1)
+  println("mm1.inverse", mm1.inverse,"mm1.transpose", mm1.transpose, "mm1.determinant" ,mm1.determinant, mm0.trace)
+  val res = mm1.solve(mm0)
+  println("solving mm1 * res = mm0; res = ", res, "residual : ",(mm1 |* res) :- mm0 )
+  val eigr = eigen(mm1)
+
+  println("(complex) eigen values : " , eigr._1, "eigen vectors :", eigr._2)
+
+  //val eigm = mm0.eig
+  //EigenTest.run1()
+  //EigenTest.run2()
+
+  EigenTest.run3({println("passed in")})
 
 }
 

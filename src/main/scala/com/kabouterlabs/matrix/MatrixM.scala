@@ -118,34 +118,46 @@ object MatrixM {
 
   def none[U] = new MatrixM[U](None)
 
-  def apply[U](u: U): MatrixM[U] = {
+//  def apply[U](u: U): MatrixM[U] = {
+//    try {
+//      new MatrixM[U](Some(u))
+//    }
+//    catch {
+//      case e: Throwable => {
+//        val sw = new StringWriter
+//        e.printStackTrace(new PrintWriter(sw))
+//        println("exception caught :" + e + sw)
+//        new MatrixM[U](None)
+//      }
+//    }
+//  }
+
+
+  def apply[U](f:  => U): MatrixM[U] = {
     try {
-      new MatrixM[U](Some(u))
+      new MatrixM[U](Some(f))
     }
     catch {
-      case e: Throwable => {
+      case e: Throwable =>
         val sw = new StringWriter
         e.printStackTrace(new PrintWriter(sw))
         println("exception caught :" + e + sw)
         new MatrixM[U](None)
-      }
     }
   }
 
-  def apply[U](f: () => U): MatrixM[U] = {
-    try {
-      new MatrixM[U](Some(f()))
-    }
-    catch {
-      case e: Throwable => {
-        val sw = new StringWriter
-        e.printStackTrace(new PrintWriter(sw))
-        println("exception caught :" + e + sw)
-        new MatrixM[U](None)
-
+  def safeMap[U](f: ()  => U): MatrixM[U] = {
+      try {
+        new MatrixM[U](Some(f()))
       }
-    }
+      catch {
+        case e: Throwable =>
+          val sw = new StringWriter
+          e.printStackTrace(new PrintWriter(sw))
+          println("exception caught :" + e + sw)
+          new MatrixM[U](None)
+      }
 
-  }
+    }
 }
 

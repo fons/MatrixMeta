@@ -149,6 +149,10 @@ case class MatrixExample[T](implicit evmatrix: MatrixOperationsTC[T]) {
     val rs1 = s1.solve(s2)
     val rs1a =solve(s1,s2)
 
+    val k  = rs1a.sumCols.sumRows
+    val ka = sumCols(sumRows(rs1a))
+    ka.csvWrite("nn")
+    csvRead("nn")
   }
 
 }

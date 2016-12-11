@@ -282,7 +282,12 @@ object MatrixOperations {
 
   def csvRead[A](fn: String)(implicit ev: MatrixOperationsTC[A]): A = ev.csvRead(fn)
 
+  def csvWrite[A](fn:String, lhs:A)(implicit ev: MatrixOperationsTC[A]):Unit = ev.csvWrite(fn, lhs)
+
   def eigen[A](lhs: A)(implicit ev: MatrixOperationsTC[A]): (A, A) = {val e = ev.eig(lhs); (ev.values(e), ev.vectors(e))}
 
+  def sumRows[A](lhs :A)(implicit ev: MatrixOperationsTC[A]):A = lhs.sumRows
+
+  def sumCols[A](lhs :A)(implicit ev: MatrixOperationsTC[A]):A = lhs.sumCols
 
 }

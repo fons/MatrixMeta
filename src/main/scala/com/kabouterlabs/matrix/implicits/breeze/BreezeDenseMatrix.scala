@@ -129,17 +129,15 @@ object BreezeDenseMatrixImplicit {
 
     override def fill(row: Int, col: Int, value: ElemT): MatrixDouble = MatrixM(row, col, Array.fill[Double](row * col)(value))
 
-    override def ones(row: Int, col: Int): MatrixDouble = MatrixM.apply(() => DenseMatrix.ones(row, col))
+    override def ones(row: Int, col: Int): MatrixDouble = MatrixM.safeMap(()=>{DenseMatrix.ones(row, col)})
 
-    override def rand(row: Int, col: Int): MatrixDouble = MatrixM.apply(() => {
-      DenseMatrix.rand[Double](row, col)
-    })
+    override def rand(row: Int, col: Int): MatrixDouble = MatrixM({DenseMatrix.rand[Double](row, col)})
 
-    override def eye(size: Int): MatrixDouble = MatrixM.apply(() => DenseMatrix.eye[Double](size))
+    override def eye(size: Int): MatrixDouble = MatrixM({DenseMatrix.eye[Double](size)})
 
-    override def diag(data: Array[Double]): MatrixDouble = MatrixM.apply(() => breeze.linalg.diag(new DenseVector[Double](data)))
+    override def diag(data: Array[Double]): MatrixDouble = MatrixM({breeze.linalg.diag(new DenseVector[Double](data))})
 
-    override def zeros(row: Int, col: Int): MatrixDouble = MatrixM.apply(() => DenseMatrix.zeros[Double](row, col))
+    override def zeros(row: Int, col: Int): MatrixDouble = MatrixM({DenseMatrix.zeros[Double](row, col)})
   }
 
 
@@ -182,10 +180,10 @@ object BreezeDenseMatrixImplicit {
     }
     override def apply(row: Int, col: Int): Option[ElemT] = matrix.safeMap(_(row,col))
 
-    override def concatRight(rhs: MatrixDouble): MatrixDouble = for (l<- matrix; r <-rhs) yield MatrixM(()=>DenseMatrix.horzcat(l,r))
+    override def concatRight(rhs: MatrixDouble): MatrixDouble = for (l<- matrix; r <-rhs) yield MatrixM({DenseMatrix.horzcat(l,r)})
 
 
-    override def concatDown(rhs: MatrixDouble): MatrixDouble = for (l<- matrix; r <-rhs) yield MatrixM(()=>DenseMatrix.vertcat(l,r))
+    override def concatDown(rhs: MatrixDouble): MatrixDouble = for (l<- matrix; r <-rhs) yield MatrixM({DenseMatrix.vertcat(l,r)})
 
   }
 
@@ -195,9 +193,9 @@ object BreezeDenseMatrixImplicit {
 
     override def eig: EigenResultT = EigenResultM.alloc(matrix.matrix.map(breeze.linalg.eig(_)))
 
-    override def solve(rhs: MatrixDouble): MatrixDouble = for (l<- matrix; r <-rhs) yield MatrixM(()=> l \ r)
+    override def solve(rhs: MatrixDouble): MatrixDouble = for (l<- matrix; r <-rhs) yield MatrixM({l \ r})
 
-    override def inverse: MatrixRetTypeT = for (m<-matrix) yield MatrixM(()=>inv(m))//matrix.flatMap(inv(_))
+    override def inverse: MatrixRetTypeT = for (m<-matrix) yield MatrixM({inv(m)})//matrix.flatMap(inv(_))
 
     override def transpose: MatrixDouble = matrix.map1(_.t)
 
@@ -206,7 +204,7 @@ object BreezeDenseMatrixImplicit {
 
   implicit object SerializeT$implicit extends SerializeT[MatrixDouble] {
     override def csvWrite(fn: String, matrix: MatrixDouble): Unit = matrix.map(breeze.linalg.csvwrite(new java.io.File(fn), _))
-    override def csvRead(fn: String): MatrixDouble = MatrixM(() => breeze.linalg.csvread(new File(fn)))
+    override def csvRead(fn: String): MatrixDouble = MatrixM({breeze.linalg.csvread(new File(fn))})
   }
 
   //TODO : Complex eigenvalues/eigenvectors aren't handled
@@ -233,36 +231,36 @@ object BreezeDenseMatrixImplicit {
 
     override def eigen(m:MatrixDouble): (MatrixDouble, MatrixDouble) = {val l = m.eig; (l.values, l.vectors)}
 
-    override def add(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (l <-lhs; r <-rhs) yield MatrixM(()=>(l+r))
+    override def add(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (l <-lhs; r <-rhs) yield MatrixM({l+r})
 
-    override def sub(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (l <-lhs; r <-rhs) yield MatrixM(()=>(l-r))
+    override def sub(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (l <-lhs; r <-rhs) yield MatrixM({l-r})
 
-    override def multe(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (l <-lhs; r <-rhs) yield MatrixM(()=>(l:*r))
+    override def multe(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (l <-lhs; r <-rhs) yield MatrixM({l:*r})
 
-    override def dive(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble =  for (l <-lhs; r <-rhs) yield MatrixM(()=>(l:/r))
+    override def dive(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble =  for (l <-lhs; r <-rhs) yield MatrixM({l:/r})
 
-    override def mult(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (l <-lhs; r <-rhs) yield MatrixM(()=>(l*r))
+    override def mult(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (l <-lhs; r <-rhs) yield MatrixM({l*r})
 
-    override def add1[B: Numeric](lhs: MatrixDouble, rhs: B) = for (lhsm<- lhs) yield MatrixM(()=>BreezeDenseMatrix.add(lhsm.copy,rhs))
+    override def add1[B: Numeric](lhs: MatrixDouble, rhs: B) = for (lhsm<- lhs) yield MatrixM({BreezeDenseMatrix.add(lhsm.copy,rhs)})
 
-    override def sub1[B: Numeric](lhs: MatrixDouble, rhs: B) = for (lhsm<- lhs) yield MatrixM(()=>BreezeDenseMatrix.sub(lhsm.copy,rhs))
+    override def sub1[B: Numeric](lhs: MatrixDouble, rhs: B) = for (lhsm<- lhs) yield MatrixM({BreezeDenseMatrix.sub(lhsm.copy,rhs)})
 
-    override def mul1[B: Numeric](lhs: MatrixDouble, rhs: B) = for (lhsm<- lhs) yield MatrixM(()=>BreezeDenseMatrix.mul(lhsm.copy,rhs))
+    override def mul1[B: Numeric](lhs: MatrixDouble, rhs: B) = for (lhsm<- lhs) yield MatrixM({BreezeDenseMatrix.mul(lhsm.copy,rhs)})
 
-    override def div1[B: Numeric](lhs: MatrixDouble, rhs: B) = for (lhsm<- lhs) yield MatrixM(()=>BreezeDenseMatrix.div(lhsm.copy,rhs))
+    override def div1[B: Numeric](lhs: MatrixDouble, rhs: B) = for (lhsm<- lhs) yield MatrixM({BreezeDenseMatrix.div(lhsm.copy,rhs)})
 
-    override def eq(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble =  for (l <-lhs; r <-rhs) yield MatrixM(()=>  (l :== r).mapValues(boolToDouble))
+    override def eq(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble =  for (l <-lhs; r <-rhs) yield MatrixM({  (l :== r).mapValues(boolToDouble)})
 
-    override def ne(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble =  for (l <-lhs; r <-rhs) yield MatrixM(()=>  (!(l :== r)).mapValues(boolToDouble))
+    override def ne(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble =  for (l <-lhs; r <-rhs) yield MatrixM({  (!(l :== r)).mapValues(boolToDouble)})
 
-    override def lt(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (l <-lhs; r <-rhs) yield MatrixM(()=>  ((l :< r)).mapValues(boolToDouble))
+    override def lt(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (l <-lhs; r <-rhs) yield MatrixM({  ((l :< r)).mapValues(boolToDouble)})
 
-    override def le(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (l <-lhs; r <-rhs) yield MatrixM(()=>  ((l :< r) :|( l:==r)).mapValues(boolToDouble))
+    override def le(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (l <-lhs; r <-rhs) yield MatrixM({  ((l :< r) :|( l:==r)).mapValues(boolToDouble)})
 
-    override def ge(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (l <-lhs; r <-rhs) yield MatrixM(()=>  (!(l :< r)).mapValues(boolToDouble))
+    override def ge(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (l <-lhs; r <-rhs) yield MatrixM({  (!(l :< r)).mapValues(boolToDouble)})
 
     override def gt(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble =
-      for (l <-lhs; r <-rhs) yield MatrixM(()=>  (!((l :< r) :|( l:==r))).mapValues(boolToDouble))
+      for (l <-lhs; r <-rhs) yield MatrixM({  (!((l :< r) :|( l:==r))).mapValues(boolToDouble)})
 
     override def create(rows: Int, colls: Int, data: Array[ElemT]): MatrixDouble = MatrixM(rows, colls, data)
 

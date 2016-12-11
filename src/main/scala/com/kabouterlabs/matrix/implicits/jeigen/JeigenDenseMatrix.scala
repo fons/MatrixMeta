@@ -148,19 +148,19 @@ object JeigenDenseMatrixImplicit {
 
     override def fill(row: Int, col: Int, value: ElemT): MatrixDouble = MatrixM(row, col, Array.fill[Double](row * col)(value))
 
-    override def ones(row: Int, col: Int): MatrixDouble = MatrixM.apply(() => jeigen.Shortcuts.ones(row, col))
+    override def ones(row: Int, col: Int): MatrixDouble = MatrixM({jeigen.Shortcuts.ones(row, col)})
 
-    override def rand(row: Int, col: Int): MatrixImplT = MatrixM.apply(() => jeigen.Shortcuts.rand(row, col))
+    override def rand(row: Int, col: Int): MatrixImplT = MatrixM.apply({jeigen.Shortcuts.rand(row, col)})
 
-    override def eye(size: Int): MatrixImplT = MatrixM.apply(() => jeigen.Shortcuts.eye(size))
+    override def eye(size: Int): MatrixImplT = MatrixM.apply({jeigen.Shortcuts.eye(size)})
 
-    override def zeros(row: Int, col: Int): MatrixImplT = MatrixM.apply(() => jeigen.Shortcuts.zeros(row, col))
+    override def zeros(row: Int, col: Int): MatrixImplT = MatrixM.apply({jeigen.Shortcuts.zeros(row, col)})
 
     //TODO check this
     override def diag(data: Array[Double]): MatrixImplT = {
       fdouble$(data.length, 1, data) match {
         case None => new MatrixDouble(None)
-        case Some(a) => MatrixM.apply(() => jeigen.Shortcuts.diag(a))
+        case Some(a) => MatrixM.apply({jeigen.Shortcuts.diag(a)})
       }
     }
   }
@@ -185,7 +185,7 @@ object JeigenDenseMatrixImplicit {
 
   implicit class SliceT$implicit(matrix: MatrixDouble) extends SliceT[MatrixDouble] {
     private def @#(matrix: MatrixDouble, a1: Int, a2: Int, a3: Int, a4: Int, f: (MatrixImpl, Int, Int, Int, Int) => MatrixImpl): MatrixDouble =
-      for (m <- matrix) yield MatrixM(() => f(m, a1, a2, a3, a4))
+      for (m <- matrix) yield MatrixM({ f(m, a1, a2, a3, a4)})
 
     override def deepCopy: MatrixDouble = for (m <- matrix) yield MatrixM(m.rows, m.cols,m.getValues())
 
@@ -193,9 +193,9 @@ object JeigenDenseMatrixImplicit {
 
     override def toDiag: MatrixDouble = matrix.map1((m: DenseMatrix) => m.mul(jeigen.Shortcuts.eye(m.rows)))
 
-    override def concatRight(rhs: MatrixDouble): MatrixDouble =   for (lhsm <- matrix; rhsm<-rhs) yield {MatrixM(()=>lhsm.concatRight(rhsm))}
+    override def concatRight(rhs: MatrixDouble): MatrixDouble =   for (lhsm <- matrix; rhsm<-rhs) yield MatrixM({lhsm.concatRight(rhsm)})
 
-    override def concatDown(rhs: MatrixDouble): MatrixDouble = for (lhsm <- matrix; rhsm<-rhs) yield {MatrixM(()=>lhsm.concatDown(rhsm))}
+    override def concatDown(rhs: MatrixDouble): MatrixDouble = for (lhsm <- matrix; rhsm<-rhs) yield MatrixM({lhsm.concatDown(rhsm)})
 
     override def toArray: Option[Array[ElemT]] = matrix.safeMap(_.getValues)
 
@@ -221,7 +221,7 @@ object JeigenDenseMatrixImplicit {
     override def inverse: MatrixRetTypeT = matrix.map1((m: DenseMatrix) => m.fullPivHouseholderQRSolve(jeigen.Shortcuts.eye(m.cols)))
 
     //TODO : can be optimized based on matrix type..
-    override def solve(rhs: MatrixDouble): MatrixRetTypeT = for (lhsm <- matrix; rhsm<-rhs) yield {MatrixM(()=>lhsm.fullPivHouseholderQRSolve(rhsm))}
+    override def solve(rhs: MatrixDouble): MatrixRetTypeT = for (lhsm <- matrix; rhsm<-rhs) yield MatrixM({lhsm.fullPivHouseholderQRSolve(rhsm)})
 
     override def eig: EigenResultT = EigenResultM.alloc(matrix.matrix.map(_.eig()))
 
@@ -234,7 +234,7 @@ object JeigenDenseMatrixImplicit {
   implicit object SerializeT$implicit extends SerializeT[MatrixDouble] {
     override def csvWrite(fn: String, matrix: MatrixDouble): Unit =   matrix.map(JeigenDenseMatrix.csvwrite(new File(fn), _))
 
-    override def csvRead(fn: String): MatrixDouble = MatrixM(() => JeigenDenseMatrix.csvread(new File(fn)))
+    override def csvRead(fn: String): MatrixDouble = MatrixM({JeigenDenseMatrix.csvread(new File(fn))})
   }
 
   //TODO : Complex eigenvalues/eigenvectors aren't handled
@@ -262,35 +262,35 @@ object JeigenDenseMatrixImplicit {
 
     override def eigen(m: MatrixDouble): (MatrixDouble, MatrixDouble) = {val e = m.eig; (e.values, e.vectors)}
 
-    override def add(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm<-rhs) yield {MatrixM(()=>lhsm.add(rhsm))}
+    override def add(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm<-rhs) yield {MatrixM({lhsm.add(rhsm)})}
 
-    override def sub(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm<-rhs) yield {MatrixM(()=>lhsm.sub(rhsm))}
+    override def sub(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm<-rhs) yield {MatrixM({lhsm.sub(rhsm)})}
 
-    override def mult(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm<-rhs) yield {MatrixM(()=>lhsm.mmul(rhsm))}
+    override def mult(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm<-rhs) yield {MatrixM({lhsm.mmul(rhsm)})}
 
-    override def multe(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm<-rhs) yield {MatrixM(()=>lhsm.mul(rhsm))}
+    override def multe(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm<-rhs) yield {MatrixM({lhsm.mul(rhsm)})}
 
-    override def dive(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble =  for (lhsm <- lhs; rhsm<-rhs) yield {MatrixM(()=>lhsm.div(rhsm))}
+    override def dive(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble =  for (lhsm <- lhs; rhsm<-rhs) yield {MatrixM({lhsm.div(rhsm)})}
 
-    override def add1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble = for (lhsm<- lhs) yield MatrixM(()=>JeigenDenseMatrix.add(lhsm,rhs))
+    override def add1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble = for (lhsm<- lhs) yield MatrixM({JeigenDenseMatrix.add(lhsm,rhs)})
 
-    override def sub1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble =   for (lhsm<- lhs) yield MatrixM(()=>JeigenDenseMatrix.sub(lhsm,rhs))
+    override def sub1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble =   for (lhsm<- lhs) yield MatrixM({JeigenDenseMatrix.sub(lhsm,rhs)})
 
-    override def mul1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble =   for (lhsm<- lhs) yield MatrixM(()=>JeigenDenseMatrix.mul(lhsm,rhs))
+    override def mul1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble =   for (lhsm<- lhs) yield MatrixM({JeigenDenseMatrix.mul(lhsm,rhs)})
 
-    override def div1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble =   for (lhsm<- lhs) yield MatrixM(()=>JeigenDenseMatrix.div(lhsm,rhs))
+    override def div1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble =   for (lhsm<- lhs) yield MatrixM({JeigenDenseMatrix.div(lhsm,rhs)})
 
-    override def eq(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble =  for (lhsm <- lhs; rhsm<-rhs) yield MatrixM(()=>lhsm.eq(rhsm))
+    override def eq(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble =  for (lhsm <- lhs; rhsm<-rhs) yield MatrixM({lhsm.eq(rhsm)})
 
-    override def ne(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble =  for (lhsm <- lhs; rhsm<-rhs) yield MatrixM(()=>lhsm.ne(rhsm))
+    override def ne(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble =  for (lhsm <- lhs; rhsm<-rhs) yield MatrixM({lhsm.ne(rhsm)})
 
-    override def gt(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm<-rhs) yield MatrixM(()=>lhsm.gt(rhsm))
+    override def gt(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm<-rhs) yield MatrixM({lhsm.gt(rhsm)})
 
-    override def ge(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble =  for (lhsm <- lhs; rhsm<-rhs) yield MatrixM(()=>lhsm.ge(rhsm))
+    override def ge(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble =  for (lhsm <- lhs; rhsm<-rhs) yield MatrixM({lhsm.ge(rhsm)})
 
-    override def lt(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm<-rhs) yield MatrixM(()=>lhsm.lt(rhsm))
+    override def lt(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm<-rhs) yield MatrixM({lhsm.lt(rhsm)})
 
-    override def le(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm<-rhs) yield MatrixM(()=>lhsm.le(rhsm))
+    override def le(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm<-rhs) yield MatrixM({lhsm.le(rhsm)})
 
     override def create(rows: Int, colls: Int, data: Array[ElemT]): MatrixDouble = MatrixM(rows, colls, data)
 
