@@ -1,5 +1,6 @@
 
 
+
 Table of Contents
 =================
 
@@ -56,24 +57,24 @@ sbt test
 
 ##Matrix Libraries Covered
 
-  1. [breeze](https://github.com/scalanlp/breeze)
+1. [breeze](https://github.com/scalanlp/breeze)
 
 ```scala
 import com.kabouterlabs.matrix.implicits.breeze.BreezeDenseMatrixImplicit._
 ```
 
-  2. [jeigen](https://github.com/hughperkins/jeigen)
-
+2. [jeigen](https://github.com/hughperkins/jeigen)
 
 ```scala
 import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
 ```
 
-  3. [armadillojava](https://github.com/SRAhub/ArmadilloJava)
+3. [armadillojava](https://github.com/SRAhub/ArmadilloJava)
 
 ```scala
 import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaMatImplicit._
 ```
+Note that both breeze and armadillojava use [netlib-java](https://github.com/fommil/netlib-java). jeigen uses [jna](https://github.com/java-native-access/jna) to wrap the [eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page) C++ library.
 
 ------
 
