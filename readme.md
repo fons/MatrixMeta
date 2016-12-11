@@ -1,5 +1,37 @@
 
 
+Table of Contents
+=================
+
+* [MatrixMeta](#matrixmeta)
+     * [Introduction](#introduction)
+     * [Building](#building)
+     * [Testing](#testing)
+     * [Matrix Libraries Covered](#matrix-libraries-covered)
+* [API Reference](#api-reference)
+     * [Usage](#usage)
+        * [Directly](#directly)
+        * [As implicit parameter](#as-implicit-parameter)
+     * [Matrix Creation](#matrix-creation)
+        * [Synopsis](#synopsis)
+        * [Operations](#operations)
+     * [Indexing ,Slicing, Aggregation](#indexing-slicing-aggregation)
+        * [Synopsis](#synopsis-1)
+        * [Operations](#operations-1)
+     * [Matrix Algebraic Operations](#matrix-algebraic-operations)
+        * [Synopsis](#synopsis-2)
+        * [Operations](#operations-2)
+     * [Linear Algebra](#linear-algebra)
+        * [Synopsis](#synopsis-3)
+        * [Operations](#operations-3)
+     * [Serialization](#serialization)
+        * [Synopsis](#synopsis-4)
+        * [Operations](#operations-4)
+
+Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
+
+
+
 ---
 
 # MatrixMeta
