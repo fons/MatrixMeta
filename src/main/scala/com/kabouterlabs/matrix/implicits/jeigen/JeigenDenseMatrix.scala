@@ -218,12 +218,15 @@ object JeigenDenseMatrixImplicit {
     override type MatrixRetTypeT = MatrixDouble
     override type EigenResultT = JeigenEigenResult
 
-    override def inverse: MatrixRetTypeT = matrix.map1((m: DenseMatrix) => m.fullPivHouseholderQRSolve(jeigen.Shortcuts.eye(m.cols)))
+    override def inverse: MatrixRetTypeT = for (m <- matrix) yield {
+      MatrixM({m.fullPivHouseholderQRSolve(jeigen.Shortcuts.eye(m.cols))})
+    }
+    //matrix.map1((m: DenseMatrix) => m.fullPivHouseholderQRSolve(jeigen.Shortcuts.eye(m.cols)))
 
     //TODO : can be optimized based on matrix type..
     override def solve(rhs: MatrixDouble): MatrixRetTypeT = for (lhsm <- matrix; rhsm<-rhs) yield MatrixM({lhsm.fullPivHouseholderQRSolve(rhsm)})
 
-    override def eig: EigenResultT = EigenResultM.alloc(matrix.matrix.map(_.eig()))
+    override def eig: EigenResultT = for (m <- matrix) yield EigenResultM({m.eig()})
 
     override def transpose: MatrixRetTypeT = matrix.map1(_.t())
 

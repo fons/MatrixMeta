@@ -29,9 +29,12 @@ package com.kabouterlabs.matrix.main
 
 import com.kabouterlabs.matrix.MatrixM
 import com.kabouterlabs.matrix.MatrixOperations._
+
+import scala.util.Random
+
 //import com.kabouterlabs.matrix.implicits.breeze.BreezeDenseMatrixImplicit._
 import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
-//import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaMatImplicit._
+//import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaDenseMatrixImplicit._
 
 
 object Use
@@ -47,9 +50,15 @@ object Use
     }
 
     def run3() = {
-      import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaMatImplicit._
+      import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaDenseMatrixImplicit._
       new MatrixExample
     }
+
+   def run4() = {
+     import com.kabouterlabs.matrix.implicits.apachecommonsmath.ApacheCommonsMathDenseMatrixImplicit._
+
+     new MatrixExample
+   }
 
 
 }
@@ -78,14 +87,19 @@ object EigenTest {
 }
 object Main extends App {
 
+
   val r1 = Use.run1()
   val r2 = Use.run2()
   val r3 = Use.run3()
-
-  r1()
-  r2()
-  r3()
-
+  val r4 = Use.run4()
+  //r1()
+  //r2()
+  //r3()
+  //r4()
+  val m = MatrixM.one(5,5)
+  val i = m.inverse
+  println(i)
+/*
   val mm = MatrixM.rand(10,10)
   val mc = mm.deepCopy(2,1,89.90)
   deepCopy(mc)
@@ -146,6 +160,7 @@ object Main extends App {
    mm.csvWrite("/tmp/myfile.csv")
    val mr = csvRead("/tmp/myfile.csv")
   println(mm, mr)
+  */
 }
 
 

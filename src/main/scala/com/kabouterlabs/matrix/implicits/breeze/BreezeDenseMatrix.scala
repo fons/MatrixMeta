@@ -191,7 +191,7 @@ object BreezeDenseMatrixImplicit {
     override type MatrixRetTypeT = MatrixDouble
     override type EigenResultT = BreezeEigenResult
 
-    override def eig: EigenResultT = EigenResultM.alloc(matrix.matrix.map(breeze.linalg.eig(_)))
+    override def eig: EigenResultT = for (m <- matrix)  yield  EigenResultM({breeze.linalg.eig(m)})
 
     override def solve(rhs: MatrixDouble): MatrixDouble = for (l<- matrix; r <-rhs) yield MatrixM({l \ r})
 

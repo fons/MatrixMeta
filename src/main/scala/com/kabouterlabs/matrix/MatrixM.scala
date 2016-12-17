@@ -74,9 +74,10 @@ case class MatrixM[V](matrix: Option[V]) {
 
 object MatrixM {
 
-  def apply(row: Int, col: Int, data: Array[Double])(implicit factory: FactoryT) = new MatrixM[factory.MatrixImplT](factory(row, col, data))
 
-  def apply(row: Int, col: Int)(implicit factory: FactoryT) = new MatrixM[factory.MatrixImplT](factory(row, col))
+  def apply(row: Int, col: Int, data: => Array[Double])(implicit factory: FactoryT) = safeMap2[factory.MatrixImplT](()=>{factory(row, col, data)})
+
+  def apply(row: Int, col: Int)(implicit factory: FactoryT) = safeMap2[factory.MatrixImplT](()=>{factory(row, col)})
 
   def apply(row: Int, col: Int, data: Option[Array[Double]])(implicit factory: FactoryT) = {
     data match {
@@ -133,5 +134,19 @@ object MatrixM {
       }
 
     }
+
+  private def safeMap2[U](f: ()  => Option[U]): MatrixM[U] = {
+    try {
+      new MatrixM[U](f())
+    }
+    catch {
+      case e: Throwable =>
+        val sw = new StringWriter
+        e.printStackTrace(new PrintWriter(sw))
+        println("exception caught :" + e + sw)
+        new MatrixM[U](None)
+    }
+
+  }
 }
 

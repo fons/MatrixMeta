@@ -64,6 +64,7 @@ case class MatrixExample[T](implicit evmatrix: MatrixOperationsTC[T]) {
     val m7 = add(m3, m3)
     val m7a = m6.sumRows
     println(m7a)
+
     val m8 = m6.sumCols
     println(m8)
 
@@ -153,6 +154,7 @@ case class MatrixExample[T](implicit evmatrix: MatrixOperationsTC[T]) {
     val ka = sumCols(sumRows(rs1a))
     ka.csvWrite("nn")
     csvRead("nn")
+
   }
 
 }

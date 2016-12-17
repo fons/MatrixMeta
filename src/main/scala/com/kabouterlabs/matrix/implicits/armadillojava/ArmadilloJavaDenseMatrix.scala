@@ -27,10 +27,6 @@
 
 package com.kabouterlabs.matrix.implicits.armadillojava
 
-/**
-  * Created by fons on 11/24/16.
-  */
-
 import java.io.{PrintWriter, StringWriter, File}
 
 import com.kabouterlabs.matrix._
@@ -48,7 +44,7 @@ import scala.io.Source
   */
 
 
-private object ArmadilloJavaMat {
+private object ArmadilloJavaDenseMatrix {
 
   def apply(rows: Int, colls: Int, data: Array[Double]): Option[Mat] = {
     try {
@@ -123,7 +119,7 @@ private object ArmadilloJavaMat {
 
 }
 
-object ArmadilloJavaMatImplicit {
+object ArmadilloJavaDenseMatrixImplicit {
   type ElemT = Double
   type MatrixImpl = Mat
   type MatrixDouble = MatrixM[MatrixImpl]
@@ -137,9 +133,9 @@ object ArmadilloJavaMatImplicit {
   implicit val fdouble$ = new FactoryT {
     type MatrixImplT = MatrixImpl
 
-    implicit override def apply(row: Int, col: Int, data: Array[Double]): Option[MatrixImplT] = ArmadilloJavaMat(row, col, data)
+    implicit override def apply(row: Int, col: Int, data: Array[Double]): Option[MatrixImplT] = ArmadilloJavaDenseMatrix(row, col, data)
 
-    implicit override def apply(row: Int, col: Int): Option[MatrixImplT] = ArmadilloJavaMat(row, col)
+    implicit override def apply(row: Int, col: Int): Option[MatrixImplT] = ArmadilloJavaDenseMatrix(row, col)
 
   }
 
@@ -218,7 +214,7 @@ object ArmadilloJavaMatImplicit {
     //TODO : can be optimized based on matrix type..
     override def solve(rhs: MatrixDouble): MatrixRetTypeT = for(l<-matrix;r<-rhs) yield MatrixM({org.armadillojava.Arma.solve(l, r)})
 
-    override def eig: EigenResultT = EigenResultM.alloc(None)
+    override def eig: EigenResultT = EigenResultM.none
 
     override def transpose: MatrixRetTypeT = matrix.map1((m: Mat) => m.t)
 
@@ -227,8 +223,8 @@ object ArmadilloJavaMatImplicit {
   }
 
   implicit object SerializeT$implicit extends SerializeT[MatrixDouble] {
-    override def csvWrite(fn: String, matrix: MatrixDouble): Unit =  matrix.map(ArmadilloJavaMat.csvwrite(new File(fn), _))
-    override def csvRead(fn: String): MatrixDouble = MatrixM({ ArmadilloJavaMat.csvread(new File(fn))})
+    override def csvWrite(fn: String, matrix: MatrixDouble): Unit =  matrix.map(ArmadilloJavaDenseMatrix.csvwrite(new File(fn), _))
+    override def csvRead(fn: String): MatrixDouble = MatrixM({ ArmadilloJavaDenseMatrix.csvread(new File(fn))})
   }
 
   //TODO : Complex eigenvalues/eigenvectors aren't handled
@@ -264,13 +260,13 @@ object ArmadilloJavaMatImplicit {
 
     override def dive(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble =for (lhsm <- lhs; rhsm <- rhs) yield MatrixM({lhsm.elemDivide(rhsm)})
 
-    override def add1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble = for (lhsm<- lhs) yield MatrixM({ArmadilloJavaMat.add(lhsm,rhs)})
+    override def add1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble = for (lhsm<- lhs) yield MatrixM({ArmadilloJavaDenseMatrix.add(lhsm,rhs)})
 
-    override def sub1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble = for (lhsm<- lhs) yield MatrixM({ArmadilloJavaMat.sub(lhsm,rhs)})
+    override def sub1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble = for (lhsm<- lhs) yield MatrixM({ArmadilloJavaDenseMatrix.sub(lhsm,rhs)})
 
-    override def mul1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble = for (lhsm<- lhs) yield MatrixM({ArmadilloJavaMat.mul(lhsm,rhs)})
+    override def mul1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble = for (lhsm<- lhs) yield MatrixM({ArmadilloJavaDenseMatrix.mul(lhsm,rhs)})
 
-    override def div1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble = for (lhsm<- lhs) yield MatrixM({ArmadilloJavaMat.div(lhsm,rhs)})
+    override def div1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble = for (lhsm<- lhs) yield MatrixM({ArmadilloJavaDenseMatrix.div(lhsm,rhs)})
 
     override def eq(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = for (lhsm <- lhs; rhsm <- rhs) yield MatrixM({lhsm.equals(rhsm)})
 

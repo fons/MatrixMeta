@@ -25,16 +25,17 @@
  * EOM
  */
 
-package kabouterlabs.nr.matrix.implicits.armadillojava
+package test.kabouterlabs.nr.matrix.implicits.apachecommonsmath
 
-import org.scalatest._
+/**
+  * Created by fons on 12/15/16.
+  */
 import com.kabouterlabs.matrix.MatrixM
 import com.kabouterlabs.matrix.MatrixOperations._
-import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaDenseMatrixImplicit._
-/**
-  * Created by fons on 11/25/16.
-  */
-class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
+import com.kabouterlabs.matrix.implicits.apachecommonsmath.ApacheCommonsMathDenseMatrixImplicit._
+import org.scalatest._
+
+class ApacheCommonsMathDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   val a1 = Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0,90.0,33.0,107.0,-78.0,-23.0,14.0,33.0)
   val a2 = Array(23.0,67.0,-78.0,23.0,45.0,-65.0, 90.0,89.0, -102.0, -90.0,45.67,23.45,12.01,-1.0,-100.0,+67.0)
   val hsize = math.sqrt(a1.length).toInt
@@ -47,13 +48,18 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
 
   val rows  = 6
   val colls = 3
-  def throwAssert  {
+  def throwAssert = {
     assert(1==2, "ok get a clue")
   }
 
   // Section 1 :Testing matrix creation
   "a matrix" should "be created" in {
     MatrixM(rows,colls,t)  should not equal None
+  }
+
+  it should "be able to extract and recreate the same matrix " in {
+
+    (MatrixM(rows,colls,t) :== MatrixM(rows,colls, MatrixM(rows,colls,t).toArray)).sum
   }
   //
   // Section * CompanionT as a way to create specialty matrices..
@@ -63,11 +69,11 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val l3  = MatrixM(hsize, lsize, a1)
     val idm = MatrixM.eye(hsize)
 
-    assertResult(Some(a1.length.toDouble), "multiplying by the identity should result in the same matrix") {
+    assertResult(Some(a1.length.toDouble), "multiplying by the identignorey should result in the same matrix") {
       (l3 |* idm :== l3).sum
     }
 
-    assertResult(Some(hsize), "the identity trace should be equal to size") {
+    assertResult(Some(hsize), "the identignorey trace should be equal to size") {
       idm.sum
     }
 
@@ -126,6 +132,7 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val r =l0 |* k0
 
   }
+
   // Section * Testing simple operations :MatrixOperationsTC
   //------------------------------------------------------------------------------------------------------
   //
@@ -138,6 +145,7 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
       (l3 :* l2 :== hadamard(l3, l2)).sum
     }
     assertResult(Some(a2.length.toDouble), "unexpected multiplication result") {
+
       (l3 :* l2 :== r).sum
     }
 
@@ -209,6 +217,7 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     }
 
   }
+
   // Section * Testing simple operations :MatrixOpsByElementT
   //           apply a single value to a all elements of a maytrix
   //------------------------------------------------------------------------------------------------------
@@ -237,9 +246,10 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     assertResult(Some(a1.length.toDouble), "infix and function for value divide are not compatible") {
       (lm \\ lv :== divide1(lm, lv)).sum
     }
+    //TODO : sync up with eigen test
 
-    assertResult(Some(a2.length.toDouble), "unexpected division result") {
-      (lm \\ lv :== r).sum
+    assertResult(Some(true), "unexpected division result") {
+      (lm \\ lv :- r).sum.map(_ < 0.0000001)
     }
 
   }
@@ -279,16 +289,17 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
   it should "commute divide and mutiply with value" in {
     val lm = MatrixM(hsize, lsize, a1)
     val lv = 67.34
-
-    assertResult(Some(a1.length.toDouble), "divide1 and multiply1 should commute ") {
-      (((lm \\ lv) ** lv) :== divide1(multiply1(lm, lv),lv)).sum
+    //TODO : sync with eigen test
+    assertResult(Some(true), "divide1 and multiply1 should commute ") {
+      (((lm \\ lv) ** lv) :- divide1(multiply1(lm, lv),lv)).sum.map(_ < 0.000001)
     }
-
-    assertResult(Some(a2.length.toDouble), "unexpected divide1/multiply1 commute result") {
-      (lm \\ lv ** lv :== lm).sum
+    //TODO : sync with eigen test
+    assertResult(Some(true), "unexpected divide1/multiply1 commute result") {
+      (lm \\ lv ** lv :- lm).sum.map(_ < 0.000001)
     }
 
   }
+
   // Section * Testing  by element compare operations :   MatrixCompareOpsByElementT
   //
   //------------------------------------------------------------------------------------------------------
@@ -364,6 +375,7 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
 
   }
 
+
   // Section * Testing  matrix slicing : SliceT
   //
   //------------------------------------------------------------------------------------------------------
@@ -394,10 +406,8 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
 
     val l2 = MatrixM(3,3,r )
     val l3 = MatrixM(3,3,Array(4.0,5.0,6.0,7.0,8.0,21.0,56.0,-1.0,-9.0))
-    println(l2)
-    println(l3)
     val l4 = l2 concatRight l3
-    assertResult(Some(18.0)) {
+    assertResult(Some(18.0), "unable to concat to the right") {
       val a = (l4(::, 0 to 2) :== l2).sum
       val b = (l4(::, 3 to 5) :== l3).sum
       (a,b) match {
@@ -454,8 +464,8 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val l0 = MatrixM(hsize, hsize, a1)
     val id = MatrixM.eye(hsize)
     val ld = l0.toDiag
-    val s = (for (i <- Range(0, hsize)) yield {l0(i, i)})
-    def |+|(l:Option[Double], r:Option[Double]) : Option[Double] = for ( x<- l; y <- r) yield (x+y)
+    val s = for (i <- Range(0, hsize)) yield l0(i, i)
+    def |+|(l:Option[Double], r:Option[Double]) : Option[Double] = for ( x<- l; y <- r) yield x+y
 
     val s1 = s.foldLeft[Option[Double]](Some(0.0))(|+|(_,_))
 
@@ -465,7 +475,6 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     assertResult(Some(hsize*hsize.toDouble)) {
       (l0 :* id :== ld).sum
     }
-
   }
 
   it should "be able to set a value" in {
@@ -474,6 +483,31 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     assertResult(Some(-56)){
       z(0,0)
     }
+  }
+
+  it should "be able to create a deep copy of a matrix" in {
+    val l0 = MatrixM.rand(hsize,hsize)
+    val l2 = l0.deepCopy
+
+    assertResult(Some(hsize*hsize)) {
+      (l0 :== l2).sum
+    }
+
+  }
+
+  it should "a deep copy of a matrix can be changed and ignore will not chnage the original" in {
+    val l0 = MatrixM.rand(hsize,hsize)
+    val l2 = l0.deepCopy
+
+    assertResult(Some(true)) {for (c1 <-l0(1,3); c2 <- l2(1,3)) yield c1 == c2}
+
+    l2(1,3,78.90)
+    assertResult(Some(true)) {for (c1 <-l0(1,3); c2 <- l2(1,3)) yield (c1 != c2) && (c2 == 78.90)}
+
+    assertResult(Some(hsize*hsize - 1)) {
+      (l0 :== l2).sum
+    }
+
   }
 
   //
@@ -517,32 +551,8 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
       -489.00000 + 139.00000 -1668.00000)
 
     assertResult(Some(3.0)) {
+
       (MatrixM(3, 3, r).sumCols :== MatrixM(3, 1, t)).sum
-    }
-
-  }
-
-  it should "be able to create a deep copy of a matrix" in {
-    val l0 = MatrixM.rand(hsize,hsize)
-    val l2 = l0.deepCopy
-
-    assertResult(Some(hsize*hsize)) {
-      (l0 :== l2).sum
-    }
-
-  }
-
-  it should "a deep copy of a matrix can be changed and it will not chnage the original" in {
-    val l0 = MatrixM.rand(hsize,hsize)
-    val l2 = l0.deepCopy
-
-    assertResult(Some(true)) {for (c1 <-l0(1,3); c2 <- l2(1,3)) yield c1 == c2}
-
-    l2(1,3,78.90)
-    assertResult(Some(true)) {for (c1 <-l0(1,3); c2 <- l2(1,3)) yield (c1 != c2) && (c2 == 78.90)}
-
-    assertResult(Some(hsize*hsize - 1)) {
-      (l0 :== l2).sum
     }
 
   }
@@ -568,8 +578,6 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     }
   }
 
-  //it
-  //ignore
   it should "not be able to invert a singular matrix" in {
 
     val m = MatrixM.one(5,5)
@@ -609,7 +617,7 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     val l0 = MatrixM.rand(r, c)
     val l1 = l0.transpose
     for (i <- Range(0,r)) {
-      assertResult(Some(c)) {
+      assertResult(Some(c), "unable to transpose a matrix") {
         (l0(i,::) :== l1(::,i).transpose).sum
       }
     }
@@ -624,72 +632,74 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
 
   }
 
-  ignore should "be able to get the eigenvalues" in {
+  it should "be able to get the eigenvalues" in {
 
-//    val a1  = Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0,90.0,33.0,107.0,-78.0,-23.0,14.0,33.0)
-//    val er1 = Array(81.3567339942231, 64.2735390962677, 7.28804710064899, -61.9183201911397)
-//    val hsize = math.sqrt(a1.length).toInt
-//    val l3 = MatrixM(hsize, hsize, a1)
-//    val e = l3.eig.values
-//
-//
-//    assertResult(Some(0), "imaginary parts not zero"){
-//      e(::,1).toArray.map(_.map(scala.math.abs)).map(_.sum)
-//    }
-//    val a = 100000
-//    val s = er1.map(_ * a).map(_.toInt)
-//    val t = e(::,0).toArray.map(_.map(_*a).map(_.toInt))
-//    for (i <- s) {
-//      assertResult((Some(true)), "value " + i + "not an eigenvalue") {
-//        t.map(_.contains(i))
-//      }
-//    }
+    val a1  = Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0,90.0,33.0,107.0,-78.0,-23.0,14.0,33.0)
+    val er1 = Array(81.3567339942231, 64.2735390962677, 7.28804710064899, -61.9183201911397)
+    val hsize = math.sqrt(a1.length).toInt
+    val l3 = MatrixM(hsize, hsize, a1)
+    val e = l3.eig.values
+
+
+    // real parts are on the diagonal; imginary parts are off diagonal
+    assertResult(Some(0), "imaginary parts not zero") {
+      (e :- e.toDiag).sum
+    }
+    val a = 100000
+    val s = er1.map(_ * a).map(_.toInt)
+    val t = e.toArray.map(_.map(_*a).map(_.toInt))
+    for (i <- s) {
+      assertResult((Some(true)), "value " + i + "not an eigenvalue") {
+        t.map(_.contains(i))
+      }
+    }
 
   }
 
-  ignore should "be able to get the eigenvalues with imaginary parts" in {
+  it should "be able to get the eigenvalues with imaginary parts" in {
 
 
-//    val a2 = Array(23.0,67.0,-78.0,23.0,45.0,-65.0, 90.0,89.0, -102.0, -90.0,45.67,23.45,12.01,-1.0,-100.0,+67.0)
-//    val hsize = math.sqrt(a2.length).toInt
-//    val er  = Array(150.958023628061, -65.0496496682086, -7.61918697992639, -7.61918697992639)
-//    val im  = Array(0.0, 0.0, 84.7958635197412 ,- 84.7958635197412)
-//    val l3 = MatrixM(hsize, hsize, a2)
-//    val e = l3.eig.values
-//
-//
-//    assertResult(Some(im.map(scala.math.abs(_)).foldLeft(0.0)(_ + _)), "imaginary parts are zero"){
-//      e(::,1).toArray.map(_.map(scala.math.abs)).map(_.sum)
-//    }
-//
-//    val a = 100000
-//    val t = e(::,0).toArray.map(_.map(_*a).map(_.toInt))
-//    for (i <- er.map(_ * a).map(_.toInt)) {
-//      assertResult((Some(true)), "value " + i + "not a real eigenvalue") {
-//        t.map(_.contains(i))
-//      }
-//    }
-//
-//    val y = e(::,1).toArray.map(_.map(_*a).map(_.toInt))
-//    for (i <- im.map(_ * a).map(_.toInt)) {
-//      assertResult((Some(true)), "value " + i + " not an imaginary eigenvalue in " + y.map(_.mkString(","))) {
-//        y.map(_.contains(i))
-//      }
-//    }
+    val a2 = Array(23.0,67.0,-78.0,23.0,45.0,-65.0, 90.0,89.0, -102.0, -90.0,45.67,23.45,12.01,-1.0,-100.0,+67.0)
+    val hsize = math.sqrt(a2.length).toInt
+    val er  = Array(150.958023628061, -65.0496496682086, -7.61918697992639, -7.61918697992639)
+    val im  = Array(0.0, 0.0, 84.7958635197412 ,- 84.7958635197412)
+    val l3 = MatrixM(hsize, hsize, a2)
+    val e = l3.eig.values
+    val refval = im.map(scala.math.abs(_)).foldLeft(0.0)(_ + _)
+    //TODO aligh with jeigen test
+    assertResult(Some(true), "imaginary parts are zero"){
+      (e :- e.toDiag).toArray.map(_.map(scala.math.abs)).map(_.sum).map(_ - refval).map(scala.math.abs(_)).map(_ < 0.0000001)
+    }
+
+    val a = 100000
+    val t = e.toDiag.toArray.map(_.map(_*a).map(_.toInt))
+    for (i <- er.map(_ * a).map(_.toInt)) {
+      assertResult((Some(true)), "value " + i + "not a real eigenvalue") {
+        t.map(_.contains(i))
+      }
+    }
+
+    val y = (e :- e.toDiag).toArray.map(_.map(_*a).map(_.toInt))
+    for (i <- im.map(_ * a).map(_.toInt)) {
+      assertResult((Some(true)), "value " + i + " not an imaginary eigenvalue in " + y.map(_.mkString(","))) {
+        y.map(_.contains(i))
+      }
+    }
   }
 
-  ignore should "be able to get the eigenvectors" in {
-//    val a1 = Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0, 90.0, 33.0, 107.0, -78.0, -23.0, 14.0, 33.0)
-//    val hsize = math.sqrt(a1.length).toInt
-//    val l3 = MatrixM(hsize, hsize, a1)
-//    val ev = l3.eig.vectors
-//    val e = l3.eig.values(::, 0)
-//    for (i <- Range(0, hsize)) {
-//      assertResult(Some(true), "eigen vector /eigen value out of sync") {
-//        ((l3 |* ev(::, i)) :\ ev(::, i) :- MatrixM.fill(hsize, 1, e(i, 0).get)).sum.map(_ < 0.0000001)
-//      }
-//    }
-//
+
+  it should "be able to get the eigenvectors" in {
+    val a1 = Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0, 90.0, 33.0, 107.0, -78.0, -23.0, 14.0, 33.0)
+    val hsize = math.sqrt(a1.length).toInt
+    val l3 = MatrixM(hsize, hsize, a1)
+    val ev = l3.eig.vectors
+    val e = l3.eig.values
+    for (i <- Range(0, hsize)) {
+      assertResult(Some(true), "eigen vector /eigen value out of sync") {
+        ((l3 |* ev(::, i)) :\ ev(::, i) :- MatrixM.fill(hsize, 1, e(i, i).get)).sum.map(_ < 0.0000001)
+      }
+    }
+
   }
 
   //
@@ -698,9 +708,9 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
   // -------------------------------------------------------------------------------------------------
   //
 
-  it should "be able to serialize to a csv file" in {
-    val m = MatrixM.rand(1000,1000)
-    val fn = "/tmp/armadillotest.csv"
+  it should "be able to serialize to a small csv file" in {
+    val m = MatrixM.rand(10,10)
+    val fn = "/tmp/testserializeapachecommonsmath.csv"
     MatrixM.csvwrite(fn, m)
     val k = MatrixM.csvread(fn)
     val res = m :- k
@@ -710,5 +720,6 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     }
 
   }
+
 
 }

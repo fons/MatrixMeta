@@ -72,8 +72,18 @@ import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
 3. [armadillojava](https://github.com/SRAhub/ArmadilloJava)
 
 ```scala
-import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaMatImplicit._
+import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaDenseMatrixImplicit._
 ```
+
+
+4. [apache commons math](http://commons.apache.org/proper/commons-math/userguide/linear.html)
+
+```scala
+import com.kabouterlabs.matrix.implicits.apachecommonsmath.ApacheCommonsMathDenseMatrixImplicit._
+```
+
+
+
 Note that both breeze and armadillojava use [netlib-java](https://github.com/fommil/netlib-java). jeigen uses [jna](https://github.com/java-native-access/jna) to wrap the [eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page) C++ library.
 
 ------
@@ -118,7 +128,7 @@ new MatrixExample
 ```scala
 import com.kabouterlabs.matrix.MatrixM
 import com.kabouterlabs.matrix.MatrixOperations._
-import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaMatImplicit._
+import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaDenseMatrixImplicit._
   val mat1 = MatrixM(2,2)
   val mat2 = MatrixM.one(2,2)
   val mat3 = MatrixM.rand(2,4)
