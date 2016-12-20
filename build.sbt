@@ -8,9 +8,6 @@ scalaVersion := "2.11.8"
 
 publishMavenStyle := true
 
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.5")
-
-
 libraryDependencies += "org.spire-math" %% "spire" % "0.7.4"
 
 libraryDependencies  ++= Seq(
