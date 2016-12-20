@@ -6,9 +6,10 @@ matrix:
   include:
     - env: OSX=10.11
       os: osx
-      osx_image: osx10.11
-   -os:linux
-    scala: 2.11.8
+      osx_image: xcode8.2
+   -env:LINUX
+   os:linux
+    
 #jdk:
 #- oraclejdk7
 
