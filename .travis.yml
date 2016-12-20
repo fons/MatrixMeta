@@ -1,8 +1,6 @@
 language: scala
 matrix:
   include:
-  matrix:
-  include:
     - env: OSX=10.11
       os: osx
       osx_image: osx10.11
