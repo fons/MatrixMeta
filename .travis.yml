@@ -1,21 +1,20 @@
 language: scala
-
 scala: 2.11.8
-
 matrix:
   include:
     - env: OSX=10.11
       os: osx
-      osx_image: xcode8.2
-   -env:LINUX
-   os:linux
+
+
+script:
+- sbt clean coverage test coverageReport
+
+after_success:
+- bash <(curl -s https://codecov.io/bash)  
     
-#jdk:
-#- oraclejdk7
+      
 
-script: sbt clean coverage test coverageReport
 
-after_success:bash <(curl -s https://codecov.io/bash)
 
 
 
