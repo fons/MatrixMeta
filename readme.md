@@ -34,7 +34,7 @@ Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 
 
 ---
-
+[![Build Status](https://travis-ci.org/fons/MatrixMeta.svg?branch=master)](https://travis-ci.org/fons/MatrixMeta)
 # MatrixMeta
 
 ##Introduction
