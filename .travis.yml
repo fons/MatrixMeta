@@ -5,3 +5,5 @@ scala:
 
 jdk:
 - oraclejdk7
+
+bash <(curl -s https://codecov.io/bash)
