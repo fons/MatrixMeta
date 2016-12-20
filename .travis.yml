@@ -7,8 +7,8 @@ os:
 scala:
   - 2.11.8
 
-jdk:
-- oraclejdk7
+#jdk:
+#- oraclejdk7
 
 script:
 - sbt clean coverage test coverageReport
