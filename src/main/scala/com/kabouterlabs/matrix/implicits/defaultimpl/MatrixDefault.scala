@@ -28,7 +28,7 @@
 package com.kabouterlabs.matrix.implicits.defaultimpl
 
 import com.kabouterlabs.matrix.MatrixOperations.MatrixOperationsTC
-import com.kabouterlabs.matrix.{MatrixM, CompanionT, FactoryT, MatrixOperations}
+import com.kabouterlabs.matrix.{MatrixM, CompanionT, FactoryT}
 import spire.math.Numeric
 
 /**
@@ -39,6 +39,7 @@ object MatrixDefaultImplicit {
   type ElemT = Double
   type MatrixImpl = {}
   type MatrixDouble = MatrixM[MatrixImpl]
+
   implicit val fdouble$ = new FactoryT {
     type MatrixImplT = MatrixImpl
 

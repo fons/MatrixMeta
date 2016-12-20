@@ -115,6 +115,23 @@ object BreezeDenseMatrixImplicit {
 
   private def boolToDouble(b: Boolean): Double = if (b) 1.0 else 0.0
 
+  implicit class BreezeDenseMatrixSizeT$Ev(matrix:MatrixDouble) extends SizeT {
+    override val rows: Int = matrix.map(_.rows)
+    override val columns: Int = matrix.map(_.cols)
+    override val size: Int = matrix.map(_.size)
+    override val isNull: Boolean = matrix.matrix match {
+      case Some(_) => false
+      case None    => true
+    }
+  }
+
+  implicit class BaseFormatter$Breeze(matrix:MatrixDouble) extends FormatterT {
+    override def stringefy = matrix.matrix match {
+      case Some(m) =>  "{" + m.getClass.getName + "  " + matrix.rows + " * " + matrix.columns + "\n" + m.toString + "}"
+      case None    => "{none}"
+    }
+
+  }
 
   implicit val fdouble = new FactoryT {
     override type MatrixImplT = DenseMatrix[Double]

@@ -30,11 +30,12 @@ package com.kabouterlabs.matrix.main
 import com.kabouterlabs.matrix.MatrixM
 import com.kabouterlabs.matrix.MatrixOperations._
 
-import scala.util.Random
 
 //import com.kabouterlabs.matrix.implicits.breeze.BreezeDenseMatrixImplicit._
-import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
-//import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaDenseMatrixImplicit._
+//import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
+import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaDenseMatrixImplicit._
+//import com.kabouterlabs.matrix.implicits.jblass.JblasDoubleMatrixImplicit._
+//import com.kabouterlabs.matrix.implicits.apachecommonsmath.ApacheCommonsMathDenseMatrixImplicit._
 
 
 object Use
@@ -59,6 +60,12 @@ object Use
 
      new MatrixExample
    }
+
+  def run5() = {
+    import com.kabouterlabs.matrix.implicits.jblass.JblasDoubleMatrixImplicit._
+
+    new MatrixExample
+  }
 
 
 }
@@ -92,13 +99,18 @@ object Main extends App {
   val r2 = Use.run2()
   val r3 = Use.run3()
   val r4 = Use.run4()
+  val r5 = Use.run5()
+  val mm = MatrixM.rand(5,5)
+  println(mm.stringefy)
+  println(mm.rows, mm.columns, mm.size, mm.isNull)
+//  val s = for (m <- mm) yield m.toString
+//  println(s.replace(";", "\n"))
   //r1()
   //r2()
   //r3()
   //r4()
-  val m = MatrixM.one(5,5)
-  val i = m.inverse
-  println(i)
+  //r5()
+
 /*
   val mm = MatrixM.rand(10,10)
   val mc = mm.deepCopy(2,1,89.90)

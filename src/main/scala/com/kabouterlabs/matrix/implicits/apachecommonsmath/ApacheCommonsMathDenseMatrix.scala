@@ -172,6 +172,24 @@ object ApacheCommonsMathDenseMatrixImplicit {
 
   //--------------------------------------------------------------------------------------------------------------
   //
+  implicit class ApacheCommonsMatrix$Ev (matrix:MatrixDouble) extends SizeT{
+    override val rows: Int = matrix.map(_.getRowDimension)
+    override val columns: Int = matrix.map(_.getColumnDimension)
+    override val size: Int = rows * columns
+    override val isNull: Boolean = matrix.matrix match {
+      case Some(_) => false
+      case None    => true
+    }
+  }
+
+  implicit class BaseFormatter$ApacheCommonMatrix(matrix:MatrixDouble) extends FormatterT {
+    override def stringefy = matrix.matrix match {
+      case Some(m) =>  "{" + m.getClass.getName + "  " + matrix.rows + " * " + matrix.columns + "\n" + m.toString.replace("},{", "}\n{").replace(",", " , ").replace("Matrix{{", "Matrix{\n{") + "}"
+      case None    => "{none}"
+    }
+
+  }
+
   implicit val fdouble$ = new FactoryT {
     type MatrixImplT = MatrixImpl
 

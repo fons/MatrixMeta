@@ -26,6 +26,8 @@ libraryDependencies  ++= Seq(
   // It depends on LGPL code.
   //"org.scalanlp" %% "breeze-viz" % "0.12"
 )
+// https://mvnrepository.com/artifact/org.jblas/jblas
+libraryDependencies += "org.jblas" % "jblas" % "1.2.4"
 // https://mvnrepository.com/artifact/org.apache.commons/commons-math3
 libraryDependencies += "org.apache.commons" % "commons-math3" % "3.6.1"
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.0"

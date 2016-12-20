@@ -33,6 +33,7 @@ import com.kabouterlabs.matrix._
 
 import com.kabouterlabs.matrix.MatrixOperations.MatrixOperationsTC
 
+
 import org.armadillojava.{Col, Mat}
 
 
@@ -128,8 +129,28 @@ object ArmadilloJavaDenseMatrixImplicit {
   private def @#(matrix: MatrixDouble, a1: Int, a2: Int, a3: Int, a4: Int, f: (MatrixImpl, Int, Int, Int, Int) => MatrixImpl): MatrixDouble =
     for (m <- matrix) yield MatrixM({ f(m, a1, a2, a3, a4)})
 
+
   //--------------------------------------------------------------------------------------------------------------
   //
+  implicit class ArmadilloJavaDenseMatrixSizeT$Ev (matrix:MatrixDouble) extends SizeT {
+    override val rows: Int = matrix.map(_.n_rows)
+    override val columns: Int = matrix.map(_.n_cols)
+    override val size: Int = matrix.map(_.size())
+    override val isNull: Boolean = matrix.matrix match {
+      case Some(_) => false
+      case None    => true
+    }
+  }
+
+  implicit class BaseFormatter$Armadillo(matrix:MatrixDouble) extends FormatterT {
+    override def stringefy = matrix.matrix match {
+      case Some(m) =>  "{" + m.getClass.getName + "\n" + m.toString + "}"
+      case None    => "{none}"
+    }
+
+  }
+
+
   implicit val fdouble$ = new FactoryT {
     type MatrixImplT = MatrixImpl
 

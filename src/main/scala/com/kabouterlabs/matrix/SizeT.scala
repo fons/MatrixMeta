@@ -33,6 +33,6 @@ package com.kabouterlabs.matrix
 trait SizeT {
   val rows:Int
   val columns:Int
-  val isNull:Int
+  val isNull:Boolean
   val size:Int
 }

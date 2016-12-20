@@ -35,6 +35,7 @@ import java.io.{PrintWriter, StringWriter, File}
 
 import com.kabouterlabs.matrix.MatrixOperations.MatrixOperationsTC
 import com.kabouterlabs.matrix._
+
 import jeigen.DenseMatrix
 import spire.math.Numeric
 import scala.io.Source
@@ -129,8 +130,22 @@ object JeigenDenseMatrixImplicit {
   type MatrixDouble = MatrixM[MatrixImpl]
   type JeigenEigenResult = EigenResultM[jeigen.DenseMatrix.EigenResult]
 
+  implicit class JeigenDenseMatrixSizeT$Ev (matrix:MatrixDouble) extends SizeT {
+    override val rows: Int = matrix.map(_.rows)
+    override val columns: Int = matrix.map(_.cols)
+    override val size: Int = rows * columns
+    override val isNull: Boolean = matrix.matrix match {
+      case Some(_) => false
+      case None    => true
+    }
+  }
+  implicit class BaseFormatter$JeigenDenseMatrix(matrix:MatrixDouble) extends FormatterT {
+    override def stringefy = matrix.matrix match {
+      case Some(m) =>  "{" + m.getClass.getName + "\n" + m.toString + "}"
+      case None    => "{none}"
+    }
 
-
+  }
 
   //--------------------------------------------------------------------------------------------------------------
   //
@@ -150,11 +165,11 @@ object JeigenDenseMatrixImplicit {
 
     override def ones(row: Int, col: Int): MatrixDouble = MatrixM({jeigen.Shortcuts.ones(row, col)})
 
-    override def rand(row: Int, col: Int): MatrixImplT = MatrixM.apply({jeigen.Shortcuts.rand(row, col)})
+    override def rand(row: Int, col: Int): MatrixImplT = MatrixM({jeigen.Shortcuts.rand(row, col)})
 
-    override def eye(size: Int): MatrixImplT = MatrixM.apply({jeigen.Shortcuts.eye(size)})
+    override def eye(size: Int): MatrixImplT = MatrixM({jeigen.Shortcuts.eye(size)})
 
-    override def zeros(row: Int, col: Int): MatrixImplT = MatrixM.apply({jeigen.Shortcuts.zeros(row, col)})
+    override def zeros(row: Int, col: Int): MatrixImplT = MatrixM({jeigen.Shortcuts.zeros(row, col)})
 
     //TODO check this
     override def diag(data: Array[Double]): MatrixImplT = {

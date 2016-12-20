@@ -26,11 +26,16 @@
  */
 
 package com.kabouterlabs.matrix
-
 import java.io.{PrintWriter, StringWriter}
 
+
+
 case class MatrixM[V](matrix: Option[V]) {
-  override def toString = "{" + matrix.getOrElse(None).getClass.getName + "\n" + matrix.getOrElse(None).toString + "}"
+
+  override def toString = matrix match {
+    case Some(m) =>  "{" + m.getClass.getName + "\n" + m.toString + "}"
+    case None    => "{none}"
+  }
 
   def safeMap[W](f: V => W): Option[W] = {
     try {
