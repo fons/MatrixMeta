@@ -92,9 +92,16 @@ object EigenTest {
   }
 
 }
+
+import spire.math._
+import spire.implicits._
+
 object Main extends App {
 
-
+  val c1 = Complex(1.0,2.0)
+  val c2 = Complex(4.89, 56.78)
+  val c3 = c1 * c2
+  println(c3)
   val r1 = Use.run1()
   val r2 = Use.run2()
   val r3 = Use.run3()

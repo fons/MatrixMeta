@@ -5,6 +5,9 @@ matrix:
     - env: OSX=10.11
       os: osx
 
+before_install:
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export JAVA_HOME=$(/usr/libexec/java_home); fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then jdk_switcher use "$CUSTOM_JDK"; fi
 
 script:
 - sbt clean coverage test coverageReport
