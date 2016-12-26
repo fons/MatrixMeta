@@ -33,8 +33,6 @@ import com.kabouterlabs.matrix.implicits.breeze.BreezeDenseMatrixImplicit._
 import org.scalatest._
 
 
-
-
 /**
   * Created by fons on 4/17/16.
   */
@@ -632,57 +630,59 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   }
 
   it should "be able to get the eigenvalues" in {
-
-    val a1  = Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0,90.0,33.0,107.0,-78.0,-23.0,14.0,33.0)
+    val a1 = Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0, 90.0, 33.0, 107.0, -78.0, -23.0, 14.0, 33.0)
     val er1 = Array(81.3567339942231, 64.2735390962677, 7.28804710064899, -61.9183201911397)
     val hsize = math.sqrt(a1.length).toInt
     val l3 = MatrixM(hsize, hsize, a1)
     val e = l3.eig.values
 
 
-    assertResult(Some(0), "imaginary parts not zero"){
-      e(::,1).toArray.map(_.map(scala.math.abs)).map(_.sum)
+    assertResult(Some(0), "imaginary parts not zero") {
+      for (a <- e) yield (a.map(_.imag).map(scala.math.abs)).sum
     }
-    val a = 100000
-    val s = er1.map(_ * a).map(_.toInt)
-    val t = e(::,0).toArray.map(_.map(_*a).map(_.toInt))
+    val fact = 100000
+    val s = er1.map(_ * fact).map(_.toInt)
+
+    val t = for (a <- e) yield a.map(_.real * fact).map(_.toInt)
     for (i <- s) {
       assertResult((Some(true)), "value " + i + "not an eigenvalue") {
         t.map(_.contains(i))
       }
     }
 
+
   }
 
   it should "be able to get the eigenvalues with imaginary parts" in {
 
-
-    val a2 = Array(23.0,67.0,-78.0,23.0,45.0,-65.0, 90.0,89.0, -102.0, -90.0,45.67,23.45,12.01,-1.0,-100.0,+67.0)
+    val a2 = Array(23.0, 67.0, -78.0, 23.0, 45.0, -65.0, 90.0, 89.0, -102.0, -90.0, 45.67, 23.45, 12.01, -1.0, -100.0, +67.0)
     val hsize = math.sqrt(a2.length).toInt
-    val er  = Array(150.958023628061, -65.0496496682086, -7.61918697992639, -7.61918697992639)
-    val im  = Array(0.0, 0.0, 84.7958635197412 ,- 84.7958635197412)
+    val er = Array(150.958023628061, -65.0496496682086, -7.61918697992639, -7.61918697992639)
+    val im = Array(0.0, 0.0, 84.7958635197412, -84.7958635197412)
     val l3 = MatrixM(hsize, hsize, a2)
     val e = l3.eig.values
-    val refval = im.map(scala.math.abs(_)).foldLeft(0.0)(_ + _)
-    //TODO aligh with jeigen test
-    assertResult(Some(true), "imaginary parts are zero"){
-      e(::,1).toArray.map(_.map(scala.math.abs)).map(_.sum).map(_ - refval).map(scala.math.abs(_)).map(_ < 0.00000001)
+
+    val value = im.map(scala.math.abs(_)).foldLeft(0.0)(_ + _)
+    assertResult(Some(true), "imaginary parts are zero") {
+      for (a <- e) yield scala.math.abs(((a.map(_.imag).map(scala.math.abs)).sum - value)) < 0.0000000001
     }
 
-    val a = 100000
-    val t = e(::,0).toArray.map(_.map(_*a).map(_.toInt))
-    for (i <- er.map(_ * a).map(_.toInt)) {
+    val fact = 100000
+
+    val t = for (a <- e) yield a.map(_.real * fact).map(_.toInt)
+    for (i <- er.map(_ * fact).map(_.toInt)) {
       assertResult((Some(true)), "value " + i + "not a real eigenvalue") {
         t.map(_.contains(i))
       }
     }
 
-    val y = e(::,1).toArray.map(_.map(_*a).map(_.toInt))
-    for (i <- im.map(_ * a).map(_.toInt)) {
+    val y = for (a <- e) yield a.map(_.imag * fact).map(_.toInt)
+    for (i <- im.map(_ * fact).map(_.toInt)) {
       assertResult((Some(true)), "value " + i + " not an imaginary eigenvalue in " + y.map(_.mkString(","))) {
         y.map(_.contains(i))
       }
     }
+
   }
 
 
@@ -690,11 +690,17 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
     val a1 = Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0, 90.0, 33.0, 107.0, -78.0, -23.0, 14.0, 33.0)
     val hsize = math.sqrt(a1.length).toInt
     val l3 = MatrixM(hsize, hsize, a1)
-    val ev = l3.eig.vectors
-    val e = l3.eig.values(::, 0)
-    for (i <- Range(0, hsize)) {
-      assertResult(Some(true), "eigen vector /eigen value out of sync") {
-        ((l3 |* ev(::, i)) :\ ev(::, i) :- MatrixM.fill(hsize, 1, e(i, 0).get)).sum.map(_ < 0.0000001)
+    val eigvec = for (arr <- l3.eig.vectors) yield for (e <- arr) yield MatrixM(e.length, 1, {
+      e.map(_.real).toArray
+    })
+
+    val eigval = for (arr <- l3.eig.values) yield for (e <- arr) yield e.real
+
+    for (o <- eigvec.zip(eigval).map((tuple) => tuple._1.zip(tuple._2))) {
+      for ((evec, eval) <- o) {
+        assertResult(Some(true), "eigen vector /eigen value out of sync") {
+          (((l3 |* evec) :\ evec) :- MatrixM.fill(hsize, 1, eval)).sum.map(_ < 0.0000001)
+        }
       }
     }
 

@@ -1,20 +1,19 @@
 language: scala
-scala: 2.11.8
-matrix:
-  include:
-    - env: OSX=10.11
-      os: osx
+os:
+  - linux
+  
+scala:
+  - 2.11.8
 
-before_install:
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export JAVA_HOME=$(/usr/libexec/java_home); fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then jdk_switcher use "$CUSTOM_JDK"; fi
+jdk:
+- oraclejdk8
 
 script:
 - sbt clean coverage test coverageReport
 
 after_success:
-- bash <(curl -s https://codecov.io/bash)  
-    
+- bash <(curl -s https://codecov.io/bash)
+
       
 
 

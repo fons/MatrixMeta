@@ -38,7 +38,7 @@ object MatrixOperations {
 
 
   trait MatrixOperationsTC[A] {
-    type EigenResultT
+    type EigenResultRetTypeT
 
     def add(x: A, y: A): A
 
@@ -124,13 +124,14 @@ object MatrixOperations {
 
     def sum(m: A): Option[Double]
 
-    def eig(m: A): EigenResultT
+    def eig(m: A): EigenResultRetTypeT //EigenResultM[EigenResultT]
+    def vectors(r: EigenResultRetTypeT): Option[EigenAccessT[EigenResultRetTypeT]#EigenVectorT]
+    //def vectors(r: EigenResultM[EigenResultT]): Option[EigenAccessT[EigenResultM[EigenResultT]]#EigenVectorT]
 
-    def vectors(r: EigenResultT): A
-
-    def values(r: EigenResultT): A
-
-    def eigen(m:A): (A,A)
+    def values(r: EigenResultRetTypeT): Option[EigenAccessT[EigenResultRetTypeT]#EigenValuesT]
+    //def values(r: EigenResultM[EigenResultT]): Option[EigenAccessT[EigenResultM[EigenResultT]]#EigenValuesT]
+    def eigen(m:A): (Option[EigenAccessT[EigenResultRetTypeT]#EigenValuesT], Option[EigenAccessT[EigenResultRetTypeT]#EigenVectorT])
+    //def eigen(m:A): (Option[EigenAccessT[EigenResultM[EigenResultT]]#EigenValuesT], Option[EigenAccessT[EigenResultM[EigenResultT]]#EigenVectorT])
   }
 
 
@@ -201,7 +202,8 @@ object MatrixOperations {
     def trace = ev.trace(lhs)
 
     def sum = ev.sum(lhs)
-    def eigen : (A, A) = {val e = ev.eig(lhs); (ev.values(e), ev.vectors(e))}
+
+    def eigen  = {val e = ev.eig(lhs); (ev.values(e), ev.vectors(e))}
 
   }
 
@@ -284,7 +286,7 @@ object MatrixOperations {
 
   def csvWrite[A](fn:String, lhs:A)(implicit ev: MatrixOperationsTC[A]):Unit = ev.csvWrite(fn, lhs)
 
-  def eigen[A](lhs: A)(implicit ev: MatrixOperationsTC[A]): (A, A) = {val e = ev.eig(lhs); (ev.values(e), ev.vectors(e))}
+  def eigen[A](lhs: A)(implicit ev: MatrixOperationsTC[A]) = {val e = ev.eig(lhs); (ev.values(e), ev.vectors(e))}
 
   def sumRows[A](lhs :A)(implicit ev: MatrixOperationsTC[A]):A = lhs.sumRows
 

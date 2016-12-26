@@ -48,105 +48,105 @@ object MatrixDefaultImplicit {
     implicit override def apply(row: Int, col: Int): Option[MatrixImplT] = None
   }
 
-  implicit object MatrixOperationsTC$implicit$ extends MatrixOperationsTC[MatrixDouble] {
+//  implicit object MatrixOperationsTC$implicit$ extends MatrixOperationsTC[MatrixMonT] {
+//
+//    override def deepCopy(lhs: MatrixMonT): MatrixMonT = MatrixM.none
+//
+//    override type EigenResultT = Option[Double]
+//
+//    override def eig(m: MatrixMonT): Option[Double] = None
+//
+//    override def vectors(r: EigenResultT): MatrixMonT = MatrixM.none
+//
+//    override def values(r: EigenResultT): MatrixMonT = MatrixM.none
+//
+//    override def eigen(m: MatrixMonT): (MatrixMonT, MatrixMonT) = (MatrixM.none, MatrixM.none)
+//
+//    override def add(lhs: MatrixMonT, rhs: MatrixMonT): MatrixMonT = MatrixM.none
+//
+//    override def sub(lhs: MatrixMonT, rhs: MatrixMonT): MatrixMonT = MatrixM.none
+//
+//    override def mult(lhs: MatrixMonT, rhs: MatrixMonT): MatrixMonT = MatrixM.none
+//
+//    override def multe(lhs: MatrixMonT, rhs: MatrixMonT): MatrixMonT = MatrixM.none
+//
+//    override def dive(lhs: MatrixMonT, rhs: MatrixMonT): MatrixMonT = MatrixM.none
+//
+//    override def add1[B: Numeric](lhs: MatrixMonT, rhs: B): MatrixMonT = MatrixM.none
+//
+//    override def sub1[B: Numeric](lhs: MatrixMonT, rhs: B): MatrixMonT = MatrixM.none
+//
+//    override def mul1[B: Numeric](lhs: MatrixMonT, rhs: B): MatrixMonT = MatrixM.none
+//
+//    override def div1[B: Numeric](lhs: MatrixMonT, rhs: B): MatrixMonT = MatrixM.none
+//
+//    override def eq(lhs: MatrixMonT, rhs: MatrixMonT): MatrixMonT = MatrixM.none
+//
+//    override def ne(lhs: MatrixMonT, rhs: MatrixMonT): MatrixMonT = MatrixM.none
+//
+//    override def gt(lhs: MatrixMonT, rhs: MatrixMonT): MatrixMonT = MatrixM.none
+//
+//    override def ge(lhs: MatrixMonT, rhs: MatrixMonT): MatrixMonT = MatrixM.none
+//
+//    override def lt(lhs: MatrixMonT, rhs: MatrixMonT): MatrixMonT = MatrixM.none
+//
+//    override def le(lhs: MatrixMonT, rhs: MatrixMonT): MatrixMonT = MatrixM.none
+//
+//    override def create(rows: Int, colls: Int, data: Array[ElemT]): MatrixMonT = MatrixM.none
+//
+//    override def zero(row: Int, col: Int): MatrixMonT = MatrixM.none
+//
+//    override def rand(row: Int, col: Int): MatrixMonT = MatrixM.none
+//
+//    override def eye(size: Int): MatrixMonT = MatrixM.none
+//
+//    override def diag(data: Array[ElemT]): MatrixMonT = MatrixM.none
+//
+//    override def one(row: Int, col: Int): MatrixMonT = MatrixM.none
+//
+//    override def fill(row: Int, col: Int, value: ElemT): MatrixMonT = MatrixM.none
+//
+//    override def inverse(m: MatrixMonT): MatrixMonT = MatrixM.none
+//
+//    override def solve(lhs: MatrixMonT, rhs: MatrixMonT): MatrixMonT = MatrixM.none
+//
+//    override def transpose(m: MatrixMonT): MatrixMonT = MatrixM.none
+//
+//    override def create(rows: Int, colls: Int): MatrixMonT = MatrixM.none
+//
+//    override def determinant(m: MatrixMonT): Option[ElemT] = None
+//
+//    override def get(m: MatrixMonT, row: Int, coll: Int): Option[ElemT] = None
+//
+//    override def concatDown(m: MatrixMonT, down: MatrixMonT): MatrixMonT = MatrixM.none
+//
+//    override def set(m: MatrixMonT, row: Int, coll: Int, v: ElemT): MatrixMonT = MatrixM.none
+//
+//    override def toArray(m: MatrixMonT): Option[Array[ElemT]] = None
+//
+//    override def concatRight(m: MatrixMonT, rhs: MatrixMonT): MatrixMonT = MatrixM.none
+//
+//    override def toDiag(m: MatrixMonT): MatrixMonT = MatrixM.none
+//
+//    override def slice[K, L](m: MatrixMonT, row: K, col: L): MatrixMonT = MatrixM.none
+//
+//    override def csvWrite(fn: String, u: MatrixMonT): Unit = Unit
+//
+//    override def csvRead(fn: String): MatrixMonT = MatrixM.none
+//
+//    override def sumRows(m: MatrixMonT): MatrixMonT = MatrixM.none
+//
+//    override def sumCols(m: MatrixMonT): MatrixMonT = MatrixM.none
+//
+//    override def sum(m: MatrixMonT): Option[ElemT] = None
+//
+//    override def trace(m: MatrixMonT): Option[ElemT] = None
+//
+//    override def none  = MatrixM.none
+//
+//  }
 
-    override def deepCopy(lhs: MatrixDouble): MatrixDouble = MatrixM.none
-
-    override type EigenResultT = Option[Double]
-
-    override def eig(m: MatrixDouble): Option[Double] = None
-
-    override def vectors(r: EigenResultT): MatrixDouble = MatrixM.none
-
-    override def values(r: EigenResultT): MatrixDouble = MatrixM.none
-
-    override def eigen(m: MatrixDouble): (MatrixDouble, MatrixDouble) = (MatrixM.none, MatrixM.none)
-
-    override def add(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = MatrixM.none
-
-    override def sub(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = MatrixM.none
-
-    override def mult(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = MatrixM.none
-
-    override def multe(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = MatrixM.none
-
-    override def dive(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = MatrixM.none
-
-    override def add1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble = MatrixM.none
-
-    override def sub1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble = MatrixM.none
-
-    override def mul1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble = MatrixM.none
-
-    override def div1[B: Numeric](lhs: MatrixDouble, rhs: B): MatrixDouble = MatrixM.none
-
-    override def eq(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = MatrixM.none
-
-    override def ne(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = MatrixM.none
-
-    override def gt(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = MatrixM.none
-
-    override def ge(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = MatrixM.none
-
-    override def lt(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = MatrixM.none
-
-    override def le(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = MatrixM.none
-
-    override def create(rows: Int, colls: Int, data: Array[ElemT]): MatrixDouble = MatrixM.none
-
-    override def zero(row: Int, col: Int): MatrixDouble = MatrixM.none
-
-    override def rand(row: Int, col: Int): MatrixDouble = MatrixM.none
-
-    override def eye(size: Int): MatrixDouble = MatrixM.none
-
-    override def diag(data: Array[ElemT]): MatrixDouble = MatrixM.none
-
-    override def one(row: Int, col: Int): MatrixDouble = MatrixM.none
-
-    override def fill(row: Int, col: Int, value: ElemT): MatrixDouble = MatrixM.none
-
-    override def inverse(m: MatrixDouble): MatrixDouble = MatrixM.none
-
-    override def solve(lhs: MatrixDouble, rhs: MatrixDouble): MatrixDouble = MatrixM.none
-
-    override def transpose(m: MatrixDouble): MatrixDouble = MatrixM.none
-
-    override def create(rows: Int, colls: Int): MatrixDouble = MatrixM.none
-
-    override def determinant(m: MatrixDouble): Option[ElemT] = None
-
-    override def get(m: MatrixDouble, row: Int, coll: Int): Option[ElemT] = None
-
-    override def concatDown(m: MatrixDouble, down: MatrixDouble): MatrixDouble = MatrixM.none
-
-    override def set(m: MatrixDouble, row: Int, coll: Int, v: ElemT): MatrixDouble = MatrixM.none
-
-    override def toArray(m: MatrixDouble): Option[Array[ElemT]] = None
-
-    override def concatRight(m: MatrixDouble, rhs: MatrixDouble): MatrixDouble = MatrixM.none
-
-    override def toDiag(m: MatrixDouble): MatrixDouble = MatrixM.none
-
-    override def slice[K, L](m: MatrixDouble, row: K, col: L): MatrixDouble = MatrixM.none
-
-    override def csvWrite(fn: String, u: MatrixDouble): Unit = Unit
-
-    override def csvRead(fn: String): MatrixDouble = MatrixM.none
-
-    override def sumRows(m: MatrixDouble): MatrixDouble = MatrixM.none
-
-    override def sumCols(m: MatrixDouble): MatrixDouble = MatrixM.none
-
-    override def sum(m: MatrixDouble): Option[ElemT] = None
-
-    override def trace(m: MatrixDouble): Option[ElemT] = None
-
-    override def none  = MatrixM.none
-
-  }
-
-  implicit object JeigenDenseMatrixCompanion extends CompanionT {
+  implicit object MatrixCompanion extends CompanionT {
     override type MatrixImplT = MatrixDouble
 
     override def fill(row: Int, col: Int, value: ElemT): MatrixDouble = MatrixM.none

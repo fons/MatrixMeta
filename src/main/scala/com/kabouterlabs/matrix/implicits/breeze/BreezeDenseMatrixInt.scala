@@ -38,15 +38,15 @@ object BreezeDenseMatrixInt {
 
   //  object BreezeDenseMatrixImplicit {
   //    type MatrixBoolean = Matrix[Boolean, Option[DenseMatrix[Boolean]]]
-  //    type MatrixDouble = Matrix[Double, Option[DenseMatrix[Double]]]
+  //    type MatrixMonT = Matrix[Double, Option[DenseMatrix[Double]]]
   //    type MatrixInt = Matrix[Int, Option[DenseMatrix[Int]]]
-  //    type BreezeEigenResult = EigenResult[Option[breeze.linalg.eig.DenseEig]]
+  //    type BreezeEigenResult = EigenResultT[Option[breeze.linalg.eig.DenseEig]]
   //
   //    implicit val fboolean = new BooleanFactory
   //    implicit val fdouble = new BreezeDenseMatrixFactory[Double]
   //    implicit val fint$ = new BreezeDenseMatrixFactory[Int]
   //
-  //    implicit object MatrixDoubleOps$ extends MatrixOperationsTC[MatrixDouble] {
+  //    implicit object MatrixDoubleOps$ extends MatrixOperationsTC[MatrixMonT] {
   //      type ElemT = Double
   //      type MaT = DenseMatrix[ElemT]
   //      type WraT = Matrix[ElemT, Option[DenseMatrix[ElemT]]]
@@ -80,7 +80,7 @@ object BreezeDenseMatrixInt {
   //    }
   //
   //
-  //    implicit object MatrixDoubleOpsDouble$ extends MatrixOpsByElementT[MatrixDouble] {
+  //    implicit object MatrixDoubleOpsDouble$ extends MatrixOpsByElementT[MatrixMonT] {
   //      type ElemT = Double
   //
   //      type MaT = DenseMatrix[ElemT]
@@ -115,7 +115,7 @@ object BreezeDenseMatrixInt {
   //    }
   //
   //
-  //    implicit object MatrixLogicOpsByElementDouble$ extends MatrixCompareOpsByElementT[MatrixDouble, MatrixBoolean] {
+  //    implicit object MatrixLogicOpsByElementDouble$ extends MatrixCompareOpsByElementT[MatrixMonT, MatrixBoolean] {
   //      type ElemT = Double
   //
   //      type MaT = DenseMatrix[ElemT]
@@ -160,21 +160,21 @@ object BreezeDenseMatrixInt {
   //    }
   //
   //    implicit object BreezeDenseMatrixCompanion extends CompanionT[Double] {
-  //      override type MatrixImplT = MatrixDouble
+  //      override type MatrixT = MatrixMonT
   //
-  //      override def rand(row: Int, col: Int): MatrixDouble = Alloc2[Double](() => {
+  //      override def rand(row: Int, col: Int): MatrixMonT = Alloc2[Double](() => {
   //        DenseMatrix.rand[Double](row, col)
   //      })
   //
-  //      override def eye(size: Int): MatrixDouble = Alloc2(() => DenseMatrix.eye[Double](size))
+  //      override def eye(size: Int): MatrixMonT = Alloc2(() => DenseMatrix.eye[Double](size))
   //
-  //      override def diag(data: Array[Double]): MatrixDouble = Alloc2(() => breeze.linalg.diag(new DenseVector[Double](data)))
+  //      override def diag(data: Array[Double]): MatrixMonT = Alloc2(() => breeze.linalg.diag(new DenseVector[Double](data)))
   //
-  //      override def zeros(row: Int, col: Int): MatrixDouble = Alloc2(() => DenseMatrix.zeros[Double](row, col))
+  //      override def zeros(row: Int, col: Int): MatrixMonT = Alloc2(() => DenseMatrix.zeros[Double](row, col))
   //    }
   //
   //    implicit object BreezeDenseMatrixCompanionInt extends CompanionT[Int] {
-  //      override type MatrixImplT = MatrixInt
+  //      override type MatrixT = MatrixInt
   //
   //      override def rand(row: Int, col: Int): MatrixInt = Alloc2(() => DenseMatrix.rand[Double](row, col).mapValues((1.0 / _ * 25.0)).mapValues(_.toInt))
   //
@@ -185,7 +185,7 @@ object BreezeDenseMatrixInt {
   //      override def diag(data: Array[Int]): MatrixInt = Alloc2(() => breeze.linalg.diag(new DenseVector[Int](data)))
   //    }
   //
-  //    implicit class AccessDouble(matrix: MatrixDouble) extends SliceT[Option[Double], MatrixDouble] {
+  //    implicit class AccessDouble(matrix: MatrixMonT) extends SliceT[Option[Double], MatrixMonT] {
   //      def name = "breeze double matrix" + matrix.toString
   //
   //      type ElemT = Double
@@ -248,7 +248,7 @@ object BreezeDenseMatrixInt {
   //    }
   //
   //
-  //    implicit class BreezeDenseMatrixDoubleLinearAlgebra$(matrix: MatrixDouble) extends LinearAlgebraT[Option[Double], MatrixDouble] {
+  //    implicit class BreezeDenseMatrixDoubleLinearAlgebra$(matrix: MatrixMonT) extends LinearAlgebraT[Option[Double], MatrixMonT] {
   //
   //      type ElemT = Double
   //      type MaT = DenseMatrix[ElemT]
@@ -304,7 +304,7 @@ object BreezeDenseMatrixInt {
   //
   //      }
   //
-  //      //new EigenResult[breeze.linalg.eig.DenseEig](breeze.linalg.eig(matrix.matrix))
+  //      //new EigenResultT[breeze.linalg.eig.DenseEig](breeze.linalg.eig(matrix.matrix))
   //
   //      override def solve(rhs: WraT): RraT = {
   //        (matrix.matrix, rhs.matrix) match {
@@ -330,17 +330,17 @@ object BreezeDenseMatrixInt {
   //      }
   //    }
   //
-  //    implicit class BreezeDenseDoubleEigenResult$(eresult: BreezeEigenResult) extends EgeinAccessT[MatrixDouble] {
+  //    implicit class BreezeDenseDoubleEigenResult$(eresult: BreezeEigenResult) extends EgeinAccessT[MatrixMonT] {
   //      def name = "jeigen breeze dense matrix result"
   //
-  //      override def values(): MatrixDouble = {
+  //      override def values(): MatrixMonT = {
   //        eresult.result match {
-  //          case None => new MatrixDouble(None)
+  //          case None => new MatrixMonT(None)
   //          case Some(r) => Alloc2(() => DenseMatrix.vertcat(r.eigenvalues.toDenseMatrix, r.eigenvectorsComplex.toDenseMatrix).t)
   //        }
   //      }
   //
-  //      override def vectors(): MatrixDouble = new MatrixDouble(None)
+  //      override def vectors(): MatrixMonT = new MatrixMonT(None)
   //    }
   //
   //

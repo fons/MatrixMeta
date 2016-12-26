@@ -25,23 +25,11 @@
  * EOM
  */
 
-package com.kabouterlabs.matrix
+package com.kabouterlabs.matrix.main
 
 /**
-  * Created by fons on 3/28/16.
+  * Created by fons on 12/21/16.
   */
-trait LinearAlgebraT {
-  type MatrixRetTypeT
-  type EigenResultRetTypeT
+trait DecompositionT[U] {
 
-  def inverse: MatrixRetTypeT
-
-  def transpose: MatrixRetTypeT
-
-  def determinant: Option[Double]
-
-  def solve(rhs: MatrixRetTypeT): MatrixRetTypeT
-
-  def eig: EigenResultRetTypeT
 }
-

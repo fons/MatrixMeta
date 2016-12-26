@@ -29,19 +29,28 @@ package com.kabouterlabs.matrix
 
 import java.io.{PrintWriter, StringWriter}
 
+
 /**
   * Created by fons on 3/30/16.
   */
-case class EigenResultM[U](result: Option[U]) {
-  def get() : Option[U] = result
+case class EigenResultM[U](result: Option[U])(implicit ev:EigenAccessT[U]) {
+  type ElemT        = EigenAccessT[U]#ElemT
+  type EigenValuesT = EigenAccessT[U]#EigenValuesT
+  type EigenVectorT = EigenAccessT[U]#EigenVectorT
+
+  private val valuesc  = ev.values(result)
+  private val vectorsc = ev.vectors(result)
   def map[W](f:U=>W):W = result.map(f(_)).get
+
+  def values:Option[EigenValuesT]  = valuesc
+  def vectors:Option[EigenVectorT] = vectorsc
 }
 
 
 object EigenResultM {
-  def none[U] = new EigenResultM[U](None)
+  def none[U]()(implicit ev:EigenAccessT[U]) = new EigenResultM[U](None)
 
-  def apply[U](f:  => U): EigenResultM[U] = {
+  def apply[U](f:  => U)(implicit ev:EigenAccessT[U]): EigenResultM[U] = {
     try {
       new EigenResultM[U](Some(f))
     }
