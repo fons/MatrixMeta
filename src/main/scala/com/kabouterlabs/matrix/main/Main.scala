@@ -78,17 +78,8 @@ object EigenTest {
     val mm1= matrix(3, 3, Array(-3.0, 1.0, -2.0, 0.0, -1.0, -1.0, 2.0, 0.0, 0.0))
     println(mm1)
     val eigr = mm1.eig
-    val gh = for (e <- eigr) yield {
-      for (col <- Range(0, e.eigenvalues.length)) yield for (row <- Range(0, e.eigenvalues.length)) yield {
-        if (e.eigenvectorsComplex(col) == 0.0) Complex(e.eigenvectors(row, col), 0.0)
-        else {
-          val (offset1, offset2,factor) = if ((col % 2) == 0) (0,1, 1.0) else (-1,0, -1.0)
-          Complex(e.eigenvectors(row, col + offset1), factor * e.eigenvectors(row, col + offset2))
-        }
-      }
-    }
 
-  println(gh)
+  println(eigr)
 
 //    val a2 = Array(23.0,67.0,-78.0,23.0,45.0,-65.0, 90.0,89.0, -102.0, -90.0,45.67,23.45,12.01,-1.0,-100.0,+67.0)
 //        val hsize = math.sqrt(a2.length).toInt
@@ -115,7 +106,7 @@ object EigenTest {
     val eigr = mm1.eig
     println(eigr)
     println(eigr.vectors.map(_.mkString("\n")))
-
+    println(eigr.values.map(_.mkString("\n")))
   }
 
   def run3() = {
@@ -280,7 +271,7 @@ object Main extends App {
   //    }
 
   EigenTest.run2()
-  EigenTest.run1()
+
 
 //  val c1 = Complex(1.0,2.0)
 //  val c2 = Complex(4.89, 56.78)

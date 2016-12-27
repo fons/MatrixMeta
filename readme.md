@@ -28,6 +28,7 @@ Table of Contents
      * [Linear Algebra](#linear-algebra)
         * [Synopsis](#synopsis-3)
         * [Operations](#operations-3)
+        * [Eigen Values and Eigen Vectors](#eigen-values-and-eigen-vectors)
      * [Serialization](#serialization)
         * [Synopsis](#synopsis-4)
         * [Operations](#operations-4)
@@ -60,32 +61,38 @@ sbt test
 
 ##Matrix Libraries Covered
 
-1. [breeze](https://github.com/scalanlp/breeze)
+* [breeze](https://github.com/scalanlp/breeze)
 
 ```scala
 import com.kabouterlabs.matrix.implicits.breeze.BreezeDenseMatrixImplicit._
 ```
 
-2. [jeigen](https://github.com/hughperkins/jeigen)
+* [jeigen](https://github.com/hughperkins/jeigen)
 
 ```scala
 import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
 ```
 
-3. [armadillojava](https://github.com/SRAhub/ArmadilloJava)
+* [armadillojava](https://github.com/SRAhub/ArmadilloJava)
 
 ```scala
 import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaDenseMatrixImplicit._
 ```
 
 
-4. [apache commons math](http://commons.apache.org/proper/commons-math/userguide/linear.html)
+* [apache commons math](http://commons.apache.org/proper/commons-math/userguide/linear.html)
 
 ```scala
 import com.kabouterlabs.matrix.implicits.apachecommonsmath.ApacheCommonsMathDenseMatrixImplicit._
 ```
 
+* [jblas](http://jblas.org/)
 
+```scala
+   import com.kabouterlabs.matrix.implicits.jblass.JblasDoubleMatrixImplicit._
+```
+
+   
 
 Note that both breeze and armadillojava use [netlib-java](https://github.com/fommil/netlib-java). jeigen uses [jna](https://github.com/java-native-access/jna) to wrap the [eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page) C++ library.
 
@@ -480,11 +487,41 @@ DenseMatrix, 3 * 6:
 
 
 
+### Eigen Values and Eigen Vectors
+
+Eigen values and eigen vectors are returned as (options of) an array of vectors or an array containing type spire.math.Complex. 
+
+```scala
+import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
+
+    val mm1= matrix(3, 3, Array(-3.0, 1.0, -2.0, 0.0, -1.0, -1.0, 2.0, 0.0, 0.0))
+
+    val eigr = mm1.eig
+    println(eigr)
+    println(eigr.vectors.map(_.mkString("\n")))
+    println(eigr.values.map(_.mkString("\n")))
+```
+
+
+
+```reStructuredText
+EigenResultM(Some(jeigen.DenseMatrix$EigenResult@23faf8f2))
+Some(Vector((-0.5404491573562336 + -0.20309613892506811i), (-0.14361065706672058 + 0.3821552640531482i), (-0.3968385002895126 + -0.5852514029782163i))
+Vector((-0.5404491573562336 + 0.20309613892506811i), (-0.14361065706672058 + -0.3821552640531482i), (-0.3968385002895126 + 0.5852514029782163i))
+Vector((-0.6666666666666664 + 0.0i), (0.6666666666666671 + 0.0i), (-0.3333333333333329 + 0.0i)))
+Some((-0.9999999999999996 + 1.4142135623730956i)
+(-0.9999999999999996 + -1.4142135623730956i)
+(-1.9999999999999998 + 0.0i))
+
+```
+
+
+
 ## Serialization
 
 ### Synopsis
 
-kk
+
 
 ```scala
 mm.csvWrite("/tmp/myfile.csv")
@@ -492,7 +529,7 @@ val mr = csvRead("/tmp/myfile.csv")
 println(mm, mr)
 ```
 
-ll
+
 
 ```reStructuredText
 ({jeigen.DenseMatrix
