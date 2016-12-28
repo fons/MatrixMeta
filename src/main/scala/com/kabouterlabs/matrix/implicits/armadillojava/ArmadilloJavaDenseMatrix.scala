@@ -259,6 +259,36 @@ object ArmadilloJavaDenseMatrixImplicit {
     override def csvRead(fn: String): MatrixMonT = MatrixM({ ArmadilloJavaDenseMatrix.csvread(new File(fn))})
   }
 
+  implicit class Ev$SingularValueDecomposition(matrix:MatrixMonT) extends SingularValueDecompositionT[MatrixMonT] {
+    override type SvdElemT = ElemT
+    private val u = new org.armadillojava.Mat
+    private val v = new org.armadillojava.Mat
+    private val s = new org.armadillojava.Col
+    matrix.matrix match {
+      case None => None
+      case Some(m) => org.armadillojava.Arma.svd(u, s, v, m)
+    }
+    val svd = new SvdResultT {
+      override val U: MatrixMonT = if (u.size() > 0) MatrixM({
+        u
+      })
+      else MatrixM.none
+      override val S: Option[Array[ElemT]] = if (s.size() > 0) Some(s.memptr()) else None
+      override val Vt: MatrixMonT = if (v.size() > 0) MatrixM({
+        v.t
+      })
+      else MatrixM.none
+
+      override def Sm(): MatrixMonT = if (u.size() > 0) {
+        val m = MatrixM.zero(u.n_cols, v.n_rows)
+        for (i <- Range(0, s.memptr().length)) yield {
+          m(i, i, s.memptr()(i))
+        }
+        m
+      }
+      else MatrixM.none
+    }
+  }//end of implicit
 
 
   implicit object Ev$MatrixOperationsTC extends MatrixOperationsTC[MatrixMonT] {
@@ -356,6 +386,8 @@ object ArmadilloJavaDenseMatrixImplicit {
     override def trace(m: MatrixMonT): Option[ElemT] = m.trace
 
     override def none  = MatrixM.none
+
+    override def svd(m: MatrixMonT): SingularValueDecompositionT[MatrixMonT]#SvdResultT = m.svd
 
   }
 

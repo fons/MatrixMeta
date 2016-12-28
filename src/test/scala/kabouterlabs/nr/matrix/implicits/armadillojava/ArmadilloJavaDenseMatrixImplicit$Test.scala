@@ -710,5 +710,193 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     }
 
   }
+  //
+  // Section * SingularValueDecompostionT
+  //----------------------------------------
+  //----------------------------------------
+  //
+
+  it should "be able to svd a 2x3 matrix; fundamental invariants" in {
+    val accuracy = 1.0E-8
+
+    val arr = Array(3.0, 2.0,2.0,3.0,2.0,-2.0)
+    val mat  = MatrixM(2,3,arr)
+    val res = mat.svd
+    assertResult(Some(true), " Vt not orthogonal") {
+      ((res.Vt.transpose |* res.Vt) :- MatrixM.eye(3)).sum.map(scala.math.abs).map(_ < accuracy)
+    }
+
+    assertResult(Some(true), " U not orthogonal") {
+      ((res.U.transpose |* res.U) :- MatrixM.eye(2)).sum.map(scala.math.abs).map(_ < accuracy)
+    }
+
+    assertResult(Some(true), "ssvd of A doesn't yield A back") {
+      ((res.U |* res.Sm() |* res.Vt) :- mat).sum.map(scala.math.abs).map(_ < accuracy)
+    }
+
+
+  }
+
+  it should "be able to svd a 2x3 matrix; wide value format" in {
+    val accuracy = 1.0E-8
+
+    val arr = Array(3.0, 2.0,2.0,3.0,2.0,-2.0)
+    val mat  = MatrixM(2,3,arr)
+    val res = mat.svd
+
+
+    val a = 1.0/scala.math.sqrt(2.0)
+    val b = 1.0/scala.math.sqrt(18.0)
+
+    val arrU = Array(-a, -a, -a, a)
+    val U = MatrixM(2,2,arrU)
+
+    assertResult(Some(4.0), "U value not correct") {
+      val dm  = res.U :\ U
+      val fac = dm(0,0)
+      val dm2 = dm \\ fac.get
+      dm2.sum.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5))
+    }
+    val sentinel = 1.0 //this is in fact 0; but you can't divide by 0 !)
+    val arrVt = Array(-a, -b, -2.0/3.0, -a , b, 2.0/3.0, sentinel, -4.0 * b, 1.0/3.0)
+    val Vt    = MatrixM(3,3,arrVt)
+
+    assertResult(Some(9.0 - sentinel), "Vt value not correct") {
+      val dm  = res.Vt :\ Vt
+      val fac = dm(0,0)
+      val dm2 = dm \\ fac.get
+      dm2.sum.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5))
+    }
+
+    val arrS = Array(5.0,0.0,0.0,3.0,0.0,0.0)
+    val S    = MatrixM(2,3,arrS)
+    assertResult(Some(true), "U value not correct") {
+      val dm  = res.Sm :- S
+      dm.sum.map(scala.math.abs).map(_ < accuracy)
+    }
+
+  }
+  //===
+  it should "svd should work  without throwing an exception for null matrices" in {
+    noException should be thrownBy {
+      val arr = Array(2.0,1.0,5.0,7.0,0.0, 0.0,6.0,0.0,0.0,10.0, 8.0,0.0,7.0,8.0,0.0,  6.0,1.0,4.0,5.0,0.0 ,0.0,7.0,0.0,0.0,7.0)
+      val mat  = MatrixM(5,6,arr)
+      val res= mat.svd
+      assertResult(MatrixM.none, "Matrix U not Non") {
+        res.U
+      }
+      assertResult(MatrixM.none, "Matrix Vt not Non") {
+        res.Vt
+      }
+      assertResult(None, "Array S not Non") {
+        res.S
+      }
+      assertResult(MatrixM.none, "Matrix Sm not Non") {
+        res.Sm
+      }
+    }
+  }
+
+  it should "be able to svd a 5x5 matrix; fundamental invariants" in {
+    val accuracy = 1.0E-8
+
+    val arr = Array(2.0,1.0,5.0,7.0,0.0, 0.0,6.0,0.0,0.0,10.0, 8.0,0.0,7.0,8.0,0.0,  6.0,1.0,4.0,5.0,0.0 ,0.0,7.0,0.0,0.0,7.0)
+    val mat  = MatrixM(5,5,arr)
+    val res = mat.svd
+    assertResult(Some(true), " Vt not orthogonal") {
+      ((res.Vt.transpose |* res.Vt) :- MatrixM.eye(5)).sum.map(scala.math.abs).map(_ < accuracy)
+    }
+
+    assertResult(Some(true), " U not orthogonal") {
+      ((res.U.transpose |* res.U) :- MatrixM.eye(5)).sum.map(scala.math.abs).map(_ < accuracy)
+    }
+
+    assertResult(Some(true), "svd of A doesn't yield A back") {
+      ((res.U |* res.Sm() |* res.Vt) :- mat).sum.map(scala.math.abs).map(_ < accuracy)
+    }
+
+
+  }
+
+  it should  "match the values (up to a factor) of the svd example" in {
+    val arr = Array(2.0, 1.0, 5.0, 7.0, 0.0, 0.0, 6.0, 0.0, 0.0, 10.0, 8.0, 0.0, 7.0, 8.0, 0.0, 6.0, 1.0, 4.0, 5.0, 0.0, 0.0, 7.0, 0.0, 0.0, 7.0)
+    val mat = MatrixM(5, 5, arr)
+    val Uarr = Array(-0.54225536,
+      -0.10181247,
+      -0.52495325,
+      -0.64487038,
+      -0.06449519,
+      0.06499573,
+      -0.59346055,
+      0.05938171,
+      0.07040626,
+      -0.79692967,
+      0.82161708,
+      -0.11255162,
+      -0.21296861,
+      -0.50874368,
+      0.09000966,
+      0.10574661,
+      0.78812338,
+      -0.11574223,
+      -0.05990271,
+      -0.59219473,
+      -0.12448979,
+      0.06026999,
+      0.81372354,
+      -0.56282918,
+      -0.04412631)
+    val U = MatrixM(5, 5, Uarr)
+
+    val Varr = Array(
+      -0.46461713,
+      -0.07008599,
+      -0.73509354,
+      -0.48439167,
+      -0.06496983,
+      0.02150651,
+      -0.75998796,
+      0.09879712,
+      0.0254474,
+      -0.64151954,
+      -0.86850856,
+      0.06307148,
+      0.28400852,
+      0.39886566,
+      -0.04427431,
+      0.00079955,
+      -0.60134567,
+      -0.22348457,
+      0.33268381,
+      0.69120104,
+      -0.17134943,
+      -0.22784122,
+      0.5650402,
+      -0.70352314,
+      0.32328395
+
+    )
+    val V = MatrixM(5, 5, Varr)
+    val Vt = V.transpose
+
+    val Sarr = Array(17.91837086, 15.17137188, 3.56400204, 1.98422815, 0.34955567)
+    val res = mat.svd
+    assertResult(Some(0), "Vt doesn't match ; mutiple of 5 test") {
+      (res.Vt :\ Vt).sum.map((x) => scala.math.floor(x + 0.5) % 5)
+    }
+    assertResult(25.0, "Vt doesn't match ;  25 sum test") {
+      scala.math.floor(0.5 + ((res.Vt :\ Vt).toArray).get.map(scala.math.abs).sum)
+    }
+
+    assertResult(Some(0), "U doesn't match ; mutiple of 5 test") {
+      (res.U :\ U).sum.map((x) => scala.math.floor(x + 0.5) % 5)
+    }
+    assertResult(25.0, "U doesn't match ;  25 sum test") {
+      scala.math.floor(0.5 + ((res.U :\ U).toArray).get.map(scala.math.abs).sum)
+    }
+    assertResult(Some(0), "Singualr values  don't match ") {
+      res.S.map(_.zip(Sarr).map((x) => x._1 - x._2).sum).map(scala.math.abs).map((x) => scala.math.floor(x + 0.5))
+    }
+  }
 
 }

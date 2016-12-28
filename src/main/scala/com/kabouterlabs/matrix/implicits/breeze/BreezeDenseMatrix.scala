@@ -227,6 +227,7 @@ object BreezeDenseMatrixImplicit {
 
 
   }
+
   implicit class Ev$LinearAlgebraT(matrix: MatrixMonT) extends LinearAlgebraT {
     implicit val access = new EigenAccess
     override type MatrixRetTypeT = MatrixMonT
@@ -248,7 +249,38 @@ object BreezeDenseMatrixImplicit {
     override def csvRead(fn: String): MatrixMonT = MatrixM({breeze.linalg.csvread(new File(fn))})
   }
 
+  implicit class Ev$SingularValueDecomposition(matrix:MatrixMonT) extends SingularValueDecompositionT[MatrixMonT] {
+    override type SvdElemT = ElemT
+    private val svdOption = matrix.matrix match {
+      case None => None
+      case Some(m) => Some(breeze.linalg.svd(m))
+    }
+    //private val svd_ = for ( m <- matrix) yield org.jblas.Singular.fullSVD(m)
+    val svd = new SvdResultT {
+      override val U: MatrixMonT = MatrixM({
+        for (svd_ <- svdOption) yield svd_.U
+      })
+      override val S: Option[Array[ElemT]] = svdOption.map(_.S.data)
+      //Some(svd_(1).toArray)
+      override val Vt: MatrixMonT = MatrixM({
+        for (svd_ <- svdOption) yield svd_.Vt
+      })
 
+      override def Sm(): MatrixMonT = {
+        svdOption match {
+          case None => MatrixM.none
+          case Some(svd_) => {
+            val m = MatrixM.zero(svd_.U.cols, svd_.Vt.rows)
+            for (i <- Range(0, svd_.S.data.length)) yield {
+              m(i, i, svd_.S.data(i))
+            }
+            m
+          }
+        }
+      }
+    }
+
+  } // end of implicit
 
   implicit object Ev$MatrixOperationsTC extends MatrixOperationsTC[MatrixMonT] {
 
@@ -346,6 +378,8 @@ object BreezeDenseMatrixImplicit {
     override def trace(m: MatrixMonT): Option[ElemT] = m.trace
 
     override def none  = MatrixM.none
+
+    override def svd(m: MatrixMonT): SingularValueDecompositionT[MatrixMonT]#SvdResultT = m.svd
   }
 
 }

@@ -126,12 +126,13 @@ object MatrixOperations {
 
     def eig(m: A): EigenResultRetTypeT //EigenResultM[EigenResultT]
     def vectors(r: EigenResultRetTypeT): Option[EigenAccessT[EigenResultRetTypeT]#EigenVectorT]
-    //def vectors(r: EigenResultM[EigenResultT]): Option[EigenAccessT[EigenResultM[EigenResultT]]#EigenVectorT]
 
     def values(r: EigenResultRetTypeT): Option[EigenAccessT[EigenResultRetTypeT]#EigenValuesT]
-    //def values(r: EigenResultM[EigenResultT]): Option[EigenAccessT[EigenResultM[EigenResultT]]#EigenValuesT]
+
     def eigen(m:A): (Option[EigenAccessT[EigenResultRetTypeT]#EigenValuesT], Option[EigenAccessT[EigenResultRetTypeT]#EigenVectorT])
-    //def eigen(m:A): (Option[EigenAccessT[EigenResultM[EigenResultT]]#EigenValuesT], Option[EigenAccessT[EigenResultM[EigenResultT]]#EigenVectorT])
+
+    def svd(m:A) : SingularValueDecompositionT[A]#SvdResultT
+
   }
 
 
@@ -291,5 +292,7 @@ object MatrixOperations {
   def sumRows[A](lhs :A)(implicit ev: MatrixOperationsTC[A]):A = lhs.sumRows
 
   def sumCols[A](lhs :A)(implicit ev: MatrixOperationsTC[A]):A = lhs.sumCols
+
+  def svd[A](lhs: A)(implicit ev: MatrixOperationsTC[A]) = ev.svd(lhs)
 
 }

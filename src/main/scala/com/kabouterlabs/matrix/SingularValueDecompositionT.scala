@@ -30,9 +30,14 @@ package com.kabouterlabs.matrix
 /**
   * Created by fons on 12/26/16.
   */
+
 trait SingularValueDecompositionT[MatrixMonT] {
+  type SvdElemT
+  abstract class SvdResultT {
+    def Sm(): MatrixMonT
     val U:MatrixMonT
-    val S:MatrixMonT
+    val S:Option[Array[SvdElemT]]
     val Vt:MatrixMonT
-    def apply():(MatrixMonT,MatrixMonT,MatrixMonT)
+  }
+
 }

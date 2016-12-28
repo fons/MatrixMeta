@@ -274,6 +274,24 @@ object JeigenDenseMatrixImplicit {
     override def csvRead(fn: String): MatrixMonT = MatrixM({JeigenDenseMatrix.csvread(new File(fn))})
   }
 
+  implicit class Ev$SingularValueDecomposition(matrix:MatrixMonT) extends SingularValueDecompositionT[MatrixMonT] {
+
+    override type SvdElemT = ElemT
+    private val svdOption = matrix.matrix match {
+      case None => None
+      case Some(m) => Some(m.svd())
+    }
+
+    val svd = new SvdResultT {
+      override val U: MatrixMonT = MatrixM({for (svd_ <- svdOption) yield svd_.U})
+      override val S: Option[Array[ElemT]] = svdOption.map(_.S.getValues)
+      override val Vt: MatrixMonT = MatrixM({for (svd_ <- svdOption) yield svd_.V.t()})
+      override def Sm(): MatrixMonT = svdOption match {
+        case None => MatrixM.none
+        case Some(svd_) => MatrixM.diag(svd_.S.getValues)
+      }
+    }
+  }
 
   implicit object Ev$MatrixOperationsTC extends MatrixOperationsTC[MatrixMonT] {
 
@@ -371,6 +389,8 @@ object JeigenDenseMatrixImplicit {
     override def trace(m: MatrixMonT): Option[ElemT] = m.trace
 
     override def none  = MatrixM.none
+
+    override def svd(m: MatrixMonT): SingularValueDecompositionT[MatrixMonT]#SvdResultT = m.svd
 
   }
 

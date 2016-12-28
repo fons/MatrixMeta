@@ -267,6 +267,39 @@ object JblasDoubleMatrixImplicit {
     override def csvRead(fn: String): MatrixMonT = MatrixM({JblasDoubleMatrix.csvread(new File(fn))})
   }
 
+  implicit class Ev$SingularValueDecomposition(matrix:MatrixMonT) extends SingularValueDecompositionT[MatrixMonT] {
+    override type SvdElemT = ElemT
+    private val svdOption = matrix.matrix match {
+      case None => None
+      case Some(m) => Some(org.jblas.Singular.fullSVD(m))
+    }
+    //private val svd_ = for ( m <- matrix) yield org.jblas.Singular.fullSVD(m)
+    val svd = new SvdResultT {
+      override val U: MatrixMonT = MatrixM({
+        for (svd_ <- svdOption) yield svd_(0)
+      })
+      override val S: Option[Array[ElemT]] = svdOption.map(_ (1).toArray)
+      //Some(svd_(1).toArray)
+      override val Vt: MatrixMonT = MatrixM({
+        for (svd_ <- svdOption) yield svd_(2)
+      }).transpose
+
+      override def Sm(): MatrixMonT = {
+        svdOption match {
+          case None => MatrixM.none
+          case Some(svd_) => {
+            val m = MatrixM.zero(svd_(0).columns, svd_(2).rows)
+            for (i <- Range(0, svd_(1).data.length)) yield {
+              m(i, i, svd_(1).data(i))
+            }
+            m
+          }
+        }
+      }
+
+    }
+  }
+
 
   implicit object Ev$MatrixOperationsTC extends MatrixOperationsTC[MatrixMonT] {
 
@@ -363,6 +396,8 @@ object JblasDoubleMatrixImplicit {
     override def trace(m: MatrixMonT): Option[ElemT] = m.trace
 
     override def none  = MatrixM.none
+
+    override def svd(m: MatrixMonT): SingularValueDecompositionT[MatrixMonT]#SvdResultT = m.svd
 
   }
 

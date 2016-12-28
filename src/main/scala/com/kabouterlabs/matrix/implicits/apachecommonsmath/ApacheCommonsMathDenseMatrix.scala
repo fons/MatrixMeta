@@ -78,8 +78,9 @@ private object ApacheCommonsMathDenseMatrix {
   }
 
   def lusolver(m: RealMatrix): Option[LUDecomposition] = {
+
     try {
-      Some(new LUDecomposition(m))
+      if (m.getRowDimension == m.getColumnDimension) Some(new LUDecomposition(m)) else None
     }
     catch {
       case e: Throwable =>
@@ -105,7 +106,7 @@ private object ApacheCommonsMathDenseMatrix {
 
   def eigensolver(m: RealMatrix): Option[EigenDecomposition] = {
     try {
-      Some(new EigenDecomposition(m))
+      if (m.getRowDimension == m.getColumnDimension) Some(new EigenDecomposition(m)) else None
     }
     catch {
       case e: Throwable =>
@@ -372,6 +373,20 @@ object ApacheCommonsMathDenseMatrixImplicit {
     })
   }
 
+  implicit class Ev$SingularValueDecomposition(matrix:MatrixMonT) extends SingularValueDecompositionT[MatrixMonT] {
+    override type SvdElemT = ElemT
+    private val svdOption = matrix.matrix match {
+      case None => None
+      case Some(m) => Some(new SingularValueDecomposition(m))
+    }
+    //private val svd_ = for ( m <- matrix) yield new SingularValueDecomposition(m)
+    val svd = new SvdResultT {
+      override val U: MatrixMonT = MatrixM({for (svd_ <- svdOption) yield svd_.getU})
+      override val S: Option[Array[ElemT]] = svdOption.map(_.getSingularValues)
+      override val Vt: MatrixMonT = MatrixM({for (svd_ <- svdOption) yield svd_.getVT})
+      override def Sm(): MatrixMonT =   MatrixM({for (svd_ <- svdOption) yield svd_.getS})
+    }
+  }
 
   implicit object Ev$MatrixOperationsTC extends MatrixOperationsTC[MatrixMonT] {
 
@@ -505,6 +520,8 @@ object ApacheCommonsMathDenseMatrixImplicit {
     override def trace(m: MatrixMonT): Option[ElemT] = m.trace
 
     override def none = MatrixM.none
+
+    override def svd(m: MatrixMonT) = m.svd
 
   }
 
