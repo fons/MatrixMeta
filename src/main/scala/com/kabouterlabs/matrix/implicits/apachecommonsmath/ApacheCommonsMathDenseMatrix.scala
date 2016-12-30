@@ -341,9 +341,9 @@ object ApacheCommonsMathDenseMatrixImplicit {
 
   implicit class Ev$LinearAlgebraT(matrix: MatrixMonT) extends LinearAlgebraT {
     implicit val access = new EigenAccess
-    private val lu = for (m <- matrix) yield ApacheCommonsMathDenseMatrix.lusolver(m)
-    private val qr = for (m <- matrix) yield ApacheCommonsMathDenseMatrix.qrsolver(m)
-    private val ei = for (m <- matrix) yield ApacheCommonsMathDenseMatrix.eigensolver(m)
+    private lazy val lu = for (m <- matrix) yield ApacheCommonsMathDenseMatrix.lusolver(m)
+    private lazy val qr = for (m <- matrix) yield ApacheCommonsMathDenseMatrix.qrsolver(m)
+    private lazy val ei = for (m <- matrix) yield ApacheCommonsMathDenseMatrix.eigensolver(m)
 
     override type MatrixRetTypeT = MatrixMonT
     override type EigenResultRetTypeT = EigenResultM[EigenResultT]
@@ -375,16 +375,83 @@ object ApacheCommonsMathDenseMatrixImplicit {
 
   implicit class Ev$SingularValueDecomposition(matrix:MatrixMonT) extends SingularValueDecompositionT[MatrixMonT] {
     override type SvdElemT = ElemT
-    private val svdOption = matrix.matrix match {
-      case None => None
-      case Some(m) => Some(new SingularValueDecomposition(m))
+
+    private case class SVD(U:MatrixMonT, Vt:MatrixMonT, S: Option[Array[ElemT]], Sm:MatrixMonT)
+
+    private val svd_ = matrix.matrix match {
+      case None => SVD(MatrixM.none, MatrixM.none, None, MatrixM.none)
+      case Some(m) => {
+        val svdr = new SingularValueDecomposition(m)
+        SVD(MatrixM({svdr.getU}), MatrixM({svdr.getVT}), Some(svdr.getSingularValues), MatrixM({svdr.getS}))
+      }
     }
-    //private val svd_ = for ( m <- matrix) yield new SingularValueDecomposition(m)
+
     val svd = new SvdResultT {
-      override val U: MatrixMonT = MatrixM({for (svd_ <- svdOption) yield svd_.getU})
-      override val S: Option[Array[ElemT]] = svdOption.map(_.getSingularValues)
-      override val Vt: MatrixMonT = MatrixM({for (svd_ <- svdOption) yield svd_.getVT})
-      override def Sm(): MatrixMonT =   MatrixM({for (svd_ <- svdOption) yield svd_.getS})
+
+      override lazy val toString: String = super.toString + "\n" + "S=" + svd_.S.map(_.mkString(",")) + "\n" + svd_.U.stringefy + "\n" + svd_.Vt.stringefy
+
+      override val U: MatrixMonT           =  svd_.U
+      override val S: Option[Array[ElemT]] =  svd_.S
+      override val Vt: MatrixMonT          =  svd_.Vt
+      override def Sm(): MatrixMonT        =  svd_.Sm
+    }
+  }
+
+  implicit class Ev$QRDecompostion (matrix: MatrixMonT) extends QRDecompositionT[MatrixMonT] {
+    private case class QR(q:MatrixMonT, r:MatrixMonT)
+    private val qr_ = matrix.matrix match {
+      case None => QR(MatrixM.none, MatrixM.none)
+      case Some(m) => ApacheCommonsMathDenseMatrix.qrsolver(m) match {
+        case None =>  QR(MatrixM.none, MatrixM.none)
+        case Some(qrs) =>  QR(MatrixM({qrs.getQ}), MatrixM({qrs.getR}))
+        }
+      }
+
+    val qr = new QRResultT {
+
+      override lazy val toString: String = super.toString + "@" + super.hashCode() + "\n" + qr_.r.stringefy + "\n" + qr_.q.stringefy
+
+      override val R: MatrixMonT = qr_.r
+      override val Q: MatrixMonT = qr_.q
+    }
+
+  }
+
+  implicit class Ev$LUDecompostion (matrix: MatrixMonT) extends LUDecompositionT[MatrixMonT] {
+    private case class LU(upper:MatrixMonT, lower:MatrixMonT, perms : Option[Array[Int]], p:MatrixMonT)
+
+    private val lu_ = matrix.matrix match {
+      case None => LU(MatrixM.none, MatrixM.none, None, MatrixM.none)
+      case Some(m) => ApacheCommonsMathDenseMatrix.lusolver(m) match {
+        case None   =>   LU(MatrixM.none, MatrixM.none, None, MatrixM.none)
+        case Some(lus) => {
+          LU(MatrixM({lus.getU}), MatrixM({lus.getL}), Some(lus.getPivot), MatrixM({lus.getP}).inverse)
+        }
+      }
+    }
+    val lu = new LUResultT {
+      override lazy val toString: String = super.toString + "@"+ hashCode() + "\n" + lu_.lower.stringefy + "\n" + lu_.upper.stringefy
+      override val P: MatrixMonT =  lu_.p
+      override val L: MatrixMonT =  lu_.lower
+      override val U: MatrixMonT =  lu_.upper
+      override val permutations: Option[Array[Int]] = lu_.perms
+      override def constructP(perms: Option[Array[Int]]): MatrixMonT = lu_.p
+    }
+
+  }
+
+  implicit class Ev$CholeskyDecompositionT(matrix:MatrixMonT) extends CholeskyDecompositionT[MatrixMonT]{
+    private case class Cholesky(chol:MatrixMonT)
+    private val cholesky_ = matrix.matrix match {
+      case None    => Cholesky(MatrixM.none)
+      case Some(m) => {
+        Cholesky(MatrixM({new org.apache.commons.math3.linear.CholeskyDecomposition(m).getL}))
+      }
+    }
+
+    val cholesky = new CholeskyResultT {
+      override lazy val toString: String = super.toString + "@"+ hashCode() + "\n" + cholesky_.chol.stringefy
+      override val L: MatrixMonT = cholesky_.chol
     }
   }
 
@@ -523,6 +590,11 @@ object ApacheCommonsMathDenseMatrixImplicit {
 
     override def svd(m: MatrixMonT) = m.svd
 
+    override def qr(m: MatrixMonT): QRDecompositionT[MatrixMonT]#QRResultT = m.qr
+
+    override def lu(m: MatrixMonT): LUDecompositionT[MatrixMonT]#LUResultT = m.lu
+
+    override def cholesky(m: MatrixMonT): CholeskyDecompositionT[MatrixMonT]#CholeskyResultT = m.cholesky
   }
 
 }

@@ -133,6 +133,12 @@ object MatrixOperations {
 
     def svd(m:A) : SingularValueDecompositionT[A]#SvdResultT
 
+    def qr(m:A) : QRDecompositionT[A]#QRResultT
+
+    def lu(m:A) : LUDecompositionT[A]#LUResultT
+
+    def cholesky(m:A): CholeskyDecompositionT[A]#CholeskyResultT
+
   }
 
 
@@ -205,6 +211,14 @@ object MatrixOperations {
     def sum = ev.sum(lhs)
 
     def eigen  = {val e = ev.eig(lhs); (ev.values(e), ev.vectors(e))}
+
+    def svd(m:A) : SingularValueDecompositionT[A]#SvdResultT  = ev.svd(m)
+
+    def qr(m:A) : QRDecompositionT[A]#QRResultT = ev.qr(m)
+
+    def lu(m:A) : LUDecompositionT[A]#LUResultT = ev.lu(m)
+
+    def cholesky(m:A) : CholeskyDecompositionT[A]#CholeskyResultT = ev.cholesky(m)
 
   }
 
@@ -295,4 +309,9 @@ object MatrixOperations {
 
   def svd[A](lhs: A)(implicit ev: MatrixOperationsTC[A]) = ev.svd(lhs)
 
+  def qr[A](lhs:A)(implicit ev: MatrixOperationsTC[A]) = ev.qr(lhs)
+
+  def lu[A](lhs:A)(implicit ev: MatrixOperationsTC[A]) = ev.lu(lhs)
+
+  def cholesky[A](lhs:A)(implicit ev: MatrixOperationsTC[A]) = ev.cholesky(lhs)
 }

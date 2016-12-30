@@ -26,7 +26,7 @@
  */
 
 package com.kabouterlabs.matrix.main
-
+                    //
 import com.kabouterlabs.matrix.MatrixM
 import com.kabouterlabs.matrix.MatrixOperations._
 import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaDenseMatrixImplicit
@@ -36,8 +36,8 @@ import spire.implicits._
 //import com.kabouterlabs.matrix.implicits.breeze.BreezeDenseMatrixImplicit._
 //import com.kabouterlabs.matrix.implicits.jeigen.JeigenDenseMatrixImplicit._
 //import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaDenseMatrixImplicit._
-//import com.kabouterlabs.matrix.implicits.jblass.JblasDoubleMatrixImplicit._
-import com.kabouterlabs.matrix.implicits.apachecommonsmath.ApacheCommonsMathDenseMatrixImplicit._
+import com.kabouterlabs.matrix.implicits.jblass.JblasDoubleMatrixImplicit._
+//import com.kabouterlabs.matrix.implicits.apachecommonsmath.ApacheCommonsMathDenseMatrixImplicit._
 
 
 object Use
@@ -76,89 +76,60 @@ object Use
 
 object Main extends App
 {
-
-
-  val arr = Array(2.0,1.0,5.0,7.0,0.0, 0.0,6.0,0.0,0.0,10.0, 8.0,0.0,7.0,8.0,0.0,  6.0,1.0,4.0,5.0,0.0 ,0.0,7.0,0.0,0.0,7.0)
-  val mat  = MatrixM(5,5,arr)
-
-  val Uarr = Array(-0.54225536	,
-  -0.10181247	,
-  -0.52495325	,
-  -0.64487038	,
-  -0.06449519	,
-  0.06499573	,
-  -0.59346055	,
-  0.05938171	,
-  0.07040626	,
-  -0.79692967	,
-  0.82161708	,
-  -0.11255162	,
-  -0.21296861	,
-  -0.50874368	,
-  0.09000966	,
-  0.10574661	,
-  0.78812338	,
-  -0.11574223	,
-  -0.05990271	,
-  -0.59219473	,
-  -0.12448979	,
-  0.06026999	,
-  0.81372354	,
-  -0.56282918	,
-  -0.04412631	)
-  val U = MatrixM(5,5,Uarr)
-
-  val Varr = Array(
-    -0.46461713	,
-    -0.07008599	,
-    -0.73509354	,
-    -0.48439167	,
-    -0.06496983	,
-    0.02150651	,
-    -0.75998796	,
-    0.09879712	,
-    0.0254474	,
-    -0.64151954	,
-    -0.86850856	,
-    0.06307148	,
-    0.28400852	,
-    0.39886566	,
-    -0.04427431	,
-    0.00079955	,
-    -0.60134567	,
-    -0.22348457	,
-    0.33268381	,
-    0.69120104	,
-    -0.17134943	,
-    -0.22784122	,
-    0.5650402	,
-    -0.70352314	,
-    0.32328395
+  val arrL = Array(
+    11.3581732686	,
+    -3.2020994169	,
+    18.0510540869	,
+    49.1320555517	,
+    -19.6554494037	,
+    68.1835081826	,
+    0	,
+    12.5597197152	,
+    -12.4285202038	,
+    -49.7426923319	,
+    -2.6575993597	,
+    43.5535492984	,
+    0	,
+    0	,
+    12.1565345348	,
+    55.118878598	,
+    23.1703823278	,
+    -58.0898301742	,
+    0	,
+    0	,
+    0	,
+    17.7743775961	,
+    -6.7945561096	,
+    77.5340560127	,
+    0	,
+    0	,
+    0	,
+    0	,
+    36.5250799375	,
+    33.354408821	,
+    0	,
+    0	,
+    0	,
+    0	,
+    0	,
+    67.9604918771
 
   )
-  val V = MatrixM(5,5,Varr)
-  val Vt = V.transpose
+  val L = MatrixM(6,6,arrL)
+  val arr = Array(2.0,1.0,5.0,7.0,10.56,-90.1, 0.0,6.0,-3.0,2.0,10.0,45.0, 8.0,0.0,7.0,8.0,0.0,100.9,  6.0,1.0,4.0,5.0,-45.0, 34.56 ,0.09,7.0,0.3,0.56,7.0, 0.89,
+    5.0, -9.0, 23.0, 90.0 , 5.0, -12.0)
+  val matx  = MatrixM(6,6,arr)
+  //println(matx)
+  val mat   = matx |* matx.transpose
+  println(mat.stringefy)
+  val res = mat.cholesky
+  println(((res.L |* res.L.transpose) :- mat).stringefy)
+  println(res.L.stringefy)
+  println(L.stringefy)
+  println((res.L :- L).stringefy)
 
-  val Sarr = Array(17.91837086  , 15.17137188   , 3.56400204  ,  1.98422815  ,  0.34955567)
-   println(V.stringefy)
-  //for ( m <- mat) yield 1
-//  println(mat.stringefy)
-  val res = mat.svd
-  //println(res.U.stringefy)
-  println(res.Vt.stringefy)
-  println(Vt.stringefy)
-  //println(res.S)
-  //println(res.Sm)
-  //println(U.stringefy)
-  //println((res.U :\ U).sum.map((x)=> scala.math.floor(x+0.5) % 5) )
-  println((res.Vt :\ Vt).sum.map((x)=> scala.math.floor(x+0.5) % 5) )
-  val test = scala.math.floor(0.5 + ((res.Vt :\ Vt).toArray).get.map(scala.math.abs).sum)
-  println(test)
-  println(res.S.map(_.zip(Sarr).map((x)=> x._1 - x._2).sum).map(scala.math.abs).map((x)=>scala.math.floor(x+0.5)))
 
-  println(((res.Vt |* res.Vt.transpose) :- MatrixM.eye(5)).sum)
 
-  println(res.S.map(_.mkString(",")))
 }
 
 

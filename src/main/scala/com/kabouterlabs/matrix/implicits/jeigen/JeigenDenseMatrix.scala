@@ -53,12 +53,11 @@ private object JeigenDenseMatrix {
       Some(new DenseMatrix(f.toArray))
     }
     catch {
-      case e: Throwable => {
+       case e: Throwable =>
         val sw = new StringWriter
         e.printStackTrace(new PrintWriter(sw))
         println("exception caught :" + e + sw)
         None
-      }
     }
   }
 
@@ -293,6 +292,32 @@ object JeigenDenseMatrixImplicit {
     }
   }
 
+  implicit class Ev$QRDecompostion (matrix: MatrixMonT) extends QRDecompositionT[MatrixMonT] {
+    val qr = new QRResultT {
+      override val R: MatrixMonT = MatrixM.none
+      override val Q: MatrixMonT = MatrixM.none
+    }
+
+  }
+
+  implicit class Ev$LUDecompositionT(matrix:MatrixMonT) extends LUDecompositionT[MatrixMonT]{
+
+
+    val lu = new LUResultT {
+      override val L: MatrixMonT = MatrixM.none
+      override val U: MatrixMonT = MatrixM.none
+      override val P: MatrixMonT = MatrixM.none
+      override val permutations: Option[Array[Int]] = None
+      override def constructP(perms: Option[Array[Int]]): MatrixMonT = MatrixM.none
+    }
+  }
+
+  implicit class Ev$CholeskyDecompositionT(matrix:MatrixMonT) extends CholeskyDecompositionT[MatrixMonT]{
+    val cholesky = new CholeskyResultT {
+      override val L: MatrixMonT = MatrixM.none
+    }
+  }
+
   implicit object Ev$MatrixOperationsTC extends MatrixOperationsTC[MatrixMonT] {
 
     override def deepCopy(lhs: MatrixMonT): MatrixMonT = lhs.deepCopy
@@ -391,6 +416,12 @@ object JeigenDenseMatrixImplicit {
     override def none  = MatrixM.none
 
     override def svd(m: MatrixMonT): SingularValueDecompositionT[MatrixMonT]#SvdResultT = m.svd
+
+    override def qr(m: MatrixMonT): QRDecompositionT[MatrixMonT]#QRResultT = m.qr
+
+    override def lu(m: MatrixMonT): LUDecompositionT[MatrixMonT]#LUResultT = m.lu
+
+    override def cholesky(m: MatrixMonT): CholeskyDecompositionT[MatrixMonT]#CholeskyResultT = m.cholesky
 
   }
 

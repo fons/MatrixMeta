@@ -251,36 +251,105 @@ object BreezeDenseMatrixImplicit {
 
   implicit class Ev$SingularValueDecomposition(matrix:MatrixMonT) extends SingularValueDecompositionT[MatrixMonT] {
     override type SvdElemT = ElemT
-    private val svdOption = matrix.matrix match {
-      case None => None
-      case Some(m) => Some(breeze.linalg.svd(m))
-    }
-    //private val svd_ = for ( m <- matrix) yield org.jblas.Singular.fullSVD(m)
-    val svd = new SvdResultT {
-      override val U: MatrixMonT = MatrixM({
-        for (svd_ <- svdOption) yield svd_.U
-      })
-      override val S: Option[Array[ElemT]] = svdOption.map(_.S.data)
-      //Some(svd_(1).toArray)
-      override val Vt: MatrixMonT = MatrixM({
-        for (svd_ <- svdOption) yield svd_.Vt
-      })
-
-      override def Sm(): MatrixMonT = {
-        svdOption match {
-          case None => MatrixM.none
-          case Some(svd_) => {
-            val m = MatrixM.zero(svd_.U.cols, svd_.Vt.rows)
-            for (i <- Range(0, svd_.S.data.length)) yield {
-              m(i, i, svd_.S.data(i))
-            }
-            m
-          }
-        }
+    private case class SVD(U:MatrixMonT, Vt:MatrixMonT, S: Option[Array[ElemT]], Sm:MatrixMonT)
+    private val svd_ = matrix.matrix match {
+      case None => SVD(MatrixM.none, MatrixM.none, None, MatrixM.none)
+      case Some(m) => {
+        val svd = breeze.linalg.svd(m)
+        val sm  = MatrixM.zero(svd.U.cols, svd.Vt.rows)
+        val arr = svd.S.data
+        for (i <- arr.indices) {sm(i, i, arr(i))}
+        SVD(MatrixM({svd.U}), MatrixM({svd.Vt}), Some(svd.S.data), sm)
       }
     }
 
+    val svd = new SvdResultT {
+
+      override lazy val toString: String = super.toString + "\n" + "S=" + svd_.S.map(_.mkString(",")) + "\n" + svd_.U + "\n" + svd_.Vt
+
+      override val U: MatrixMonT           = svd_.U
+      override val S: Option[Array[ElemT]] = svd_.S
+      override val Vt: MatrixMonT          = svd_.Vt
+      override def Sm(): MatrixMonT        = svd_.Sm
+
+    }
+
   } // end of implicit
+
+  implicit class Ev$QRDecompostion (matrix: MatrixMonT) extends QRDecompositionT[MatrixMonT] {
+    private case class QR(q:MatrixMonT, r:MatrixMonT)
+    private val qr_ = matrix.matrix match {
+      case None => QR(MatrixM.none,MatrixM.none)
+      case Some(m) => {
+        val qr = breeze.linalg.qr(m)
+        QR(MatrixM({qr.q}), MatrixM({qr.r}))
+      }
+    }
+
+
+    val qr = new QRResultT {
+
+      override lazy val toString: String = super.toString + "@" + super.hashCode() + "\n" + qr_.r.stringefy + "\n" + qr_.q.stringefy
+
+      override val R: MatrixMonT = qr_.r
+      override val Q: MatrixMonT = qr_.q
+    }
+
+  }
+
+  implicit class Ev$LUDecompositionT(matrix:MatrixMonT) extends LUDecompositionT[MatrixMonT]{
+    private case class LU(upper:MatrixMonT, lower:MatrixMonT, perms : Option[Array[Int]])
+    private def normalize_u(m:MatrixT) = {for (i <- Range(0, m.rows)) yield m(i,i) = 1.0; m}
+    private val lu_ = matrix.matrix match {
+      case None => LU(MatrixM.none, MatrixM.none, None)
+      case Some(m) => {
+        val (lu, p)= breeze.linalg.LU(m)
+        LU(MatrixM({breeze.linalg.upperTriangular(lu)}),
+                 MatrixM({normalize_u(breeze.linalg.lowerTriangular(lu))}),Some(p))
+      }
+    }
+
+    val lu = new LUResultT {
+      private def fold(m:MatrixT, tuple:(Int,Int)) = tuple match {
+          case (col,row) => {
+            val Px = DenseMatrix.eye[Double](m.rows)
+            Px(row,row) = 0.0
+            Px(col,col) = 0.0
+            Px(row,col) = 1.0
+            Px(col,row) = 1.0
+            m * Px
+          }
+        }
+
+
+      override lazy val toString: String = super.toString + "@"+ hashCode() + "\n" + lu_.lower.stringefy + "\n" + lu_.upper.stringefy
+
+      override val L: MatrixMonT = lu_.lower
+      override val U: MatrixMonT = lu_.upper
+      override val P: MatrixMonT = MatrixM.none
+      override val permutations: Option[Array[Int]] = lu_.perms
+      override def constructP(perms: Option[Array[Int]]): MatrixMonT = {
+        //perms is not zero based so I correct for that below
+        perms match {
+          case None => MatrixM.none
+          case Some(pvec) => MatrixM({pvec.map(_ - 1).zipWithIndex.foldLeft(DenseMatrix.eye[Double](pvec.length))(fold)})
+        }
+      }
+    }
+  }
+
+  implicit class Ev$CholeskyDecompositionT(matrix:MatrixMonT) extends CholeskyDecompositionT[MatrixMonT]{
+    private case class Cholesky(chol:MatrixMonT)
+    private val cholesky_ = matrix.matrix match {
+      case None    => Cholesky(MatrixM.none)
+      case Some(m) => Cholesky(MatrixM({breeze.linalg.cholesky(m)}))
+    }
+
+    val cholesky = new CholeskyResultT {
+      override lazy val toString: String = super.toString + "@"+ hashCode() + "\n" + cholesky_.chol
+      override val L: MatrixMonT = cholesky_.chol
+    }
+  }
 
   implicit object Ev$MatrixOperationsTC extends MatrixOperationsTC[MatrixMonT] {
 
@@ -380,6 +449,12 @@ object BreezeDenseMatrixImplicit {
     override def none  = MatrixM.none
 
     override def svd(m: MatrixMonT): SingularValueDecompositionT[MatrixMonT]#SvdResultT = m.svd
+
+    override def qr(m: MatrixMonT): QRDecompositionT[MatrixMonT]#QRResultT = m.qr
+
+    override def lu(m: MatrixMonT): LUDecompositionT[MatrixMonT]#LUResultT = m.lu
+
+    override def cholesky(m: MatrixMonT): CholeskyDecompositionT[MatrixMonT]#CholeskyResultT = m.cholesky
   }
 
 }

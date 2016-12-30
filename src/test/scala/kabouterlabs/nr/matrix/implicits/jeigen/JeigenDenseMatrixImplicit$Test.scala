@@ -713,7 +713,7 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
 
   it should "be able to serialize to a csv file" in {
     val m = MatrixM.rand(1000,1000)
-    val fn = "/tmp/test.csv"
+    val fn = "/tmp/jeigen-serialization-test.csv"
     MatrixM.csvwrite(fn, m)
     val k = MatrixM.csvread(fn)
     val res = m :- k

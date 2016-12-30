@@ -915,5 +915,399 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
     }
   }
 
+  //
+  // Section * QRDecompostionT
+  //----------------------------------------
+  //----------------------------------------
+  //
 
+  it should "take the qr decompostion of a 5x5 matrix: fundamental invariants" in {
+    val arr = Array(2.0,1.0,5.0,7.0,0.0, 0.0,6.0,0.0,0.0,10.0, 8.0,0.0,7.0,8.0,0.0,  6.0,1.0,4.0,5.0,0.0 ,0.0,7.0,0.0,0.0,7.0)
+    val mat  = MatrixM(5,5,arr)
+
+    val res = mat.qr
+
+
+    assertResult(Some(25.0), "Q matrix is not orthogonal") {
+      val itest = res.Q |* res.Q.transpose
+      val norm  = itest.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(5,5,norm) :== MatrixM.eye(5)).sum
+    }
+
+    assertResult(Some(25.0), "Q matrix is not orthogonal(test 2)") {
+      val itest = res.Q.transpose |* res.Q
+      val norm  = itest.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(5,5,norm) :== MatrixM.eye(5)).sum
+    }
+
+    assertResult(Some(25.0), "Q * R should yield original matrix") {
+      val a1 = (res.Q |* res.R) :- mat
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(5,5,a2) :== MatrixM.zero(5,5)).sum
+    }
+
+  }
+
+  it should "match the values of the qr decompostion of a 5x5 matrix" in {
+
+    val arrQ= Array(
+      -0.2250175802	,
+      -0.1125087901	,
+      -0.5625439505	,
+      -0.7875615306	,
+      0	,
+      0.0130470858	,
+      -0.5088363471	,
+      0.0326177146	,
+      0.0456648004	,
+      -0.85893315	,
+      0.9397991177	,
+      -0.1777908515	,
+      0.0364886645	,
+      -0.2691786723	,
+      0.1066745109	,
+      -0.2404755802	,
+      -0.75265008	,
+      0.3997580631	,
+      -0.109312725	,
+      0.451590048	,
+      0.0902550602	,
+      -0.3610202407	,
+      -0.7220404814	,
+      0.5415303611	,
+      0.2166121444
+    )
+    val Q = MatrixM(5,5,arrQ)
+    val arrR = Array(
+      -8.8881944173	,
+      0	,
+      0	,
+      0	,
+      0	,
+      -0.6750527406	,
+      -11.6423495823	,
+      0	,
+      0	,
+      0	,
+      -12.0384405399	,
+      0.6980190915	,
+      5.6203842142	,
+      0	,
+      0	,
+      -7.6505977263	,
+      -0.071758972	,
+      4.2610651509	,
+      -1.1430349339	,
+      0	,
+      -0.7875615306	,
+      -9.5743864795	,
+      -0.4978143841	,
+      -2.1074202241	,
+      -1.010856674
+
+    )
+    val R = MatrixM(5,5,arrR)
+    val arr = Array(2.0,1.0,5.0,7.0,0.0, 0.0,6.0,0.0,0.0,10.0, 8.0,0.0,7.0,8.0,0.0,  6.0,1.0,4.0,5.0,0.0 ,0.0,7.0,0.0,0.0,7.0)
+    val mat  = MatrixM(5,5,arr)
+    val res  = mat.qr
+
+    assertResult(Some(25.0), "R should match") {
+      val a1 = res.R :- R
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(5,5,a2) :== MatrixM.zero(5,5)).sum
+    }
+
+    assertResult(Some(25.0), "Q should match") {
+      val a1 = res.Q :- Q
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(5,5,a2) :== MatrixM.zero(5,5)).sum
+    }
+
+  }
+
+  it should "take the qr decompostion of a 5x6 matrix: fundamental invariants" in {
+    val arr = Array(2.0,-10.0,5.0,7.0,89.67, 0.0,6.0,60.0,0.0,10.0, 8.0,-90.89,7.0,8.0,0.0,  6.0,1.0,4.0,5.0,0.0 ,0.0,7.0,0.0,0.0,7.0, -89.0, 201, 0, 5.9,6.9)
+    val mat  = MatrixM(5,6,arr)
+    val res = mat.qr
+
+    assertResult(Some(25.0), "Q matrix is not orthogonal") {
+      val itest = res.Q |* res.Q.transpose
+      val norm  = itest.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(5,5,norm) :== MatrixM.eye(5)).sum
+    }
+
+    assertResult(Some(25.0), "Q matrix is not orthogonal(test 2)") {
+      val itest = res.Q.transpose |* res.Q
+      val norm  = itest.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(5,5,norm) :== MatrixM.eye(5)).sum
+    }
+
+    assertResult(Some(25.0), "Q * R should yield original matrix") {
+      val a1 = (res.Q |* res.R) :- mat
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(5,5,a2) :== MatrixM.zero(5,5)).sum
+    }
+
+  }
+  it should "match the values of the qr decompostion of a 5x6 matrix" in {
+    val arrR = Array(
+      -90.6570951443	,
+      0	,
+      0	,
+      0	,
+      0	,
+      -12.5384560159	,
+      -59.8229648274	,
+      0	,
+      0	,
+      0	,
+      -11.2059624057	,
+      4.4438698	,
+      -91.0641012022	,
+      0	,
+      0	,
+      -0.6287428459	,
+      -3.9803533003	,
+      -0.3926080932	,
+      -7.8490336299	,
+      0	,
+      -6.1516420652	,
+      -0.5828515293	,
+      7.7151692504	,
+      -0.4893955258	,
+      -0.2328936532	,
+      16.8544667968	,
+      -24.8454585107	,
+      204.6295878394	,
+      39.6809798191	,
+      63.6804660919
+    )
+    val arrQ = Array (
+      -0.0220611525	,
+      0.1103057624	,
+      -0.0551528812	,
+      -0.0772140337	,
+      -0.9891117718	,
+      0.0046238563	,
+      -0.1234152131	,
+      -0.9913996773	,
+      0.0161834969	,
+      0.0401507089	,
+      -0.0849098123	,
+      0.9784918037	,
+      -0.118461719	,
+      -0.0775588294	,
+      0.1236752321	,
+      -0.7607557556	,
+      -0.122598737	,
+      0.0034790253	,
+      -0.6351632921	,
+      0.0526850904	,
+      -0.6430652607	,
+      0.0111652944	,
+      0.0062894399	,
+      0.764413702	,
+      -0.0444358163
+    )
+    val Q = MatrixM(5,5,arrQ)
+    val R = MatrixM(5,6,arrR)
+    val arr = Array(2.0,-10.0,5.0,7.0,89.67, 0.0,6.0,60.0,0.0,10.0, 8.0,-90.89,7.0,8.0,0.0,  6.0,1.0,4.0,5.0,0.0 ,0.0,7.0,0.0,0.0,7.0, -89.0, 201, 0, 5.9,6.9)
+    val mat  = MatrixM(5,6,arr)
+    val res = mat.qr
+
+    assertResult(Some(30.0), "R should match") {
+      val a1 = res.R :- R
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(5,6,a2) :== MatrixM.zero(5,6)).sum
+    }
+
+    assertResult(Some(25.0), "Q should match") {
+      val a1 = res.Q :- Q
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(5,5,a2) :== MatrixM.zero(5,5)).sum
+    }
+
+  }
+  //
+  // Section * LUDecompostionT
+  //----------------------------------------
+  //----------------------------------------
+  //
+  it should "match the values of the lu decompostion of a 6x6 matrix" in {
+
+    val arrL = Array(
+      1	,
+      -0.1172031077	,
+      -0.0554938957	,
+      -0.0110987791	,
+      -0.0776914539	,
+      -0.0221975583	,
+      0	,
+      1	,
+      -0.0329167272	,
+      0.4255195466	,
+      0.3598314199	,
+      0.0653974713	,
+      0	,
+      0	,
+      1	,
+      -0.3012056227	,
+      0.8918417053	,
+      0.7288203713	,
+      0	,
+      0	,
+      0	,
+      1	,
+      0.908812197	,
+      0.3029234501	,
+      0	,
+      0	,
+      0	,
+      0	,
+      1	,
+      0.3275677427	,
+      0	,
+      0	,
+      0	,
+      0	,
+      0	,
+      1.0
+    )
+    val arrU = Array(
+      -90.1	,
+      0	,
+      0	,
+      0	,
+      0	,
+      0	,
+      45	,
+      15.2741398446	,
+      0	,
+      0	,
+      0	,
+      0	,
+      100.9	,
+      11.8257935627	,
+      12.9886004941	,
+      0	,
+      0	,
+      0	,
+      34.56	,
+      -40.9494605993	,
+      4.5699468101	,
+      20.1848633884	,
+      0	,
+      0	,
+      0.89	,
+      7.1043107658	,
+      0.5832402267	,
+      4.1625300533	,
+      -6.230324877	,
+      0	,
+      -12	,
+      3.5935627081	,
+      22.4523615754	,
+      -3.899538974	,
+      71.2946219281	,
+      -34.0376756807
+
+    )
+    val L = MatrixM(6,6,arrL)
+    val U = MatrixM(6,6,arrU)
+    val arr = Array(2.0,1.0,5.0,7.0,10.56,-90.1, 0.0,6.0,-3.0,2.0,10.0,45.0, 8.0,0.0,7.0,8.0,0.0,100.9,  6.0,1.0,4.0,5.0,-45.0, 34.56 ,0.09,7.0,0.3,0.56,7.0, 0.89,
+      5.0, -9.0, 23.0, 90.0 , 5.0, -12.0)
+    val mat  = MatrixM(6,6,arr)
+    val res = mat.lu
+
+    assertResult(Some(36.0), "P * L * U should match") {
+      val P = res.constructP(res.permutations)
+      val test = P |* res.L |* res.U
+      val a1 = test :- mat
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+    }
+
+    assertResult(Some(36.0), "L hould match") {
+      val a1 = res.L :- L
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+    }
+
+    assertResult(Some(36.0), "U hould match") {
+      val a1 = res.U :- U
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+    }
+
+
+  }
+
+  //
+  // Section * CholeskyDecompostionT
+  //----------------------------------------
+  //----------------------------------------
+  //
+  it should "match the values of the cholesky decompostion of a 6x6 square matrix" in {
+    val arrL = Array(
+      11.3581732686	,
+      -3.2020994169	,
+      18.0510540869	,
+      49.1320555517	,
+      -19.6554494037	,
+      68.1835081826	,
+      0	,
+      12.5597197152	,
+      -12.4285202038	,
+      -49.7426923319	,
+      -2.6575993597	,
+      43.5535492984	,
+      0	,
+      0	,
+      12.1565345348	,
+      55.118878598	,
+      23.1703823278	,
+      -58.0898301742	,
+      0	,
+      0	,
+      0	,
+      17.7743775961	,
+      -6.7945561096	,
+      77.5340560127	,
+      0	,
+      0	,
+      0	,
+      0	,
+      36.5250799375	,
+      33.354408821	,
+      0	,
+      0	,
+      0	,
+      0	,
+      0	,
+      67.9604918771
+
+    )
+    val L = MatrixM(6,6,arrL)
+    val arr = Array(2.0,1.0,5.0,7.0,10.56,-90.1, 0.0,6.0,-3.0,2.0,10.0,45.0, 8.0,0.0,7.0,8.0,0.0,100.9,  6.0,1.0,4.0,5.0,-45.0, 34.56 ,0.09,7.0,0.3,0.56,7.0, 0.89,
+      5.0, -9.0, 23.0, 90.0 , 5.0, -12.0)
+    val matx  = MatrixM(6,6,arr)
+    //println(matx)
+    val mat   = matx |* matx.transpose
+
+    val res = mat.cholesky
+
+    assertResult(Some(36.0), "L hould match") {
+      val a1 = res.L :- L
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+    }
+
+    assertResult(Some(36.0), "L * L^t should match") {
+      val test = res.L |* res.L.transpose
+      val a1 = test :- mat
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+    }
+
+  }
 }
