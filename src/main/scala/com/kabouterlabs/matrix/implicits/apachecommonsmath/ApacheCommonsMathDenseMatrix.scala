@@ -33,6 +33,7 @@ package com.kabouterlabs.matrix.implicits.apachecommonsmath
 
 import java.io.{PrintWriter, StringWriter, File}
 
+import com.kabouterlabs.matrix.MatrixExtension.MatrixExtensionsTC
 import com.kabouterlabs.matrix._
 
 import com.kabouterlabs.matrix.MatrixOperations.MatrixOperationsTC
@@ -44,6 +45,8 @@ import org.apache.commons.math3.linear._
 import spire.math.{Complex, Numeric}
 import scala.io.Source
 import scala.util.Random
+
+import com.kabouterlabs.matrix.implicits.extension.MatrixExtensionImplicit.MatrixMapper._
 
 /*
 The array is column major order but the apache lib expects row major order.
@@ -249,10 +252,6 @@ object ApacheCommonsMathDenseMatrixImplicit {
   }
 
   implicit class Ev$SliceT(matrix: MatrixMonT) extends SliceT[MatrixMonT] {
-    private def @#(matrix: MatrixMonT, a1: Int, a2: Int, a3: Int, a4: Int, f: (MatrixT, Int, Int, Int, Int) => MatrixT): MatrixMonT =
-      for (m <- matrix) yield MatrixM({
-        f(m, a1, a2, a3, a4)
-      })
 
     override def deepCopy: MatrixMonT = for (m <- matrix) yield MatrixM(m.getRowDimension, m.getColumnDimension, m.getData.transpose.flatten)
 
@@ -290,13 +289,14 @@ object ApacheCommonsMathDenseMatrixImplicit {
     override def apply(row: Int, coll: Int): Option[Double] = matrix.safeMap(_.getEntry(row, coll))
 
     override def apply[K, L](row: K, col: L): MatrixMonT = (row, col) match {
-      case (r: Range, `::`) => @#(matrix, r.start, r.end, 0, 0, (m, start: Int, end: Int, _, _) => m.getSubMatrix(r.start, r.end, 0, m.getColumnDimension - 1))
-      case (`::`, r: Range) => @#(matrix, r.start, r.end, 0, 0, (m, start: Int, end: Int, _, _) => m.getSubMatrix(0, m.getRowDimension - 1, start, end))
-      case (row: Int, `::`) => @#(matrix, row, 0, 0, 0, (m: RealMatrix, row: Int, _, _, _) => m.getSubMatrix(row, row, 0, m.getColumnDimension - 1))
-      case (`::`, col: Int) => @#(matrix, col, 0, 0, 0, (m: RealMatrix, col: Int, _, _, _) => m.getSubMatrix(0, m.getRowDimension - 1, col, col))
-      case (r: Range, c: Range) => @#(matrix, r.start, r.end + 1, c.start, c.end + 1, (m: RealMatrix, rs, re, cs, ce) => m.getSubMatrix(rs, re, cs, ce))
-      case (row: Int, r: Range) => @#(matrix, row, row + 1, r.start, r.end + 1, (m: RealMatrix, rs, re, cs, ce) => m.getSubMatrix(rs, re, cs, ce))
-      case (r: Range, col: Int) => @#(matrix, r.start, r.end + 1, col, col + 1, (m: RealMatrix, rs, re, cs, ce) => m.getSubMatrix(rs, re, cs, ce))
+      case (r: Range, `::`)     => for (m <- matrix) yield MatrixM({m.getSubMatrix(r.start, r.end, 0, m.getColumnDimension - 1)})
+      case (`::`, r: Range)     => for (m <- matrix) yield MatrixM({m.getSubMatrix(0, m.getRowDimension - 1, r.start, r.end)})
+      case (row: Int, `::`)     => for (m <- matrix) yield MatrixM({m.getSubMatrix(row, row, 0, m.getColumnDimension - 1)})
+      case (`::`, col: Int)     => for (m <- matrix) yield MatrixM({m.getSubMatrix(0, m.getRowDimension - 1, col, col)})
+      case (r: Range, c: Range) => for (m <- matrix) yield MatrixM({m.getSubMatrix(r.start, r.end, c.start, c.end)})
+      case (row: Int, c: Range) => for (m <- matrix) yield MatrixM({m.getSubMatrix(row, row, c.start, c.end)})
+      case (r: Range, col: Int) => for (m <- matrix) yield MatrixM({m.getSubMatrix(r.start, r.end, col, col)})
+
       case (_, _) => matrix
     }
   }
@@ -418,6 +418,7 @@ object ApacheCommonsMathDenseMatrixImplicit {
   }
 
   implicit class Ev$LUDecompostion (matrix: MatrixMonT) extends LUDecompositionT[MatrixMonT] {
+
     private case class LU(upper:MatrixMonT, lower:MatrixMonT, perms : Option[Array[Int]], p:MatrixMonT)
 
     private val lu_ = matrix.matrix match {
@@ -455,7 +456,14 @@ object ApacheCommonsMathDenseMatrixImplicit {
     }
   }
 
+
   implicit object Ev$MatrixOperationsTC extends MatrixOperationsTC[MatrixMonT] {
+
+
+
+    override type MatrixDataElemT = Double
+
+
 
     private def op(lhs: MatrixMonT, rhs: MatrixMonT, f: (Double, Double) => Double): MatrixMonT =
       for (l <- lhs; r <- rhs) yield {
@@ -478,6 +486,15 @@ object ApacheCommonsMathDenseMatrixImplicit {
         })
       }
 
+
+
+    override def rows(m: MatrixMonT): Int = m.rows
+
+    override def columns(m: MatrixMonT): Int = m.columns
+
+    override def size(m: MatrixMonT): Int = m.size
+
+    override def isNull(m: MatrixMonT): Boolean = m.isNull
 
     override def deepCopy(lhs: MatrixMonT): MatrixMonT = lhs.deepCopy
 
@@ -535,6 +552,7 @@ object ApacheCommonsMathDenseMatrixImplicit {
     override def lt(lhs: MatrixMonT, rhs: MatrixMonT): MatrixMonT = opb(lhs, rhs, _ < _)
 
     override def le(lhs: MatrixMonT, rhs: MatrixMonT): MatrixMonT = opb(lhs, rhs, _ <= _)
+
 
     override def create(rows: Int, colls: Int, data: Array[ElemT]): MatrixMonT = MatrixM(rows, colls, data)
 
@@ -596,6 +614,71 @@ object ApacheCommonsMathDenseMatrixImplicit {
 
     override def cholesky(m: MatrixMonT): CholeskyDecompositionT[MatrixMonT]#CholeskyResultT = m.cholesky
   }
+
+  implicit object Ev$MatrixExtensionsTC extends MatrixExtensionsTC[MatrixMonT]{
+    override type MatrixDataElemT = ElemT //MatrixDataElemT
+
+    override def acos(m: MatrixMonT): MatrixMonT = m.acos
+
+    override def atan(m: MatrixMonT): MatrixMonT = m.atan
+
+    override def log10(m: MatrixMonT): MatrixMonT = m.log10
+
+    override def tanh(m: MatrixMonT): MatrixMonT = m.tanh
+
+    override def log(m: MatrixMonT): MatrixMonT = m.log
+
+    override def mapFunc(m: MatrixMonT, f: (MatrixDataElemT) => MatrixDataElemT): MatrixMonT = m.mapFunc(f)
+
+    override def round(m: MatrixMonT): MatrixMonT = m.round
+
+    override def cosh(m: MatrixMonT): MatrixMonT = m.cosh
+
+    override def tan(m: MatrixMonT): MatrixMonT = m.tan
+
+    override def cos(m: MatrixMonT): MatrixMonT = m.cos
+
+    override def exp(m: MatrixMonT): MatrixMonT = m.exp
+
+    override def foldFunc[W](m: MatrixMonT, w: W, f: (W, MatrixDataElemT) => W): Option[W] = m.foldFunc(w)(f)
+
+    override def max(m: MatrixMonT): Option[MatrixDataElemT] = m.max
+
+    override def expm1(m: MatrixMonT): MatrixMonT = m.expm1
+
+    override def pow(m: MatrixMonT, p: MatrixDataElemT): MatrixMonT = m.pow(p)
+
+    override def asinh(m: MatrixMonT): MatrixMonT = m.asinh
+
+    override def asin(m: MatrixMonT): MatrixMonT = m.asin
+
+    override def reduceFunc(m: MatrixMonT, v: MatrixDataElemT, f: (MatrixDataElemT, MatrixDataElemT) => MatrixDataElemT): Option[MatrixDataElemT] = m.reduceFunc(v)(f)
+
+    override def floor(m: MatrixMonT): MatrixMonT = m.floor
+
+    override def abs(m: MatrixMonT): MatrixMonT = m.abs
+
+    override def min(m: MatrixMonT): Option[MatrixDataElemT] = m.min
+
+    override def sqrt(m: MatrixMonT): MatrixMonT = m.sqrt
+
+    override def reduceFilter(m: MatrixMonT, v: MatrixDataElemT, f: (MatrixDataElemT, Int, Int, MatrixDataElemT) => MatrixDataElemT): Option[MatrixDataElemT] = m.reduceFilter(v)(f)
+
+    override def mapFilter(m: MatrixMonT, f: (Int, Int, MatrixDataElemT) => MatrixDataElemT): MatrixMonT = m.mapFilter(f)
+
+    override def log1p(m: MatrixMonT): MatrixMonT = m.log1p
+
+    override def sin(m: MatrixMonT): MatrixMonT = m.sin
+
+    override def ceil(m: MatrixMonT): MatrixMonT = m.ceil
+
+    override def atanh(m: MatrixMonT): MatrixMonT = m.atanh
+
+    override def acosh(m: MatrixMonT): MatrixMonT = m.acosh
+
+    override def sinh(m: MatrixMonT): MatrixMonT = m.sinh
+  }
+
 
 }
 

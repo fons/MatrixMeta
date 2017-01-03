@@ -508,6 +508,98 @@ class JeigenDenseMatrixImplicit$Test extends FlatSpec with Matchers {
 
   }
 
+  it should "should be able to use the access slicer" in {
+    val arr = Array(2.0,1.0,5.0,7.0,10.56,-90.1, 0.0,6.0,-3.0,2.0,10.0,45.0,
+      8.0,0.0,7.0,8.0,0.0,100.9,  6.0,1.0,4.0,5.0,-45.0, 34.56 ,0.09,7.0,0.3,0.56,7.0, 0.89,
+      5.0, -9.0, 23.0, 90.0 , 5.0, -12.0)
+
+    val mat = MatrixM(6,6,arr)
+
+    assertResult(Some(36.0), "row range plus column wildcard not working") {
+      val test = mat(0 to 3, :: ) concatDown mat(4 to 5, ::)
+      val a1 = test :- mat
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+    }
+
+    assertResult(Some(36.0), "row wild card plus column range not working") {
+      val test = mat(::, 0 to 3) concatRight mat(::, 4 to 5)
+      val a1 = test :- mat
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+    }
+
+    assertResult(Some(36.0), "row range plus column range not working") {
+      val test = mat(0 to 3, 0 to 5) concatDown mat(4 to 5, 0 to 5)
+      val a1 = test :- mat
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+    }
+
+
+    assertResult(Some(36.0), "row plus column range not working") {
+      val test = mat(0, 0 to 5) concatDown mat(1 to 5, 0 to 5)
+      val a1 = test :- mat
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+    }
+
+    assertResult(Some(36.0), "row plus column range not working (bottom)") {
+      val test = mat(0 to 4, 0 to 5) concatDown mat(5, 0 to 5)
+      val a1 = test :- mat
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+    }
+
+
+    assertResult(Some(36.0), "row plus column range not working (bottom)") {
+      val test = mat(0 to 4, 0 to 5) concatDown mat(5, 0 to 5)
+      val a1 = test :- mat
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+    }
+    assertResult(Some(36.0), "row plus column wild cart not working") {
+      val test = mat(0, 0 to 5) concatDown mat(1 to 5, ::)
+      val a1 = test :- mat
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+    }
+
+    assertResult(Some(36.0), "row range plus column  not working") {
+      val test = mat(0 to 5, 0) concatRight mat(0 to 5, 1 to 5)
+      val a1 = test :- mat
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+    }
+
+    assertResult(Some(36.0), "row range plus column  not working (right side) ") {
+      val test = mat(0 to 5, 0 to 4) concatRight mat(0 to 5, 5)
+      val a1 = test :- mat
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+    }
+    assertResult(Some(36.0), "row wild card plus column  not working") {
+      val test = mat(::, 0) concatRight mat(::, 1 to 5)
+      val a1 = test :- mat
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+    }
+
+    assertResult(Some(36.0), "row wild card plus column not working (right side)") {
+      val test = mat(::, 0 to 4) concatRight mat(::, 5)
+      val a1 = test :- mat
+      val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+    }
+
+    for (i <- Range(0, 5); j <- Range(0,5)) {
+      assertResult(Some(0.0), "single cell extraction ") {
+        (mat(i to i, j to j) :- MatrixM(1, 1, mat(i, j).map(Array(_)))).apply(0, 0) //.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      }
+    }
+  }
+
+
   //
   // Section  Aggregation Test : AggregateT
   //------------------------------------------------------------------------------------------------------

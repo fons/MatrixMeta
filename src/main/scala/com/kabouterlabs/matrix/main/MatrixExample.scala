@@ -27,19 +27,24 @@
 
 package com.kabouterlabs.matrix.main
 
-import com.kabouterlabs.matrix.MatrixOperations._
 
+import com.kabouterlabs.matrix.MatrixOperations._
+import com.kabouterlabs.matrix.MatrixExtension._
 
 /**
   * Created by fons on 12/2/16.
   */
 
-case class MatrixExample[T](implicit evmatrix: MatrixOperationsTC[T]) {
+case class MatrixExample[T](implicit ev$matrix: MatrixOperationsTC[T]{type MatrixDataElemT=Double},
+                            ev$extension:MatrixExtensionsTC[T]{type MatrixDataElemT=Double}) {
 
   def apply(): Unit = {
     val m1a = matrix(3, 3, Array(5, 6, 7, 8, 9, 8, 7, 6, 5))
     val m56 = matrix(3,3)
-    val m2a = fill(3, 3, 78.23)
+
+    val m2a = ev$matrix.fill(3,3,78.90)//fill(3, 3)(ev$matrix)(78.23)
+    val m2c = fill(3,3, 89.90)
+
     val m3a = m1a |* m2a :* m2a
     println(m1a)
     println(m2a)
@@ -106,7 +111,7 @@ case class MatrixExample[T](implicit evmatrix: MatrixOperationsTC[T]) {
     val b = (l4(::, 3 to 5) :== l3a).sum
     val l6a = l4(::, 3 to 5)
     println(l6a)
-    println(evmatrix)
+    println(ev$matrix)
 
     val s1  = l2 :+ l3a
     val s1b = add(l2, l3a)
@@ -155,6 +160,24 @@ case class MatrixExample[T](implicit evmatrix: MatrixOperationsTC[T]) {
     ka.csvWrite("nn")
     csvRead("nn")
 
+    val mat = matrix(4, 4, r)
+    val res1  = svd(mat)
+    val res1a = mat.svd
+    val res2  = lu(mat)
+    val res2a = mat.lu
+    val res3  = qr(mat)
+    val res3a = mat.qr
+    val res4  = (mat |* mat.transpose).cholesky
+    val res4a = cholesky((mat |* mat.transpose))
+
+     mat.mapFunc((x)=>x*x)
+    mat.mapFunc((x)=> 0.0 * x)
+    println(mat)
+    mat.reduceFunc(0.0)((x,y)=>x+y)
+    mat.foldFunc(0.0)((x,y)=>x-y)
+    mat.cos
+    mat.cosh
+    mat.abs
   }
 
 }

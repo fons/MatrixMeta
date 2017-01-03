@@ -34,6 +34,7 @@ package com.kabouterlabs.matrix.implicits.jblass
 
 import java.io.{PrintWriter, StringWriter, File}
 
+import com.kabouterlabs.matrix.MatrixExtension.MatrixExtensionsTC
 import com.kabouterlabs.matrix.MatrixOperations.MatrixOperationsTC
 import com.kabouterlabs.matrix._
 import org.jblas.{ComplexDoubleMatrix, Eigen, Solve, DoubleMatrix}
@@ -41,6 +42,7 @@ import spire.math.{Complex, Numeric}
 import spire.implicits._
 import scala.io.Source
 
+import com.kabouterlabs.matrix.implicits.extension.MatrixExtensionImplicit.MatrixMapper._
 /**
   * Created by fons on 3/21/16.
   */
@@ -405,7 +407,19 @@ object JblasDoubleMatrixImplicit {
     }
   }
 
+
   implicit object Ev$MatrixOperationsTC extends MatrixOperationsTC[MatrixMonT] {
+
+
+    override type MatrixDataElemT = Double
+
+    override def rows(m: MatrixMonT): Int = m.rows
+
+    override def columns(m: MatrixMonT): Int = m.columns
+
+    override def size(m: MatrixMonT): Int = m.size
+
+    override def isNull(m: MatrixMonT): Boolean = m.isNull
 
     override def deepCopy(lhs: MatrixMonT): MatrixMonT = lhs.deepCopy
 
@@ -552,6 +566,71 @@ object JblasDoubleMatrixImplicit {
     override def cholesky(m: MatrixMonT): CholeskyDecompositionT[MatrixMonT]#CholeskyResultT = m.cholesky
 
   }
+
+  implicit object Ev$MatrixExtensionsTC extends MatrixExtensionsTC[MatrixMonT]{
+    override type MatrixDataElemT = ElemT //MatrixDataElemT
+
+    override def acos(m: MatrixMonT): MatrixMonT = m.acos
+
+    override def atan(m: MatrixMonT): MatrixMonT = m.atan
+
+    override def log10(m: MatrixMonT): MatrixMonT = m.log10
+
+    override def tanh(m: MatrixMonT): MatrixMonT = m.tanh
+
+    override def log(m: MatrixMonT): MatrixMonT = m.log
+
+    override def mapFunc(m: MatrixMonT, f: (MatrixDataElemT) => MatrixDataElemT): MatrixMonT = m.mapFunc(f)
+
+    override def round(m: MatrixMonT): MatrixMonT = m.round
+
+    override def cosh(m: MatrixMonT): MatrixMonT = m.cosh
+
+    override def tan(m: MatrixMonT): MatrixMonT = m.tan
+
+    override def cos(m: MatrixMonT): MatrixMonT = m.cos
+
+    override def exp(m: MatrixMonT): MatrixMonT = m.exp
+
+    override def foldFunc[W](m: MatrixMonT, w: W, f: (W, MatrixDataElemT) => W): Option[W] = m.foldFunc(w)(f)
+
+    override def max(m: MatrixMonT): Option[MatrixDataElemT] = m.max
+
+    override def expm1(m: MatrixMonT): MatrixMonT = m.expm1
+
+    override def pow(m: MatrixMonT, p: MatrixDataElemT): MatrixMonT = m.pow(p)
+
+    override def asinh(m: MatrixMonT): MatrixMonT = m.asinh
+
+    override def asin(m: MatrixMonT): MatrixMonT = m.asin
+
+    override def reduceFunc(m: MatrixMonT, v: MatrixDataElemT, f: (MatrixDataElemT, MatrixDataElemT) => MatrixDataElemT): Option[MatrixDataElemT] = m.reduceFunc(v)(f)
+
+    override def floor(m: MatrixMonT): MatrixMonT = m.floor
+
+    override def abs(m: MatrixMonT): MatrixMonT = m.abs
+
+    override def min(m: MatrixMonT): Option[MatrixDataElemT] = m.min
+
+    override def sqrt(m: MatrixMonT): MatrixMonT = m.sqrt
+
+    override def reduceFilter(m: MatrixMonT, v: MatrixDataElemT, f: (MatrixDataElemT, Int, Int, MatrixDataElemT) => MatrixDataElemT): Option[MatrixDataElemT] = m.reduceFilter(v)(f)
+
+    override def mapFilter(m: MatrixMonT, f: (Int, Int, MatrixDataElemT) => MatrixDataElemT): MatrixMonT = m.mapFilter(f)
+
+    override def log1p(m: MatrixMonT): MatrixMonT = m.log1p
+
+    override def sin(m: MatrixMonT): MatrixMonT = m.sin
+
+    override def ceil(m: MatrixMonT): MatrixMonT = m.ceil
+
+    override def atanh(m: MatrixMonT): MatrixMonT = m.atanh
+
+    override def acosh(m: MatrixMonT): MatrixMonT = m.acosh
+
+    override def sinh(m: MatrixMonT): MatrixMonT = m.sinh
+  }
+
 
 }
 

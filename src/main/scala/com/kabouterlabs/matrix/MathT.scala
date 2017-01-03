@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016.
+ * Copyright (c) 2017.
  * https://opensource.org/licenses/BSD-3-Clause
  *
  * Copyright (c) 2016, MatrixMeta developers
@@ -28,25 +28,33 @@
 package com.kabouterlabs.matrix
 
 /**
-  * Created by fons on 3/27/16.
+  * Created by fons on 1/1/17.
   */
 
-trait SliceT[MatrixMonT] {
-  def apply(row: Int, coll: Int): Option[Double]
-
-  def apply(row: Int, coll: Int, v: Double): MatrixMonT
-
-  def apply[K, L](row: K, col: L): MatrixMonT
-
-  def toArray: Option[Array[Double]]
-
-  def concatRight(matrix: MatrixMonT): MatrixMonT
-
-  def concatDown(matrix: MatrixMonT): MatrixMonT
-
-  def toDiag: MatrixMonT
-
-  def deepCopy:MatrixMonT
+trait MathT[MatrixMonT] {
+  type ContElemT
+  def cos:MatrixMonT
+  def acos:MatrixMonT
+  def sin:MatrixMonT
+  def asin:MatrixMonT
+  def tan:MatrixMonT
+  def atan:MatrixMonT
+  def cosh:MatrixMonT
+  def acosh:MatrixMonT
+  def sinh:MatrixMonT
+  def asinh:MatrixMonT
+  def tanh:MatrixMonT
+  def atanh:MatrixMonT
+  def exp:MatrixMonT
+  def log:MatrixMonT
+  def log10:MatrixMonT
+  def log1p:MatrixMonT
+  def expm1:MatrixMonT
+  def ceil:MatrixMonT
+  def floor:MatrixMonT
+  def abs:MatrixMonT
+  def round:MatrixMonT
+  def sqrt:MatrixMonT
+  def pow(p:ContElemT):MatrixMonT
 
 }
-

@@ -6,6 +6,7 @@ organization      := "com.kabouterlabs"
 
 scalaVersion := "2.11.8"
 
+
 publishMavenStyle := true
 
 libraryDependencies += "org.spire-math" %% "spire" % "0.7.4"

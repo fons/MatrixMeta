@@ -27,26 +27,15 @@
 
 package com.kabouterlabs.matrix
 
+
 /**
-  * Created by fons on 3/27/16.
+  * Created by fons on 12/30/16.
   */
-
-trait SliceT[MatrixMonT] {
-  def apply(row: Int, coll: Int): Option[Double]
-
-  def apply(row: Int, coll: Int, v: Double): MatrixMonT
-
-  def apply[K, L](row: K, col: L): MatrixMonT
-
-  def toArray: Option[Array[Double]]
-
-  def concatRight(matrix: MatrixMonT): MatrixMonT
-
-  def concatDown(matrix: MatrixMonT): MatrixMonT
-
-  def toDiag: MatrixMonT
-
-  def deepCopy:MatrixMonT
-
+trait MapT[MatrixMonT] {
+  type ContElemT
+  def mapFilter(f:(Int,Int,ContElemT)=>ContElemT):MatrixMonT
+  def mapFunc(f:(ContElemT)=>ContElemT):MatrixMonT
+  def reduceFunc(v:ContElemT)(f:(ContElemT, ContElemT)=>ContElemT):Option[ContElemT]
+  def foldFunc[W](w:W)(f:(W,ContElemT)=>W):Option[W]
+  def reduceFilter(v:ContElemT)(f:(ContElemT, Int,Int,ContElemT)=>ContElemT):Option[ContElemT]
 }
-

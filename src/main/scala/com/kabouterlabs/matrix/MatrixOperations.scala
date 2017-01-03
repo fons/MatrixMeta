@@ -38,7 +38,17 @@ object MatrixOperations {
 
 
   trait MatrixOperationsTC[A] {
+    type MatrixDataElemT  // = Double
+
     type EigenResultRetTypeT
+
+    def rows(m:A):Int
+
+    def columns(m:A):Int
+
+    def isNull(m:A):Boolean
+
+    def size(m:A):Int
 
     def add(x: A, y: A): A
 
@@ -70,7 +80,7 @@ object MatrixOperations {
 
     def lt(lhs: A, rhs: A): A
 
-    def create(rows: Int, colls: Int, data: Array[Double]): A
+    def create(rows: Int, colls: Int, data: Array[MatrixDataElemT]): A
 
     def create(rows: Int, colls: Int): A
 
@@ -80,31 +90,31 @@ object MatrixOperations {
 
     def rand(row: Int, col: Int): A
 
-    def diag(data: Array[Double]): A
+    def diag(data: Array[MatrixDataElemT]): A
 
     def one(row: Int, col: Int): A
 
     def none
 
-    def fill(row: Int, col: Int, value: Double): A
+    def fill(row: Int, col: Int, value: MatrixDataElemT): A
 
     def inverse(m: A): A
 
     def transpose(m: A): A
 
-    def determinant(m: A): Option[Double]
+    def determinant(m: A): Option[MatrixDataElemT]
 
     def solve(lhs: A, rhs: A): A
 
     def deepCopy(lhs:A):A
 
-    def get(m: A, row: Int, coll: Int): Option[Double]
+    def get(m: A, row: Int, coll: Int): Option[MatrixDataElemT]
 
-    def set(m: A, row: Int, coll: Int, v: Double): A
+    def set(m: A, row: Int, coll: Int, v: MatrixDataElemT): A
 
     def slice[K, L](m: A, row: K, col: L): A
 
-    def toArray(m: A): Option[Array[Double]]
+    def toArray(m: A): Option[Array[MatrixDataElemT]]
 
     def concatRight(m: A, rhs: A): A
 
@@ -120,9 +130,9 @@ object MatrixOperations {
 
     def sumCols(m: A): A
 
-    def trace(m: A): Option[Double]
+    def trace(m: A): Option[MatrixDataElemT]
 
-    def sum(m: A): Option[Double]
+    def sum(m: A): Option[MatrixDataElemT]
 
     def eig(m: A): EigenResultRetTypeT //EigenResultM[EigenResultT]
     def vectors(r: EigenResultRetTypeT): Option[EigenAccessT[EigenResultRetTypeT]#EigenVectorT]
@@ -184,19 +194,21 @@ object MatrixOperations {
 
   implicit class MatrixSelfOps$[A](lhs: A)(implicit ev: MatrixOperationsTC[A]) {
 
+    type MatrixElemT =  MatrixOperationsTC[A]#MatrixDataElemT
+
     def inverse: A = ev.inverse(lhs)
 
     def transpose: A = ev.transpose(lhs)
 
-    def determinant: Option[Double] = ev.determinant(lhs)
+    def determinant:Option[MatrixElemT] = ev.determinant(lhs)
 
     def deepCopy = ev.deepCopy(lhs)
 
     def apply[K, L](row: K, col: L): A = ev.slice(lhs, row, col)
 
-    def apply(row: Int, coll: Int): Option[Double] = ev.get(lhs, row, coll)
+    def apply(row: Int, coll: Int): Option[MatrixElemT] = ev.get(lhs, row, coll)
 
-    def apply(row: Int, coll: Int, v: Double): A = ev.set(lhs, row, coll, v)
+    def apply(row: Int, coll: Int, v: ev.MatrixDataElemT): A = ev.set(lhs, row, coll, v)
 
     def toDiag: A = ev.toDiag(lhs)
 
@@ -206,19 +218,21 @@ object MatrixOperations {
 
     def sumCols = ev.sumCols(lhs)
 
-    def trace = ev.trace(lhs)
+    def trace:Option[MatrixElemT] = ev.trace(lhs)
 
-    def sum = ev.sum(lhs)
+    def sum:Option[MatrixElemT] = ev.sum(lhs)
 
     def eigen  = {val e = ev.eig(lhs); (ev.values(e), ev.vectors(e))}
 
-    def svd(m:A) : SingularValueDecompositionT[A]#SvdResultT  = ev.svd(m)
+    def svd : SingularValueDecompositionT[A]#SvdResultT  = ev.svd(lhs)
 
-    def qr(m:A) : QRDecompositionT[A]#QRResultT = ev.qr(m)
+    def qr : QRDecompositionT[A]#QRResultT = ev.qr(lhs)
 
-    def lu(m:A) : LUDecompositionT[A]#LUResultT = ev.lu(m)
+    def lu : LUDecompositionT[A]#LUResultT = ev.lu(lhs)
 
-    def cholesky(m:A) : CholeskyDecompositionT[A]#CholeskyResultT = ev.cholesky(m)
+    def cholesky : CholeskyDecompositionT[A]#CholeskyResultT = ev.cholesky(lhs)
+
+    //def funky(v:MatrixMTypeManifestT[A]#MatrixElemTypeT):MatrixMTypeManifestT[A]#MatrixElemTypeT = ev.funky(lhs,v)
 
   }
 
@@ -275,11 +289,11 @@ object MatrixOperations {
 
   def deepCopy[A: MatrixOperationsTC](lhs: A): A = lhs.deepCopy
 
-  def getValue[A: MatrixOperationsTC](lhs: A, row: Int, coll: Int): Option[Double] = lhs(row, coll)
+  def getValue[A: MatrixOperationsTC](lhs: A, row: Int, coll: Int)(implicit ev: MatrixOperationsTC[A]) = ev.get(lhs,row, coll)
 
-  def setValue[A: MatrixOperationsTC](lhs: A, row: Int, coll: Int, v: Double): A = lhs(row, coll, v)
+  def setValue[A](lhs: A, row: Int, coll: Int, v: Double)(implicit ev: MatrixOperationsTC[A]{type MatrixDataElemT=Double}) = ev.set(lhs, row, coll, v)
 
-  def matrix[A](row: Int, col: Int, data: Array[Double])(implicit ev: MatrixOperationsTC[A]) = ev.create(row, col, data)
+  def matrix[A](row: Int, col: Int, data: Array[Double])(implicit ev: MatrixOperationsTC[A]{type MatrixDataElemT=Double}) = ev.create(row, col, data)
 
   def matrix[A](row :Int, col :Int)(implicit ev: MatrixOperationsTC[A]) = ev.create(row,col)
 
@@ -289,13 +303,15 @@ object MatrixOperations {
 
   def rand[A](row: Int, col: Int)(implicit ev: MatrixOperationsTC[A]): A = ev.rand(row, col)
 
-  def diag[A](data: Array[Double])(implicit ev: MatrixOperationsTC[A]): A = ev.diag(data)
+  def diag[A](data: Array[Double])(implicit ev: MatrixOperationsTC[A]{type MatrixDataElemT=Double}): A = ev.diag(data)
 
   def one[A](row: Int, col: Int)(implicit ev: MatrixOperationsTC[A]): A = ev.one(row, col)
 
   def none[A]()(implicit ev: MatrixOperationsTC[A])  = ev.none
 
-  def fill[A](row: Int, col: Int, value: Double)(implicit ev: MatrixOperationsTC[A]): A = ev.fill(row, col, value)
+  def fill[A](row: Int, col: Int, value:Double)(implicit ev: MatrixOperationsTC[A]{type MatrixDataElemT=Double}) = ev.fill(row, col, value)
+
+  def fill[A](row: Int, col:Int)(implicit ev: MatrixOperationsTC[A]) = (value:ev.MatrixDataElemT)=>ev.fill(row, col, value)
 
   def csvRead[A](fn: String)(implicit ev: MatrixOperationsTC[A]): A = ev.csvRead(fn)
 
@@ -314,4 +330,6 @@ object MatrixOperations {
   def lu[A](lhs:A)(implicit ev: MatrixOperationsTC[A]) = ev.lu(lhs)
 
   def cholesky[A](lhs:A)(implicit ev: MatrixOperationsTC[A]) = ev.cholesky(lhs)
+
+  //def funky[A](m:A, v)(implicit ev: MatrixOperationsTC[A]):MatrixMTypeManifestT[A]#MatrixElemTypeT = ev.funky(m)
 }

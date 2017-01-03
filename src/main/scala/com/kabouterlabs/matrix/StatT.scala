@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016.
+ * Copyright (c) 2017.
  * https://opensource.org/licenses/BSD-3-Clause
  *
  * Copyright (c) 2016, MatrixMeta developers
@@ -28,25 +28,10 @@
 package com.kabouterlabs.matrix
 
 /**
-  * Created by fons on 3/27/16.
+  * Created by fons on 1/1/17.
   */
-
-trait SliceT[MatrixMonT] {
-  def apply(row: Int, coll: Int): Option[Double]
-
-  def apply(row: Int, coll: Int, v: Double): MatrixMonT
-
-  def apply[K, L](row: K, col: L): MatrixMonT
-
-  def toArray: Option[Array[Double]]
-
-  def concatRight(matrix: MatrixMonT): MatrixMonT
-
-  def concatDown(matrix: MatrixMonT): MatrixMonT
-
-  def toDiag: MatrixMonT
-
-  def deepCopy:MatrixMonT
-
+trait StatT[MatrixMonT] {
+  type ContElemT
+  def max:Option[ContElemT]
+  def min:Option[ContElemT]
 }
-
