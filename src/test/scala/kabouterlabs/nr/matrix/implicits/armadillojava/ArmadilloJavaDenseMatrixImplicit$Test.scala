@@ -30,6 +30,7 @@ package kabouterlabs.nr.matrix.implicits.armadillojava
 import org.scalatest._
 import com.kabouterlabs.matrix.MatrixM
 import com.kabouterlabs.matrix.MatrixOperations._
+import com.kabouterlabs.matrix.MatrixExtension._
 import com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaDenseMatrixImplicit._
 /**
   * Created by fons on 11/25/16.
@@ -1385,5 +1386,94 @@ class ArmadilloJavaDenseMatrixImplicit$Test extends FlatSpec with Matchers {
     }
 
   }
+  it should "calculate functions on matrix elements" in {
+    val arr = Array(2.0, 1.0, 5.0, 7.0, 10.56, -90.1, 0.0, 6.0, -3.0, 2.0, 10.0, 45.0,
+      8.0, 0.0, 7.0, 8.0, 0.0, 100.9, 6.0, 1.0, 4.0, 5.0, -45.0, 34.56, 0.09, 7.0, 0.3, 0.56, 7.0, 0.89,
+      5.0, -9.0, 23.0, 90.0, 5.0, -12.0).map((x) => if (scala.math.abs(x) > 1.0) 1.0/x else x).map(scala.math.abs).map((x) => if(x==0.0) 0.56 else x)
+
+
+    val matx = MatrixM(6, 6, arr)
+
+    type MatT = com.kabouterlabs.matrix.implicits.armadillojava.ArmadilloJavaDenseMatrixImplicit.MatrixMonT
+
+    def testit(name: String, f: (Double) => Double, mf: (MatT) => MatT): Unit = {
+      assertResult(Some(36.0), "operation " + name + " should work on all matrix elements") {
+        val a1 = mf(matx.deepCopy) :- MatrixM(6, 6, arr.clone().map(f))
+        val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+        (MatrixM(6, 6, a2) :== MatrixM.zero(6, 6)).sum
+      }
+    }
+
+    def testit2(name: String, f: (Array[Double]) => Double, mf: (MatT) => Option[Double]): Unit = {
+      assertResult(Some(0.0), "aggregate operation " + name + " should work on all matrix elements") {
+        println(mf(matx))
+        mf(matx).map(_ - f(arr)).map(scala.math.abs).map((x) => scala.math.floor(x + 0.5))
+      }
+    }
+
+    testit("cos", scala.math.cos, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.cos(m))
+    testit("sin", scala.math.sin, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.sin(m))
+    testit("tan", scala.math.tan, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.tan(m))
+    testit("cosh", scala.math.cosh, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.cosh(m))
+    testit("sinh", scala.math.sinh, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.sinh(m))
+    testit("tanh", scala.math.tanh, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.tanh(m))
+
+
+
+    testit("acos", scala.math.acos, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.acos(m))
+    testit("asin", scala.math.asin, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.asin(m))
+    testit("atan", scala.math.atan, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.atan(m))
+
+    testit("exp", scala.math.exp, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.exp(m))
+    testit("log", scala.math.log, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.log(m))
+    testit("log10", scala.math.log10, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.log10(m))
+    testit("log1p", scala.math.log1p, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.log1p(m))
+    testit("expm1", scala.math.expm1, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.expm1(m))
+    testit("floor", scala.math.floor, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.floor(m))
+    testit("ceil", scala.math.ceil, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.ceil(m))
+    testit("abs", scala.math.abs, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.abs(m))
+
+    testit("sqrt", scala.math.sqrt, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.sqrt(m))
+    testit("pow (3.45)", scala.math.pow(_,3.45), (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.pow(m, 3.45))
+
+    testit2("min", (x)=>x.min, (m:MatT) => com.kabouterlabs.matrix.MatrixExtension.min(m))
+    testit2("max", (x)=>x.max, (m:MatT) => com.kabouterlabs.matrix.MatrixExtension.max(m))
+
+
+  }
+
+  it should "support map/reduce functions on matrix elements with and without filter" in {
+
+
+    assertResult(Some(true), "values are changed in place") {
+      val arr = Array(2.0, 1.0, 5.0, 7.0, 10.56, -90.1, 0.0, 6.0, -3.0, 2.0, 10.0, 45.0,
+        8.0, 0.0, 7.0, 8.0, 0.0, 100.9, 6.0, 1.0, 4.0, 5.0, -45.0, 34.56, 0.09, 7.0, 0.3, 0.56, 7.0, 0.89,
+        5.0, -9.0, 23.0, 90.0, 5.0, -12.0)
+      val matx = MatrixM(6, 6, arr)
+      val res = com.kabouterlabs.matrix.MatrixExtension.mapFilter(matx)((row:Int, col:Int, x:Double) => if(row == col) 90.0 else x )
+      ((res :- matx).mapFunc(_ + 0.5).floor :== MatrixM.zero(6,6)).foldFunc(true)((a, x)=> (x==1.0) && a )
+    }
+
+    assertResult(Some(false), "values are not changed in place after a deep copy is made") {
+      val arr = Array(2.0, 1.0, 5.0, 7.0, 10.56, -90.1, 0.0, 6.0, -3.0, 2.0, 10.0, 45.0,
+        8.0, 0.0, 7.0, 8.0, 0.0, 100.9, 6.0, 1.0, 4.0, 5.0, -45.0, 34.56, 0.09, 7.0, 0.3, 0.56, 7.0, 0.89,
+        5.0, -9.0, 23.0, 90.0, 5.0, -12.0)
+      val matx = MatrixM(6, 6, arr)
+      val res = com.kabouterlabs.matrix.MatrixExtension.mapFilter(matx.deepCopy)((row:Int, col:Int, x:Double) => if(row == col) 90.0 else x )
+      ((res :- matx).mapFunc(_ + 0.5).floor :== MatrixM.zero(6,6)).foldFunc(true)((a, x)=> (x==1.0) && a )
+    }
+
+    assertResult(true, "reduce can be used to implement a sum of all diagonal elements") {
+      val arr = Array(2.0, 1.0, 5.0, 7.0, 10.56, -90.1, 0.0, 6.0, -3.0, 2.0, 10.0, 45.0,
+        8.0, 0.0, 7.0, 8.0, 0.0, 100.9, 6.0, 1.0, 4.0, 5.0, -45.0, 34.56, 0.09, 7.0, 0.3, 0.56, 7.0, 0.89,
+        5.0, -9.0, 23.0, 90.0, 5.0, -12.0)
+      val matx = MatrixM(6, 6, arr)
+      val res = com.kabouterlabs.matrix.MatrixExtension.reduceFilter(matx)(0.0)((accum:Double, row:Int, col:Int, x:Double) => if(row == col) accum + x else accum )
+      val gh = matx.toDiag.toArray.map(_.sum)
+      res == gh
+    }
+
+  }
+
 
 }

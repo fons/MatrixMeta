@@ -29,6 +29,7 @@ package test.kabouterlabs.nr.matrix.implicits.breeze
 
 import com.kabouterlabs.matrix.MatrixM
 import com.kabouterlabs.matrix.MatrixOperations._
+import com.kabouterlabs.matrix.MatrixExtension._
 import com.kabouterlabs.matrix.implicits.breeze.BreezeDenseMatrixImplicit._
 import org.scalatest._
 
@@ -38,25 +39,26 @@ import org.scalatest._
   */
 class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
 
-  val a1 = Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0,90.0,33.0,107.0,-78.0,-23.0,14.0,33.0)
-  val a2 = Array(23.0,67.0,-78.0,23.0,45.0,-65.0, 90.0,89.0, -102.0, -90.0,45.67,23.45,12.01,-1.0,-100.0,+67.0)
+  val a1 = Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0, 90.0, 33.0, 107.0, -78.0, -23.0, 14.0, 33.0)
+  val a2 = Array(23.0, 67.0, -78.0, 23.0, 45.0, -65.0, 90.0, 89.0, -102.0, -90.0, 45.67, 23.45, 12.01, -1.0, -100.0, +67.0)
   val hsize = math.sqrt(a1.length).toInt
   val lsize = math.sqrt(a2.length).toInt
 
-  val t = Array[Double]( 4.0, 5.0, 6.0, 7.0, 8.0,21.0,
-    56.0,-1.0,-9.0,67.0,45.0,89.0,
-    23.0,67.0,-78.0,23.0,45.0,-65.0,
-    90.0,89.0)
+  val t = Array[Double](4.0, 5.0, 6.0, 7.0, 8.0, 21.0,
+    56.0, -1.0, -9.0, 67.0, 45.0, 89.0,
+    23.0, 67.0, -78.0, 23.0, 45.0, -65.0,
+    90.0, 89.0)
 
-  val rows  = 6
+  val rows = 6
   val colls = 3
-  def throwAssert  {
-    assert(1==2, "ok get a clue")
+
+  def throwAssert {
+    assert(1 == 2, "ok get a clue")
   }
 
   // Section 1 :Testing matrix creation
   "a matrix" should "be created" in {
-    MatrixM(rows,colls,t)  should not equal None
+    MatrixM(rows, colls, t) should not equal None
   }
 
   //
@@ -64,7 +66,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   //----------------------------------------------------------------------------------------------------
 
   it should "be able to create  an identy matrix" in {
-    val l3  = MatrixM(hsize, lsize, a1)
+    val l3 = MatrixM(hsize, lsize, a1)
     val idm = MatrixM.eye(hsize)
 
     assertResult(Some(a1.length.toDouble), "multiplying by the identity should result in the same matrix") {
@@ -78,8 +80,8 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   }
 
   it should "be able to create  a zero matrix" in {
-    val l3  = MatrixM(hsize, lsize, a1)
-    val zero = MatrixM.zero(hsize,lsize)
+    val l3 = MatrixM(hsize, lsize, a1)
+    val zero = MatrixM.zero(hsize, lsize)
 
     assertResult(Some(a1.length.toDouble)) {
       (l3 :+ zero :== l3).sum
@@ -88,34 +90,34 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   }
 
   it should "be able to create a diagonal matrix" in {
-    val diag = MatrixM.diag(Array(1.0,1.0,1.0,1.0,1.0,1.0,1.0))
-    val id   = MatrixM.eye(7)
-    val zero  = MatrixM.zero(7,7)
-    assertResult(Some(7.0*7.0)) {
+    val diag = MatrixM.diag(Array(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0))
+    val id = MatrixM.eye(7)
+    val zero = MatrixM.zero(7, 7)
+    assertResult(Some(7.0 * 7.0)) {
       (id :- diag :== zero).sum
     }
   }
 
   it should "be able to create a small random sized matrix" in {
-    MatrixM.rand(7,7) should not equal None
+    MatrixM.rand(7, 7) should not equal None
 
   }
 
   it should "be able to create a very large random sized matrix without exception" in {
-    noException should be thrownBy MatrixM.rand(70000,7000)
+    noException should be thrownBy MatrixM.rand(70000, 7000)
   }
 
   it should "be able to handle out-of-bounds matrix creation" in {
-    noException should be thrownBy MatrixM(hsize, lsize*1000, a1)
+    noException should be thrownBy MatrixM(hsize, lsize * 1000, a1)
   }
 
 
 
   it should "be able to create a matrix of ones" in {
-    assertResult(Some(5*5)) {
-      MatrixM.one(5,5).sum
+    assertResult(Some(5 * 5)) {
+      MatrixM.one(5, 5).sum
     }
-    assertResult(Some(5*5)) {
+    assertResult(Some(5 * 5)) {
       (MatrixM.one(5, 5) :== MatrixM.one(5, 5).transpose).sum
     }
 
@@ -125,9 +127,9 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
 
   it should "be able to create a matrix filled with a specific value" in {
     val sz = 66
-    val l0 = MatrixM.one(sz,sz)
-    val k0 = MatrixM.fill(1,sz,1.0/sz) concatDown MatrixM.fill(sz-1,sz,0)
-    val r =l0 |* k0
+    val l0 = MatrixM.one(sz, sz)
+    val k0 = MatrixM.fill(1, sz, 1.0 / sz) concatDown MatrixM.fill(sz - 1, sz, 0)
+    val r = l0 |* k0
 
   }
 
@@ -138,7 +140,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   it should "use the infix operator for element wise multiply" in {
     val l3 = MatrixM(hsize, lsize, a1)
     val l2 = MatrixM(hsize, lsize, a2)
-    val r  = MatrixM(hsize, lsize, (a1,a2).zipped.map((l:Double, r:Double)=>l*r))
+    val r = MatrixM(hsize, lsize, (a1, a2).zipped.map((l: Double, r: Double) => l * r))
     assertResult(Some(a1.length.toDouble), "infix and function for element wise multiply op are not compatible") {
       (l3 :* l2 :== hadamard(l3, l2)).sum
     }
@@ -151,7 +153,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   it should "use the infix operator for element wise sum" in {
     val l3 = MatrixM(hsize, lsize, a1)
     val l2 = MatrixM(hsize, lsize, a2)
-    val r  = MatrixM(hsize, lsize, (a1,a2).zipped.map((l:Double, r:Double)=>l+r))
+    val r = MatrixM(hsize, lsize, (a1, a2).zipped.map((l: Double, r: Double) => l + r))
     assertResult(Some(a1.length.toDouble), "infix and function for element wise sum are not compatible") {
       (l3 :+ l2 :== add(l3, l2)).sum
     }
@@ -163,7 +165,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   it should "use the infix operator for element wise subtract" in {
     val l3 = MatrixM(hsize, lsize, a1)
     val l2 = MatrixM(hsize, lsize, a2)
-    val r  = MatrixM(hsize, lsize, (a1,a2).zipped.map((l:Double, r:Double)=>l-r))
+    val r = MatrixM(hsize, lsize, (a1, a2).zipped.map((l: Double, r: Double) => l - r))
     assertResult(Some(a1.length.toDouble), "infix and function for element wise sum are not compatible") {
       (l3 :- l2 :== subtract(l3, l2)).sum
     }
@@ -176,7 +178,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   it should "use the infix operator for element wise divide" in {
     val l3 = MatrixM(hsize, lsize, a1)
     val l2 = MatrixM(hsize, lsize, a2)
-    val r  = MatrixM(hsize, lsize, (a1,a2).zipped.map((l:Double, r:Double)=>l/r))
+    val r = MatrixM(hsize, lsize, (a1, a2).zipped.map((l: Double, r: Double) => l / r))
     assertResult(Some(a1.length.toDouble), "infix and function for element wise sum are not compatible") {
       (l3 :\ l2 :== divide(l3, l2)).sum
     }
@@ -203,9 +205,9 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   it should "use the infix operator for matrix multiply" in {
     val l3 = MatrixM(hsize, lsize, a1)
     val l2 = MatrixM(hsize, lsize, a2)
-    val arr = Array(-464.0,-6027.0,1638.0,-7493.0,-8092.0,4913.0,846.0,12947.0,-3368.13,1170.9500000000003,
-      -3816.5899999999992,5036.540000000001,-4285.96,-10501.95,-2345.94,-8403.93)
-    val r  = MatrixM(hsize, lsize, arr)
+    val arr = Array(-464.0, -6027.0, 1638.0, -7493.0, -8092.0, 4913.0, 846.0, 12947.0, -3368.13, 1170.9500000000003,
+      -3816.5899999999992, 5036.540000000001, -4285.96, -10501.95, -2345.94, -8403.93)
+    val r = MatrixM(hsize, lsize, arr)
     assertResult(Some(a1.length.toDouble), "infix and function for matrix multiply are not compatible") {
       (l3 |* l2 :== multiply(l3, l2)).sum
     }
@@ -223,7 +225,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   it should "use the infix operator for multiply by value" in {
     val lm = MatrixM(hsize, lsize, a1)
     val lv = 67.34
-    val r  = MatrixM(hsize, lsize, a1.map(_ * lv))
+    val r = MatrixM(hsize, lsize, a1.map(_ * lv))
 
     assertResult(Some(a1.length.toDouble), "infix and function for value multiply op are not compatible") {
       (lm ** lv :== multiply1(lm, lv)).sum
@@ -238,12 +240,12 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   it should "use the infix operator for divide with value" in {
     val lm = MatrixM(hsize, lsize, a1)
     val lv = 67.34
-    val r  = MatrixM(hsize, lsize, a1.map(_ / lv))
+    val r = MatrixM(hsize, lsize, a1.map(_ / lv))
 
     assertResult(Some(a1.length.toDouble), "infix and function for value divide are not compatible") {
       (lm \\ lv :== divide1(lm, lv)).sum
     }
-     //TODO : sync up with eigen test
+    //TODO : sync up with eigen test
 
     assertResult(Some(true), "unexpected division result") {
       (lm \\ lv :- r).sum.map(_ < 0.0000001)
@@ -255,7 +257,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   it should "use the infix operator for sum with value" in {
     val lm = MatrixM(hsize, lsize, a1)
     val lv = 67.34
-    val r  = MatrixM(hsize, lsize, a1.map(_ + lv))
+    val r = MatrixM(hsize, lsize, a1.map(_ + lv))
 
     assertResult(Some(a1.length.toDouble), "infix and function for value sum are not compatible") {
       (lm ++ lv :== add1(lm, lv)).sum
@@ -271,7 +273,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   it should "use the infix operator for subtract with value" in {
     val lm = MatrixM(hsize, lsize, a1)
     val lv = 67.34
-    val r  = MatrixM(hsize, lsize, a1.map(_ - lv))
+    val r = MatrixM(hsize, lsize, a1.map(_ - lv))
 
     assertResult(Some(a1.length.toDouble), "infix and function for value subtract are not compatible") {
       (lm -- lv :== subtract1(lm, lv)).sum
@@ -288,7 +290,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
     val lv = 67.34
     //TODO : sync with eigen test
     assertResult(Some(true), "divide1 and multiply1 should commute ") {
-      (((lm \\ lv) ** lv) :- divide1(multiply1(lm, lv),lv)).sum.map(_ < 0.000001)
+      (((lm \\ lv) ** lv) :- divide1(multiply1(lm, lv), lv)).sum.map(_ < 0.000001)
     }
     //TODO : sync with eigen test
     assertResult(Some(true), "unexpected divide1/multiply1 commute result") {
@@ -305,7 +307,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   it should "use the infix operator for matrix equality" in {
     val lm = MatrixM(hsize, lsize, a1)
     assertResult(Some(a1.length.toDouble), "infix and function for matrix equality are not compatible") {
-      (lm :== lm :== mEqual(lm,lm)).sum
+      (lm :== lm :== mEqual(lm, lm)).sum
     }
     assertResult(Some(a1.length.toDouble), "unexpected value matrix equality result") {
       (lm :== lm).sum
@@ -324,7 +326,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   it should "use the infix operator for matrix in-equality" in {
     val lm = MatrixM(hsize, lsize, a1)
     assertResult(Some(a1.length.toDouble), "infix and function for matrix inequality are not compatible") {
-      (lm :!= (lm ** 0.234) :== mNotEqual(lm,lm ** 0.234)).sum
+      (lm :!= (lm ** 0.234) :== mNotEqual(lm, lm ** 0.234)).sum
     }
 
     assertResult(Some(a1.length.toDouble), "unexpected value matrix in equality result") {
@@ -343,7 +345,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
       (lm :<< (lm ** 1.234) :== mSmaller(lm, lm ** 1.234)).sum
     }
 
-    assertResult(Some(a1.filter(_>= 0).length.toDouble), "unexpected value matrix smaller /equal result") {
+    assertResult(Some(a1.filter(_ >= 0).length.toDouble), "unexpected value matrix smaller /equal result") {
       (lm :<= (lm ** 1.34)).sum
     }
 
@@ -355,18 +357,18 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   it should "use the infix operator for matrix larger or equal " in {
     val lm = MatrixM(hsize, lsize, a1)
     assertResult(Some(a1.length.toDouble), "infix and function for matrix smaller or equal are not compatible") {
-      (lm :>= (lm ** 0.234) :== mGreaterEqual(lm,lm ** 0.234)).sum
+      (lm :>= (lm ** 0.234) :== mGreaterEqual(lm, lm ** 0.234)).sum
     }
 
     assertResult(Some(a1.length.toDouble), "infix and function for matrix smaller than are not compatible") {
-      (lm :>> (lm ** 0.234) :== mGreater(lm,lm ** 0.234)).sum
+      (lm :>> (lm ** 0.234) :== mGreater(lm, lm ** 0.234)).sum
     }
 
     assertResult(Some(a1.filter(_ >= 0).length.toDouble), "unexpected value matrix smaller /equal result") {
       (lm :>= (lm ** 0.34)).sum
     }
 
-    assertResult(Some(a1.filter(_> 0).length.toDouble), "unexpected value matrix smaller result") {
+    assertResult(Some(a1.filter(_ > 0).length.toDouble), "unexpected value matrix smaller result") {
       (lm :>> (lm ** 0.34)).sum
     }
 
@@ -379,20 +381,20 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   //
 
 
-  it should "be able to extract an array and convert back to the same matrix" in  {
-    val r = Array[Double](434.00000, 417.00000,  -489.00000,  501.00000,   527.00000,   139.00000,
-      959.00000,  1434.00000,  -1668.00000,   1068.00000,   1361.00000,   -506.00000,
+  it should "be able to extract an array and convert back to the same matrix" in {
+    val r = Array[Double](434.00000, 417.00000, -489.00000, 501.00000, 527.00000, 139.00000,
+      959.00000, 1434.00000, -1668.00000, 1068.00000, 1361.00000, -506.00000,
       -39.00000, -322.00000, 1047.00000, 118.00000, -2.00000, 1672.00000)
-    val k1 = MatrixM(3,3,r)
-    val k2 = MatrixM(3,3,k1.toArray)
+    val k1 = MatrixM(3, 3, r)
+    val k2 = MatrixM(3, 3, k1.toArray)
     assertResult(Some(9.0)) {
       (k1 :== k2).sum
     }
   }
 
-  it should "be able to be able to concatenate an array to the right" in  {
-    val r = Array[Double](434.00000, 417.00000,  -489.00000,  501.00000,   527.00000,   139.00000,
-      959.00000,  1434.00000,  -1668.00000,   1068.00000,   1361.00000,   -506.00000,
+  it should "be able to be able to concatenate an array to the right" in {
+    val r = Array[Double](434.00000, 417.00000, -489.00000, 501.00000, 527.00000, 139.00000,
+      959.00000, 1434.00000, -1668.00000, 1068.00000, 1361.00000, -506.00000,
       -39.00000,
       -322.00000,
       1047.00000,
@@ -401,138 +403,146 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
       1672.00000)
 
 
-    val l2 = MatrixM(3,3,r )
-    val l3 = MatrixM(3,3,Array(4.0,5.0,6.0,7.0,8.0,21.0,56.0,-1.0,-9.0))
+    val l2 = MatrixM(3, 3, r)
+    val l3 = MatrixM(3, 3, Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0))
     val l4 = l2 concatRight l3
     assertResult(Some(18.0), "unable to concat to the right") {
       val a = (l4(::, 0 to 2) :== l2).sum
       val b = (l4(::, 3 to 5) :== l3).sum
-      (a,b) match {
-        case (Some(l), Some(r))=>Some(l+r)
+      (a, b) match {
+        case (Some(l), Some(r)) => Some(l + r)
         case _ => None
       }
     }
 
   }
 
-  it should "be able to be able to concatenate an array at the bottom" in  {
-    val r = Array[Double](434.00000, 417.00000,  -489.00000,  501.00000,   527.00000,   139.00000,
-      959.00000,  1434.00000,  -1668.00000,   1068.00000,   1361.00000,   -506.00000,
+  it should "be able to be able to concatenate an array at the bottom" in {
+    val r = Array[Double](434.00000, 417.00000, -489.00000, 501.00000, 527.00000, 139.00000,
+      959.00000, 1434.00000, -1668.00000, 1068.00000, 1361.00000, -506.00000,
       -39.00000,
       -322.00000,
       1047.00000,
       118.00000,
       -2.00000,
       1672.00000)
-    val l2 = MatrixM(3,3,r )
-    val l3 = MatrixM(3,3,Array(4.0,5.0,6.0,7.0,8.0,21.0,56.0,-1.0,-9.0))
-    val l4 = l2 concatDown  l3
+    val l2 = MatrixM(3, 3, r)
+    val l3 = MatrixM(3, 3, Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0))
+    val l4 = l2 concatDown l3
     assertResult(Some(18.0)) {
       val a = (l4(0 to 2, ::) :== l2).sum
       val b = (l4(3 to 5, ::) :== l3).sum
-      (a,b) match {
-        case (Some(l), Some(r))=>Some(l+r)
+      (a, b) match {
+        case (Some(l), Some(r)) => Some(l + r)
         case _ => None
       }
     }
 
   }
 
-  it should "be able to be able to extract a diagonal marix" in  {
+  it should "be able to be able to extract a diagonal marix" in {
     val l0 = MatrixM(hsize, hsize, a1)
     val id = MatrixM.eye(hsize)
     val ld = l0.toDiag
-    val s = (for (i <- Range(0, hsize)) yield {l0(i, i)})
-    def |+|(l:Option[Double], r:Option[Double]) : Option[Double] = for ( x<- l; y <- r) yield (x+y)
+    val s = (for (i <- Range(0, hsize)) yield {
+      l0(i, i)
+    })
+    def |+|(l: Option[Double], r: Option[Double]): Option[Double] = for (x <- l; y <- r) yield (x + y)
 
-    val s1 = s.foldLeft[Option[Double]](Some(0.0))(|+|(_,_))
+    val s1 = s.foldLeft[Option[Double]](Some(0.0))(|+|(_, _))
 
     assertResult(s1) {
       ld.sum
     }
-    assertResult(Some(hsize*hsize.toDouble)) {
+    assertResult(Some(hsize * hsize.toDouble)) {
       (l0 :* id :== ld).sum
     }
 
   }
 
 
-  it should "not be able to extract a diagonal marix from a non-square matrix" in  {
+  it should "not be able to extract a diagonal marix from a non-square matrix" in {
     val l0 = MatrixM(hsize, hsize, a1)
     val id = MatrixM.eye(hsize)
     val ld = l0.toDiag
-    val s = (for (i <- Range(0, hsize)) yield {l0(i, i)})
-    def |+|(l:Option[Double], r:Option[Double]) : Option[Double] = for ( x<- l; y <- r) yield (x+y)
+    val s = (for (i <- Range(0, hsize)) yield {
+      l0(i, i)
+    })
+    def |+|(l: Option[Double], r: Option[Double]): Option[Double] = for (x <- l; y <- r) yield (x + y)
 
-    val s1 = s.foldLeft[Option[Double]](Some(0.0))(|+|(_,_))
+    val s1 = s.foldLeft[Option[Double]](Some(0.0))(|+|(_, _))
 
     assertResult(s1) {
       ld.sum
     }
-    assertResult(Some(hsize*hsize.toDouble)) {
+    assertResult(Some(hsize * hsize.toDouble)) {
       (l0 :* id :== ld).sum
     }
   }
 
   it should "be able to set a value" in {
-    val z = MatrixM.zero(4,4)
-    z(0,0,-56.0)
-    assertResult(Some(-56)){
-      z(0,0)
+    val z = MatrixM.zero(4, 4)
+    z(0, 0, -56.0)
+    assertResult(Some(-56)) {
+      z(0, 0)
     }
   }
 
   it should "be able to create a deep copy of a matrix" in {
-    val l0 = MatrixM.rand(hsize,hsize)
+    val l0 = MatrixM.rand(hsize, hsize)
     val l2 = l0.deepCopy
 
-    assertResult(Some(hsize*hsize)) {
+    assertResult(Some(hsize * hsize)) {
       (l0 :== l2).sum
     }
 
   }
 
   it should "a deep copy of a matrix can be changed and it will not chnage the original" in {
-    val l0 = MatrixM.rand(hsize,hsize)
+    val l0 = MatrixM.rand(hsize, hsize)
     val l2 = l0.deepCopy
 
-    assertResult(Some(true)) {for (c1 <-l0(1,3); c2 <- l2(1,3)) yield c1 == c2}
+    assertResult(Some(true)) {
+      for (c1 <- l0(1, 3); c2 <- l2(1, 3)) yield c1 == c2
+    }
 
-    l2(1,3,78.90)
-    assertResult(Some(true)) {for (c1 <-l0(1,3); c2 <- l2(1,3)) yield (c1 != c2) && (c2 == 78.90)}
+    l2(1, 3, 78.90)
+    assertResult(Some(true)) {
+      for (c1 <- l0(1, 3); c2 <- l2(1, 3)) yield (c1 != c2) && (c2 == 78.90)
+    }
 
-    assertResult(Some(hsize*hsize - 1)) {
+    assertResult(Some(hsize * hsize - 1)) {
       (l0 :== l2).sum
     }
 
   }
 
   it should "should be able to use the access slicer" in {
-    val arr = Array(2.0,1.0,5.0,7.0,10.56,-90.1, 0.0,6.0,-3.0,2.0,10.0,45.0,
-      8.0,0.0,7.0,8.0,0.0,100.9,  6.0,1.0,4.0,5.0,-45.0, 34.56 ,0.09,7.0,0.3,0.56,7.0, 0.89,
-      5.0, -9.0, 23.0, 90.0 , 5.0, -12.0)
+    val arr = Array(2.0, 1.0, 5.0, 7.0, 10.56, -90.1, 0.0, 6.0, -3.0, 2.0, 10.0, 45.0,
+      8.0, 0.0, 7.0, 8.0, 0.0, 100.9, 6.0, 1.0, 4.0, 5.0, -45.0, 34.56, 0.09, 7.0, 0.3, 0.56, 7.0, 0.89,
+      5.0, -9.0, 23.0, 90.0, 5.0, -12.0)
 
-    val mat = MatrixM(6,6,arr)
+    val mat = MatrixM(6, 6, arr)
 
     assertResult(Some(36.0), "row range plus column wildcard not working") {
-      val test = mat(0 to 3, :: ) concatDown mat(4 to 5, ::)
+      val test = mat(0 to 3, ::) concatDown mat(4 to 5, ::)
       val a1 = test :- mat
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+      (MatrixM(6, 6, a2) :== MatrixM.zero(6, 6)).sum
     }
 
     assertResult(Some(36.0), "row wild card plus column range not working") {
       val test = mat(::, 0 to 3) concatRight mat(::, 4 to 5)
       val a1 = test :- mat
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+      (MatrixM(6, 6, a2) :== MatrixM.zero(6, 6)).sum
     }
 
     assertResult(Some(36.0), "row range plus column range not working") {
       val test = mat(0 to 3, 0 to 5) concatDown mat(4 to 5, 0 to 5)
       val a1 = test :- mat
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+      (MatrixM(6, 6, a2) :== MatrixM.zero(6, 6)).sum
     }
 
 
@@ -540,14 +550,14 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
       val test = mat(0, 0 to 5) concatDown mat(1 to 5, 0 to 5)
       val a1 = test :- mat
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+      (MatrixM(6, 6, a2) :== MatrixM.zero(6, 6)).sum
     }
 
     assertResult(Some(36.0), "row plus column range not working (bottom)") {
       val test = mat(0 to 4, 0 to 5) concatDown mat(5, 0 to 5)
       val a1 = test :- mat
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+      (MatrixM(6, 6, a2) :== MatrixM.zero(6, 6)).sum
     }
 
 
@@ -555,43 +565,43 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
       val test = mat(0 to 4, 0 to 5) concatDown mat(5, 0 to 5)
       val a1 = test :- mat
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+      (MatrixM(6, 6, a2) :== MatrixM.zero(6, 6)).sum
     }
     assertResult(Some(36.0), "row plus column wild cart not working") {
       val test = mat(0, 0 to 5) concatDown mat(1 to 5, ::)
       val a1 = test :- mat
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+      (MatrixM(6, 6, a2) :== MatrixM.zero(6, 6)).sum
     }
 
     assertResult(Some(36.0), "row range plus column  not working") {
       val test = mat(0 to 5, 0) concatRight mat(0 to 5, 1 to 5)
       val a1 = test :- mat
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+      (MatrixM(6, 6, a2) :== MatrixM.zero(6, 6)).sum
     }
 
     assertResult(Some(36.0), "row range plus column  not working (right side) ") {
       val test = mat(0 to 5, 0 to 4) concatRight mat(0 to 5, 5)
       val a1 = test :- mat
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+      (MatrixM(6, 6, a2) :== MatrixM.zero(6, 6)).sum
     }
     assertResult(Some(36.0), "row wild card plus column  not working") {
       val test = mat(::, 0) concatRight mat(::, 1 to 5)
       val a1 = test :- mat
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+      (MatrixM(6, 6, a2) :== MatrixM.zero(6, 6)).sum
     }
 
     assertResult(Some(36.0), "row wild card plus column not working (right side)") {
       val test = mat(::, 0 to 4) concatRight mat(::, 5)
       val a1 = test :- mat
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+      (MatrixM(6, 6, a2) :== MatrixM.zero(6, 6)).sum
     }
 
-    for (i <- Range(0, 5); j <- Range(0,5)) {
+    for (i <- Range(0, 5); j <- Range(0, 5)) {
       assertResult(Some(0.0), "single cell extraction ") {
         (mat(i to i, j to j) :- MatrixM(1, 1, mat(i, j).map(Array(_)))).apply(0, 0) //.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
       }
@@ -618,12 +628,12 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   }
 
   it should "sum over all the rows of a simple matrix" in {
-    val r = Array[Double](434.00000, 417.00000,  -489.00000,  501.00000,   527.00000,   139.00000,
-      959.00000,  1434.00000,  -1668.00000,   1068.00000,   1361.00000,   -506.00000,
+    val r = Array[Double](434.00000, 417.00000, -489.00000, 501.00000, 527.00000, 139.00000,
+      959.00000, 1434.00000, -1668.00000, 1068.00000, 1361.00000, -506.00000,
       -39.00000, -322.00000, 1047.00000, 118.00000, -2.00000, 1672.00000)
-    val t = Array[Double](434.00000 + 417.00000 -489.00000,
-      501.00000 + 527.00000  + 139.00000,
-      959.00000 + 1434.00000 +  -1668.00000)
+    val t = Array[Double](434.00000 + 417.00000 - 489.00000,
+      501.00000 + 527.00000 + 139.00000,
+      959.00000 + 1434.00000 + -1668.00000)
 
     assertResult(Some(3.0)) {
       (MatrixM(3, 3, r).sumRows :== MatrixM(1, 3, t)).sum
@@ -632,12 +642,12 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   }
 
   it should "sum over all the columns of a simple matrix" in {
-    val r = Array[Double](434.00000, 417.00000,  -489.00000,  501.00000,   527.00000,   139.00000,
-      959.00000,  1434.00000,  -1668.00000,   1068.00000,   1361.00000,   -506.00000,
+    val r = Array[Double](434.00000, 417.00000, -489.00000, 501.00000, 527.00000, 139.00000,
+      959.00000, 1434.00000, -1668.00000, 1068.00000, 1361.00000, -506.00000,
       -39.00000, -322.00000, 1047.00000, 118.00000, -2.00000, 1672.00000)
     val t = Array[Double](434.00000 + 501.00000 + 959.00000,
       417.00000 + 527.00000 + 1434.00000,
-      -489.00000 + 139.00000 -1668.00000)
+      -489.00000 + 139.00000 - 1668.00000)
 
     assertResult(Some(3.0)) {
 
@@ -652,28 +662,28 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   // -------------------------------------------------------------------------------------------------
   //
 
-  it should "be able to get the inverse matrix" in   {
+  it should "be able to get the inverse matrix" in {
     val l0 = MatrixM(hsize, hsize, a1)
     val l1 = l0.inverse
     assertResult(Some(true), "matrix times inverse should equal id ") {
       ((l0 |* l1) :- MatrixM.eye(hsize)).sum.map(_ < 0.00000009)
     }
-    val k1 = MatrixM(1,4, Array(0.133383283270387,-0.193441867087964,0.0562818261335358,0.156569320793865))
-    val k2 = k1 concatDown MatrixM(1,4, Array(-0.00868671218665456,0.0138975529051200,0.0135898861548267, -0.0166114618154203))
-    val k3 = k2 concatDown MatrixM(1,4, Array(-0.00693479160027393,   0.0159732440110930, -0.00505488842630576 , -0.00311396044236207))
-    val k4 = k3 concatDown MatrixM(1,4, Array(-0.00607112102575925,  -0.0103377723232145,  0.00486333832832704, 0.00668475939273533))
+    val k1 = MatrixM(1, 4, Array(0.133383283270387, -0.193441867087964, 0.0562818261335358, 0.156569320793865))
+    val k2 = k1 concatDown MatrixM(1, 4, Array(-0.00868671218665456, 0.0138975529051200, 0.0135898861548267, -0.0166114618154203))
+    val k3 = k2 concatDown MatrixM(1, 4, Array(-0.00693479160027393, 0.0159732440110930, -0.00505488842630576, -0.00311396044236207))
+    val k4 = k3 concatDown MatrixM(1, 4, Array(-0.00607112102575925, -0.0103377723232145, 0.00486333832832704, 0.00668475939273533))
     assertResult(Some(true), "shuould get the actual inverse") {
-      (l1 :- k4).sum.map(_ < 0.000000009 )
+      (l1 :- k4).sum.map(_ < 0.000000009)
     }
   }
 
   it should "not be able to invert a singular matrix" in {
 
-    val m = MatrixM.one(5,5)
+    val m = MatrixM.one(5, 5)
     val i = m.inverse
     i.matrix match {
-      case Some(m) => assert(1==2,"cannot invert singular matrix")
-      case None => assert(1==1)
+      case Some(m) => assert(1 == 2, "cannot invert singular matrix")
+      case None => assert(1 == 1)
     }
 
   }
@@ -681,18 +691,18 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   it should "be able to invert a large matrix " in {
     assertResult(Some(true), "unable to invert a reasonbly large matrix") {
       val sz = 250
-      val l0 = MatrixM.one(sz,sz)  :- MatrixM.eye(sz)
+      val l0 = MatrixM.one(sz, sz) :- MatrixM.eye(sz)
       val k0 = l0.inverse
-      val r = k0(0,::).toArray.map(_.sum)
-      r.map(1.0 / _).map(_ - (sz-1)).map(_ < 0.0000001)
+      val r = k0(0, ::).toArray.map(_.sum)
+      r.map(1.0 / _).map(_ - (sz - 1)).map(_ < 0.0000001)
     }
   }
 
   it should "be able to solve a set of equations " in {
     val l0 = MatrixM(hsize, hsize, a1)
-    val x  = MatrixM(hsize, 3, Array(1.0,2.0,3.0,4.0,0.4,0.3,0.56,0.489,10,45,900,-90))
+    val x = MatrixM(hsize, 3, Array(1.0, 2.0, 3.0, 4.0, 0.4, 0.3, 0.56, 0.489, 10, 45, 900, -90))
 
-    val r  = l0.solve(x)
+    val r = l0.solve(x)
     assertResult(Some(true)) {
       ((l0 |* r) :- x).sum.map(_ < 0.00000000001)
     }
@@ -705,15 +715,15 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
     val c = 120
     val l0 = MatrixM.rand(r, c)
     val l1 = l0.transpose
-    for (i <- Range(0,r)) {
+    for (i <- Range(0, r)) {
       assertResult(Some(c), "unable to transpose a matrix") {
-        (l0(i,::) :== l1(::,i).transpose).sum
+        (l0(i, ::) :== l1(::, i).transpose).sum
       }
     }
   }
 
   it should "be able to get the determinant" in {
-    val l3  = MatrixM(hsize, lsize, a1)
+    val l3 = MatrixM(hsize, lsize, a1)
     val result = -2.35969600000000e6
     assertResult(Some(true)) {
       l3.determinant.map(_ - result).map(scala.math.abs(_)).map(_ < 0.000001)
@@ -805,7 +815,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   //
 
   it should "be able to serialize to a csv file" in {
-    val m = MatrixM.rand(1000,1000)
+    val m = MatrixM.rand(1000, 1000)
     val fn = "/tmp/testserializebreeze.csv"
     MatrixM.csvwrite(fn, m)
     val k = MatrixM.csvread(fn)
@@ -826,8 +836,8 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   it should "be able to svd a 2x3 matrix; fundamental invariants" in {
     val accuracy = 1.0E-8
 
-    val arr = Array(3.0, 2.0,2.0,3.0,2.0,-2.0)
-    val mat  = MatrixM(2,3,arr)
+    val arr = Array(3.0, 2.0, 2.0, 3.0, 2.0, -2.0)
+    val mat = MatrixM(2, 3, arr)
     val res = mat.svd
     assertResult(Some(true), " Vt not orthogonal") {
       ((res.Vt.transpose |* res.Vt) :- MatrixM.eye(3)).sum.map(scala.math.abs).map(_ < accuracy)
@@ -847,38 +857,38 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   it should "be able to svd a 2x3 matrix; wide value format" in {
     val accuracy = 1.0E-8
 
-    val arr = Array(3.0, 2.0,2.0,3.0,2.0,-2.0)
-    val mat  = MatrixM(2,3,arr)
+    val arr = Array(3.0, 2.0, 2.0, 3.0, 2.0, -2.0)
+    val mat = MatrixM(2, 3, arr)
     val res = mat.svd
 
 
-    val a = 1.0/scala.math.sqrt(2.0)
-    val b = 1.0/scala.math.sqrt(18.0)
+    val a = 1.0 / scala.math.sqrt(2.0)
+    val b = 1.0 / scala.math.sqrt(18.0)
 
     val arrU = Array(-a, -a, -a, a)
-    val U = MatrixM(2,2,arrU)
+    val U = MatrixM(2, 2, arrU)
 
     assertResult(Some(4.0), "U value not correct") {
-      val dm  = res.U :\ U
-      val fac = dm(0,0)
+      val dm = res.U :\ U
+      val fac = dm(0, 0)
       val dm2 = dm \\ fac.get
       dm2.sum.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5))
     }
     val sentinel = 1.0 //this is in fact 0; but you can't divide by 0 !)
-    val arrVt = Array(-a, -b, -2.0/3.0, -a , b, 2.0/3.0, sentinel, -4.0 * b, 1.0/3.0)
-    val Vt    = MatrixM(3,3,arrVt)
+    val arrVt = Array(-a, -b, -2.0 / 3.0, -a, b, 2.0 / 3.0, sentinel, -4.0 * b, 1.0 / 3.0)
+    val Vt = MatrixM(3, 3, arrVt)
 
     assertResult(Some(9.0 - sentinel), "Vt value not correct") {
-      val dm  = res.Vt :\ Vt
-      val fac = dm(0,0)
+      val dm = res.Vt :\ Vt
+      val fac = dm(0, 0)
       val dm2 = dm \\ fac.get
       dm2.sum.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5))
     }
 
-    val arrS = Array(5.0,0.0,0.0,3.0,0.0,0.0)
-    val S    = MatrixM(2,3,arrS)
+    val arrS = Array(5.0, 0.0, 0.0, 3.0, 0.0, 0.0)
+    val S = MatrixM(2, 3, arrS)
     assertResult(Some(true), "U value not correct") {
-      val dm  = res.Sm :- S
+      val dm = res.Sm :- S
       dm.sum.map(scala.math.abs).map(_ < accuracy)
     }
 
@@ -887,9 +897,9 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   //===
   it should "svd should work  without throwing an exception for null matrices" in {
     noException should be thrownBy {
-      val arr = Array(2.0,1.0,5.0,7.0,0.0, 0.0,6.0,0.0,0.0,10.0, 8.0,0.0,7.0,8.0,0.0,  6.0,1.0,4.0,5.0,0.0 ,0.0,7.0,0.0,0.0,7.0)
-      val mat  = MatrixM(5,6,arr)
-      val res= mat.svd
+      val arr = Array(2.0, 1.0, 5.0, 7.0, 0.0, 0.0, 6.0, 0.0, 0.0, 10.0, 8.0, 0.0, 7.0, 8.0, 0.0, 6.0, 1.0, 4.0, 5.0, 0.0, 0.0, 7.0, 0.0, 0.0, 7.0)
+      val mat = MatrixM(5, 6, arr)
+      val res = mat.svd
       assertResult(MatrixM.none, "Matrix U not Non") {
         res.U
       }
@@ -908,8 +918,8 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   it should "be able to svd a 5x5 matrix; fundamental invariants" in {
     val accuracy = 1.0E-8
 
-    val arr = Array(2.0,1.0,5.0,7.0,0.0, 0.0,6.0,0.0,0.0,10.0, 8.0,0.0,7.0,8.0,0.0,  6.0,1.0,4.0,5.0,0.0 ,0.0,7.0,0.0,0.0,7.0)
-    val mat  = MatrixM(5,5,arr)
+    val arr = Array(2.0, 1.0, 5.0, 7.0, 0.0, 0.0, 6.0, 0.0, 0.0, 10.0, 8.0, 0.0, 7.0, 8.0, 0.0, 6.0, 1.0, 4.0, 5.0, 0.0, 0.0, 7.0, 0.0, 0.0, 7.0)
+    val mat = MatrixM(5, 5, arr)
     val res = mat.svd
     assertResult(Some(true), " Vt not orthogonal") {
       ((res.Vt.transpose |* res.Vt) :- MatrixM.eye(5)).sum.map(scala.math.abs).map(_ < accuracy)
@@ -926,7 +936,7 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
 
   }
 
-  it should  "match the values (up to a factor) of the svd example" in {
+  it should "match the values (up to a factor) of the svd example" in {
     val arr = Array(2.0, 1.0, 5.0, 7.0, 0.0, 0.0, 6.0, 0.0, 0.0, 10.0, 8.0, 0.0, 7.0, 8.0, 0.0, 6.0, 1.0, 4.0, 5.0, 0.0, 0.0, 7.0, 0.0, 0.0, 7.0)
     val mat = MatrixM(5, 5, arr)
     val Uarr = Array(-0.54225536,
@@ -1014,209 +1024,209 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   //
 
   it should "take the qr decompostion of a 5x5 matrix: fundamental invariants" in {
-    val arr = Array(2.0,1.0,5.0,7.0,0.0, 0.0,6.0,0.0,0.0,10.0, 8.0,0.0,7.0,8.0,0.0,  6.0,1.0,4.0,5.0,0.0 ,0.0,7.0,0.0,0.0,7.0)
-    val mat  = MatrixM(5,5,arr)
+    val arr = Array(2.0, 1.0, 5.0, 7.0, 0.0, 0.0, 6.0, 0.0, 0.0, 10.0, 8.0, 0.0, 7.0, 8.0, 0.0, 6.0, 1.0, 4.0, 5.0, 0.0, 0.0, 7.0, 0.0, 0.0, 7.0)
+    val mat = MatrixM(5, 5, arr)
 
     val res = mat.qr
 
 
     assertResult(Some(25.0), "Q matrix is not orthogonal") {
       val itest = res.Q |* res.Q.transpose
-      val norm  = itest.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(5,5,norm) :== MatrixM.eye(5)).sum
+      val norm = itest.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(5, 5, norm) :== MatrixM.eye(5)).sum
     }
 
     assertResult(Some(25.0), "Q matrix is not orthogonal(test 2)") {
       val itest = res.Q.transpose |* res.Q
-      val norm  = itest.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(5,5,norm) :== MatrixM.eye(5)).sum
+      val norm = itest.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(5, 5, norm) :== MatrixM.eye(5)).sum
     }
 
     assertResult(Some(25.0), "Q * R should yield original matrix") {
       val a1 = (res.Q |* res.R) :- mat
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(5,5,a2) :== MatrixM.zero(5,5)).sum
+      (MatrixM(5, 5, a2) :== MatrixM.zero(5, 5)).sum
     }
 
   }
 
   it should "match the values of the qr decompostion of a 5x5 matrix" in {
 
-    val arrQ= Array(
-      -0.2250175802	,
-      -0.1125087901	,
-      -0.5625439505	,
-      -0.7875615306	,
-      0	,
-      0.0130470858	,
-      -0.5088363471	,
-      0.0326177146	,
-      0.0456648004	,
-      -0.85893315	,
-      0.9397991177	,
-      -0.1777908515	,
-      0.0364886645	,
-      -0.2691786723	,
-      0.1066745109	,
-      -0.2404755802	,
-      -0.75265008	,
-      0.3997580631	,
-      -0.109312725	,
-      0.451590048	,
-      0.0902550602	,
-      -0.3610202407	,
-      -0.7220404814	,
-      0.5415303611	,
+    val arrQ = Array(
+      -0.2250175802,
+      -0.1125087901,
+      -0.5625439505,
+      -0.7875615306,
+      0,
+      0.0130470858,
+      -0.5088363471,
+      0.0326177146,
+      0.0456648004,
+      -0.85893315,
+      0.9397991177,
+      -0.1777908515,
+      0.0364886645,
+      -0.2691786723,
+      0.1066745109,
+      -0.2404755802,
+      -0.75265008,
+      0.3997580631,
+      -0.109312725,
+      0.451590048,
+      0.0902550602,
+      -0.3610202407,
+      -0.7220404814,
+      0.5415303611,
       0.2166121444
     )
-    val Q = MatrixM(5,5,arrQ)
+    val Q = MatrixM(5, 5, arrQ)
     val arrR = Array(
-      -8.8881944173	,
-      0	,
-      0	,
-      0	,
-      0	,
-      -0.6750527406	,
-      -11.6423495823	,
-      0	,
-      0	,
-      0	,
-      -12.0384405399	,
-      0.6980190915	,
-      5.6203842142	,
-      0	,
-      0	,
-      -7.6505977263	,
-      -0.071758972	,
-      4.2610651509	,
-      -1.1430349339	,
-      0	,
-      -0.7875615306	,
-      -9.5743864795	,
-      -0.4978143841	,
-      -2.1074202241	,
+      -8.8881944173,
+      0,
+      0,
+      0,
+      0,
+      -0.6750527406,
+      -11.6423495823,
+      0,
+      0,
+      0,
+      -12.0384405399,
+      0.6980190915,
+      5.6203842142,
+      0,
+      0,
+      -7.6505977263,
+      -0.071758972,
+      4.2610651509,
+      -1.1430349339,
+      0,
+      -0.7875615306,
+      -9.5743864795,
+      -0.4978143841,
+      -2.1074202241,
       -1.010856674
 
     )
-    val R = MatrixM(5,5,arrR)
-    val arr = Array(2.0,1.0,5.0,7.0,0.0, 0.0,6.0,0.0,0.0,10.0, 8.0,0.0,7.0,8.0,0.0,  6.0,1.0,4.0,5.0,0.0 ,0.0,7.0,0.0,0.0,7.0)
-    val mat  = MatrixM(5,5,arr)
-    val res  = mat.qr
+    val R = MatrixM(5, 5, arrR)
+    val arr = Array(2.0, 1.0, 5.0, 7.0, 0.0, 0.0, 6.0, 0.0, 0.0, 10.0, 8.0, 0.0, 7.0, 8.0, 0.0, 6.0, 1.0, 4.0, 5.0, 0.0, 0.0, 7.0, 0.0, 0.0, 7.0)
+    val mat = MatrixM(5, 5, arr)
+    val res = mat.qr
 
     assertResult(Some(25.0), "R should match") {
       val a1 = res.R :- R
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(5,5,a2) :== MatrixM.zero(5,5)).sum
+      (MatrixM(5, 5, a2) :== MatrixM.zero(5, 5)).sum
     }
 
     assertResult(Some(25.0), "Q should match") {
       val a1 = res.Q :- Q
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(5,5,a2) :== MatrixM.zero(5,5)).sum
+      (MatrixM(5, 5, a2) :== MatrixM.zero(5, 5)).sum
     }
 
   }
 
   it should "take the qr decompostion of a 5x6 matrix: fundamental invariants" in {
-    val arr = Array(2.0,-10.0,5.0,7.0,89.67, 0.0,6.0,60.0,0.0,10.0, 8.0,-90.89,7.0,8.0,0.0,  6.0,1.0,4.0,5.0,0.0 ,0.0,7.0,0.0,0.0,7.0, -89.0, 201, 0, 5.9,6.9)
-    val mat  = MatrixM(5,6,arr)
+    val arr = Array(2.0, -10.0, 5.0, 7.0, 89.67, 0.0, 6.0, 60.0, 0.0, 10.0, 8.0, -90.89, 7.0, 8.0, 0.0, 6.0, 1.0, 4.0, 5.0, 0.0, 0.0, 7.0, 0.0, 0.0, 7.0, -89.0, 201, 0, 5.9, 6.9)
+    val mat = MatrixM(5, 6, arr)
     val res = mat.qr
 
     assertResult(Some(25.0), "Q matrix is not orthogonal") {
       val itest = res.Q |* res.Q.transpose
-      val norm  = itest.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(5,5,norm) :== MatrixM.eye(5)).sum
+      val norm = itest.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(5, 5, norm) :== MatrixM.eye(5)).sum
     }
 
     assertResult(Some(25.0), "Q matrix is not orthogonal(test 2)") {
       val itest = res.Q.transpose |* res.Q
-      val norm  = itest.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(5,5,norm) :== MatrixM.eye(5)).sum
+      val norm = itest.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+      (MatrixM(5, 5, norm) :== MatrixM.eye(5)).sum
     }
 
     assertResult(Some(25.0), "Q * R should yield original matrix") {
       val a1 = (res.Q |* res.R) :- mat
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(5,5,a2) :== MatrixM.zero(5,5)).sum
+      (MatrixM(5, 5, a2) :== MatrixM.zero(5, 5)).sum
     }
 
   }
   it should "match the values of the qr decompostion of a 5x6 matrix" in {
     val arrR = Array(
-      -90.6570951443	,
-      0	,
-      0	,
-      0	,
-      0	,
-      -12.5384560159	,
-      -59.8229648274	,
-      0	,
-      0	,
-      0	,
-      -11.2059624057	,
-      4.4438698	,
-      -91.0641012022	,
-      0	,
-      0	,
-      -0.6287428459	,
-      -3.9803533003	,
-      -0.3926080932	,
-      -7.8490336299	,
-      0	,
-      -6.1516420652	,
-      -0.5828515293	,
-      7.7151692504	,
-      -0.4893955258	,
-      -0.2328936532	,
-      16.8544667968	,
-      -24.8454585107	,
-      204.6295878394	,
-      39.6809798191	,
+      -90.6570951443,
+      0,
+      0,
+      0,
+      0,
+      -12.5384560159,
+      -59.8229648274,
+      0,
+      0,
+      0,
+      -11.2059624057,
+      4.4438698,
+      -91.0641012022,
+      0,
+      0,
+      -0.6287428459,
+      -3.9803533003,
+      -0.3926080932,
+      -7.8490336299,
+      0,
+      -6.1516420652,
+      -0.5828515293,
+      7.7151692504,
+      -0.4893955258,
+      -0.2328936532,
+      16.8544667968,
+      -24.8454585107,
+      204.6295878394,
+      39.6809798191,
       63.6804660919
     )
-    val arrQ = Array (
-      -0.0220611525	,
-      0.1103057624	,
-      -0.0551528812	,
-      -0.0772140337	,
-      -0.9891117718	,
-      0.0046238563	,
-      -0.1234152131	,
-      -0.9913996773	,
-      0.0161834969	,
-      0.0401507089	,
-      -0.0849098123	,
-      0.9784918037	,
-      -0.118461719	,
-      -0.0775588294	,
-      0.1236752321	,
-      -0.7607557556	,
-      -0.122598737	,
-      0.0034790253	,
-      -0.6351632921	,
-      0.0526850904	,
-      -0.6430652607	,
-      0.0111652944	,
-      0.0062894399	,
-      0.764413702	,
+    val arrQ = Array(
+      -0.0220611525,
+      0.1103057624,
+      -0.0551528812,
+      -0.0772140337,
+      -0.9891117718,
+      0.0046238563,
+      -0.1234152131,
+      -0.9913996773,
+      0.0161834969,
+      0.0401507089,
+      -0.0849098123,
+      0.9784918037,
+      -0.118461719,
+      -0.0775588294,
+      0.1236752321,
+      -0.7607557556,
+      -0.122598737,
+      0.0034790253,
+      -0.6351632921,
+      0.0526850904,
+      -0.6430652607,
+      0.0111652944,
+      0.0062894399,
+      0.764413702,
       -0.0444358163
     )
-    val Q = MatrixM(5,5,arrQ)
-    val R = MatrixM(5,6,arrR)
-    val arr = Array(2.0,-10.0,5.0,7.0,89.67, 0.0,6.0,60.0,0.0,10.0, 8.0,-90.89,7.0,8.0,0.0,  6.0,1.0,4.0,5.0,0.0 ,0.0,7.0,0.0,0.0,7.0, -89.0, 201, 0, 5.9,6.9)
-    val mat  = MatrixM(5,6,arr)
+    val Q = MatrixM(5, 5, arrQ)
+    val R = MatrixM(5, 6, arrR)
+    val arr = Array(2.0, -10.0, 5.0, 7.0, 89.67, 0.0, 6.0, 60.0, 0.0, 10.0, 8.0, -90.89, 7.0, 8.0, 0.0, 6.0, 1.0, 4.0, 5.0, 0.0, 0.0, 7.0, 0.0, 0.0, 7.0, -89.0, 201, 0, 5.9, 6.9)
+    val mat = MatrixM(5, 6, arr)
     val res = mat.qr
 
     assertResult(Some(30.0), "R should match") {
       val a1 = res.R :- R
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(5,6,a2) :== MatrixM.zero(5,6)).sum
+      (MatrixM(5, 6, a2) :== MatrixM.zero(5, 6)).sum
     }
 
     assertResult(Some(25.0), "Q should match") {
       val a1 = res.Q :- Q
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(5,5,a2) :== MatrixM.zero(5,5)).sum
+      (MatrixM(5, 5, a2) :== MatrixM.zero(5, 5)).sum
     }
 
   }
@@ -1228,87 +1238,87 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   it should "match the values of the lu decompostion of a 6x6 matrix" in {
 
     val arrL = Array(
-      1	,
-      -0.1172031077	,
-      -0.0554938957	,
-      -0.0110987791	,
-      -0.0776914539	,
-      -0.0221975583	,
-      0	,
-      1	,
-      -0.0329167272	,
-      0.4255195466	,
-      0.3598314199	,
-      0.0653974713	,
-      0	,
-      0	,
-      1	,
-      -0.3012056227	,
-      0.8918417053	,
-      0.7288203713	,
-      0	,
-      0	,
-      0	,
-      1	,
-      0.908812197	,
-      0.3029234501	,
-      0	,
-      0	,
-      0	,
-      0	,
-      1	,
-      0.3275677427	,
-      0	,
-      0	,
-      0	,
-      0	,
-      0	,
+      1,
+      -0.1172031077,
+      -0.0554938957,
+      -0.0110987791,
+      -0.0776914539,
+      -0.0221975583,
+      0,
+      1,
+      -0.0329167272,
+      0.4255195466,
+      0.3598314199,
+      0.0653974713,
+      0,
+      0,
+      1,
+      -0.3012056227,
+      0.8918417053,
+      0.7288203713,
+      0,
+      0,
+      0,
+      1,
+      0.908812197,
+      0.3029234501,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0.3275677427,
+      0,
+      0,
+      0,
+      0,
+      0,
       1.0
     )
     val arrU = Array(
-      -90.1	,
-      0	,
-      0	,
-      0	,
-      0	,
-      0	,
-      45	,
-      15.2741398446	,
-      0	,
-      0	,
-      0	,
-      0	,
-      100.9	,
-      11.8257935627	,
-      12.9886004941	,
-      0	,
-      0	,
-      0	,
-      34.56	,
-      -40.9494605993	,
-      4.5699468101	,
-      20.1848633884	,
-      0	,
-      0	,
-      0.89	,
-      7.1043107658	,
-      0.5832402267	,
-      4.1625300533	,
-      -6.230324877	,
-      0	,
-      -12	,
-      3.5935627081	,
-      22.4523615754	,
-      -3.899538974	,
-      71.2946219281	,
+      -90.1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      45,
+      15.2741398446,
+      0,
+      0,
+      0,
+      0,
+      100.9,
+      11.8257935627,
+      12.9886004941,
+      0,
+      0,
+      0,
+      34.56,
+      -40.9494605993,
+      4.5699468101,
+      20.1848633884,
+      0,
+      0,
+      0.89,
+      7.1043107658,
+      0.5832402267,
+      4.1625300533,
+      -6.230324877,
+      0,
+      -12,
+      3.5935627081,
+      22.4523615754,
+      -3.899538974,
+      71.2946219281,
       -34.0376756807
 
     )
-    val L = MatrixM(6,6,arrL)
-    val U = MatrixM(6,6,arrU)
-    val arr = Array(2.0,1.0,5.0,7.0,10.56,-90.1, 0.0,6.0,-3.0,2.0,10.0,45.0, 8.0,0.0,7.0,8.0,0.0,100.9,  6.0,1.0,4.0,5.0,-45.0, 34.56 ,0.09,7.0,0.3,0.56,7.0, 0.89,
-      5.0, -9.0, 23.0, 90.0 , 5.0, -12.0)
-    val mat  = MatrixM(6,6,arr)
+    val L = MatrixM(6, 6, arrL)
+    val U = MatrixM(6, 6, arrU)
+    val arr = Array(2.0, 1.0, 5.0, 7.0, 10.56, -90.1, 0.0, 6.0, -3.0, 2.0, 10.0, 45.0, 8.0, 0.0, 7.0, 8.0, 0.0, 100.9, 6.0, 1.0, 4.0, 5.0, -45.0, 34.56, 0.09, 7.0, 0.3, 0.56, 7.0, 0.89,
+      5.0, -9.0, 23.0, 90.0, 5.0, -12.0)
+    val mat = MatrixM(6, 6, arr)
     val res = mat.lu
 
     assertResult(Some(36.0), "P * L * U should match") {
@@ -1316,19 +1326,19 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
       val test = P |* res.L |* res.U
       val a1 = test :- mat
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+      (MatrixM(6, 6, a2) :== MatrixM.zero(6, 6)).sum
     }
 
     assertResult(Some(36.0), "L hould match") {
       val a1 = res.L :- L
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+      (MatrixM(6, 6, a2) :== MatrixM.zero(6, 6)).sum
     }
 
     assertResult(Some(36.0), "U hould match") {
       val a1 = res.U :- U
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+      (MatrixM(6, 6, a2) :== MatrixM.zero(6, 6)).sum
     }
 
 
@@ -1341,65 +1351,159 @@ class BreezeDenseMatrixImplicit$Test extends FlatSpec  with Matchers {
   //
   it should "match the values of the cholesky decompostion of a 6x6 square matrix" in {
     val arrL = Array(
-      11.3581732686	,
-      -3.2020994169	,
-      18.0510540869	,
-      49.1320555517	,
-      -19.6554494037	,
-      68.1835081826	,
-      0	,
-      12.5597197152	,
-      -12.4285202038	,
-      -49.7426923319	,
-      -2.6575993597	,
-      43.5535492984	,
-      0	,
-      0	,
-      12.1565345348	,
-      55.118878598	,
-      23.1703823278	,
-      -58.0898301742	,
-      0	,
-      0	,
-      0	,
-      17.7743775961	,
-      -6.7945561096	,
-      77.5340560127	,
-      0	,
-      0	,
-      0	,
-      0	,
-      36.5250799375	,
-      33.354408821	,
-      0	,
-      0	,
-      0	,
-      0	,
-      0	,
+      11.3581732686,
+      -3.2020994169,
+      18.0510540869,
+      49.1320555517,
+      -19.6554494037,
+      68.1835081826,
+      0,
+      12.5597197152,
+      -12.4285202038,
+      -49.7426923319,
+      -2.6575993597,
+      43.5535492984,
+      0,
+      0,
+      12.1565345348,
+      55.118878598,
+      23.1703823278,
+      -58.0898301742,
+      0,
+      0,
+      0,
+      17.7743775961,
+      -6.7945561096,
+      77.5340560127,
+      0,
+      0,
+      0,
+      0,
+      36.5250799375,
+      33.354408821,
+      0,
+      0,
+      0,
+      0,
+      0,
       67.9604918771
 
     )
-    val L = MatrixM(6,6,arrL)
-    val arr = Array(2.0,1.0,5.0,7.0,10.56,-90.1, 0.0,6.0,-3.0,2.0,10.0,45.0, 8.0,0.0,7.0,8.0,0.0,100.9,  6.0,1.0,4.0,5.0,-45.0, 34.56 ,0.09,7.0,0.3,0.56,7.0, 0.89,
-      5.0, -9.0, 23.0, 90.0 , 5.0, -12.0)
-    val matx  = MatrixM(6,6,arr)
+    val L = MatrixM(6, 6, arrL)
+    val arr = Array(2.0, 1.0, 5.0, 7.0, 10.56, -90.1, 0.0, 6.0, -3.0, 2.0, 10.0, 45.0, 8.0, 0.0, 7.0, 8.0, 0.0, 100.9, 6.0, 1.0, 4.0, 5.0, -45.0, 34.56, 0.09, 7.0, 0.3, 0.56, 7.0, 0.89,
+      5.0, -9.0, 23.0, 90.0, 5.0, -12.0)
+    val matx = MatrixM(6, 6, arr)
     //println(matx)
-    val mat   = matx |* matx.transpose
+    val mat = matx |* matx.transpose
 
     val res = mat.cholesky
 
     assertResult(Some(36.0), "L hould match") {
       val a1 = res.L :- L
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+      (MatrixM(6, 6, a2) :== MatrixM.zero(6, 6)).sum
     }
 
     assertResult(Some(36.0), "L * L^t should match") {
       val test = res.L |* res.L.transpose
       val a1 = test :- mat
       val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
-      (MatrixM(6,6,a2) :== MatrixM.zero(6,6)).sum
+      (MatrixM(6, 6, a2) :== MatrixM.zero(6, 6)).sum
     }
 
   }
+
+  //
+  // map /reduce/extensions
+  //-----------------------------------------------
+  //
+  it should "calculate functions on matrix elements" in {
+    val arr = Array(2.0, 1.0, 5.0, 7.0, 10.56, -90.1, 0.0, 6.0, -3.0, 2.0, 10.0, 45.0,
+      8.0, 0.0, 7.0, 8.0, 0.0, 100.9, 6.0, 1.0, 4.0, 5.0, -45.0, 34.56, 0.09, 7.0, 0.3, 0.56, 7.0, 0.89,
+      5.0, -9.0, 23.0, 90.0, 5.0, -12.0).map((x) => if (scala.math.abs(x) > 1.0) 1.0/x else x).map(scala.math.abs).map((x) => if(x==0.0) 0.56 else x)
+
+
+    val matx = MatrixM(6, 6, arr)
+
+    type MatT = com.kabouterlabs.matrix.implicits.breeze.BreezeDenseMatrixImplicit.MatrixMonT
+
+    def testit(name: String, f: (Double) => Double, mf: (MatT) => MatT): Unit = {
+      assertResult(Some(36.0), "operation " + name + " should work on all matrix elements") {
+        val a1 = mf(matx) :- MatrixM(6, 6, arr.map(f))
+        val a2 = a1.toArray.map(_.map(scala.math.abs).map((x) => scala.math.floor(x + 0.5)))
+        (MatrixM(6, 6, a2) :== MatrixM.zero(6, 6)).sum
+      }
+    }
+
+    def testit2(name: String, f: (Array[Double]) => Double, mf: (MatT) => Option[Double]): Unit = {
+      assertResult(Some(0.0), "aggregate operation " + name + " should work on all matrix elements") {
+         println(mf(matx))
+         mf(matx).map(_ - f(arr)).map(scala.math.abs).map((x) => scala.math.floor(x + 0.5))
+      }
+    }
+
+    testit("cos", scala.math.cos, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.cos(m))
+    testit("sin", scala.math.sin, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.sin(m))
+    testit("tan", scala.math.tan, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.tan(m))
+    testit("cosh", scala.math.cosh, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.cosh(m))
+    testit("sinh", scala.math.sinh, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.sinh(m))
+    testit("tanh", scala.math.tanh, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.tanh(m))
+
+
+
+    testit("acos", scala.math.acos, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.acos(m))
+    testit("asin", scala.math.asin, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.asin(m))
+    testit("atan", scala.math.atan, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.atan(m))
+
+    testit("exp", scala.math.exp, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.exp(m))
+    testit("log", scala.math.log, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.log(m))
+    testit("log10", scala.math.log10, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.log10(m))
+    testit("log1p", scala.math.log1p, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.log1p(m))
+    testit("expm1", scala.math.expm1, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.expm1(m))
+    testit("floor", scala.math.floor, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.floor(m))
+    testit("ceil", scala.math.ceil, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.ceil(m))
+    testit("abs", scala.math.abs, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.abs(m))
+
+    testit("sqrt", scala.math.sqrt, (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.sqrt(m))
+    testit("pow (3.45)", scala.math.pow(_,3.45), (m:MatT)=>com.kabouterlabs.matrix.MatrixExtension.pow(m, 3.45))
+
+    testit2("min", (x)=>x.min, (m:MatT) => com.kabouterlabs.matrix.MatrixExtension.min(m))
+    testit2("max", (x)=>x.max, (m:MatT) => com.kabouterlabs.matrix.MatrixExtension.max(m))
+
+
+  }
+
+  it should "support map/reduce functions on matrix elements with and without filter" in {
+
+
+    assertResult(Some(true), "values are changed in place") {
+      val arr = Array(2.0, 1.0, 5.0, 7.0, 10.56, -90.1, 0.0, 6.0, -3.0, 2.0, 10.0, 45.0,
+        8.0, 0.0, 7.0, 8.0, 0.0, 100.9, 6.0, 1.0, 4.0, 5.0, -45.0, 34.56, 0.09, 7.0, 0.3, 0.56, 7.0, 0.89,
+        5.0, -9.0, 23.0, 90.0, 5.0, -12.0)
+      val matx = MatrixM(6, 6, arr)
+      val res = com.kabouterlabs.matrix.MatrixExtension.mapFilter(matx)((row:Int, col:Int, x:Double) => if(row == col) 90.0 else x )
+      ((res :- matx).mapFunc(_ + 0.5).floor :== MatrixM.zero(6,6)).foldFunc(true)((a, x)=> (x==1.0) && a )
+    }
+
+    assertResult(Some(false), "values are not changed in place after a deep copy is made") {
+      val arr = Array(2.0, 1.0, 5.0, 7.0, 10.56, -90.1, 0.0, 6.0, -3.0, 2.0, 10.0, 45.0,
+        8.0, 0.0, 7.0, 8.0, 0.0, 100.9, 6.0, 1.0, 4.0, 5.0, -45.0, 34.56, 0.09, 7.0, 0.3, 0.56, 7.0, 0.89,
+        5.0, -9.0, 23.0, 90.0, 5.0, -12.0)
+      val matx = MatrixM(6, 6, arr)
+      val res = com.kabouterlabs.matrix.MatrixExtension.mapFilter(matx.deepCopy)((row:Int, col:Int, x:Double) => if(row == col) 90.0 else x )
+      ((res :- matx).mapFunc(_ + 0.5).floor :== MatrixM.zero(6,6)).foldFunc(true)((a, x)=> (x==1.0) && a )
+    }
+
+    assertResult(true, "reduce can be used to implement a sum of all diagonal elements") {
+      val arr = Array(2.0, 1.0, 5.0, 7.0, 10.56, -90.1, 0.0, 6.0, -3.0, 2.0, 10.0, 45.0,
+        8.0, 0.0, 7.0, 8.0, 0.0, 100.9, 6.0, 1.0, 4.0, 5.0, -45.0, 34.56, 0.09, 7.0, 0.3, 0.56, 7.0, 0.89,
+        5.0, -9.0, 23.0, 90.0, 5.0, -12.0)
+      val matx = MatrixM(6, 6, arr)
+      val res = com.kabouterlabs.matrix.MatrixExtension.reduceFilter(matx)(0.0)((accum:Double, row:Int, col:Int, x:Double) => if(row == col) accum + x else accum )
+      val gh = matx.toDiag.toArray.map(_.sum)
+      res == gh
+    }
+
+  }
+
 }

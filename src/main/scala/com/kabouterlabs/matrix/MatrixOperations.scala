@@ -232,8 +232,6 @@ object MatrixOperations {
 
     def cholesky : CholeskyDecompositionT[A]#CholeskyResultT = ev.cholesky(lhs)
 
-    //def funky(v:MatrixMTypeManifestT[A]#MatrixElemTypeT):MatrixMTypeManifestT[A]#MatrixElemTypeT = ev.funky(lhs,v)
-
   }
 
 
@@ -331,5 +329,4 @@ object MatrixOperations {
 
   def cholesky[A](lhs:A)(implicit ev: MatrixOperationsTC[A]) = ev.cholesky(lhs)
 
-  //def funky[A](m:A, v)(implicit ev: MatrixOperationsTC[A]):MatrixMTypeManifestT[A]#MatrixElemTypeT = ev.funky(m)
 }

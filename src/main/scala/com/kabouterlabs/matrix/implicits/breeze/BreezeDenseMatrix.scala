@@ -193,14 +193,15 @@ object BreezeDenseMatrixImplicit {
 
     // breeze supports step 1 size only
     override def apply[K, L](row: K, col: L): MatrixMonT = (row, col) match {
-      case (r: Range, ::) => matrix.map1(_(r.start to r.end, ::))
-      case (::, r: Range) => matrix.map1(_(::, r.start to r.end))
+      case (r: Range, ::) => matrix.map1((m:MatrixT)=>m(r.start to r.end, ::).copy)
+
+      case (::, r: Range) => matrix.map1((m:MatrixT)=>m(::, r.start to r.end).copy)
 
       case (row: Int, ::) => matrix.map1(_(row, ::).t.toDenseMatrix)
-      case (::, col: Int) => matrix.map1(_(::, col).toDenseMatrix.t)
+      case (::, col: Int) => matrix.map1((m:MatrixT)=>m(::, col).toDenseMatrix.t)
 
-      case (r: Range, c: Range) => matrix.map1(_(r.start to r.end, c.start to c.end))
-      case (row: Int, r: Range) => matrix.map1(_(row, r.start to r.end).t.toDenseMatrix)
+      case (r: Range, c: Range) => matrix.map1((m:MatrixT)=>m(r.start to r.end, c.start to c.end).copy)
+      case (row: Int, r: Range) => matrix.map1((m:MatrixT) => m(row, r.start to r.end).t.toDenseMatrix)
       case (r: Range, col: Int) => matrix.map1(_(r.start to r.end, col).toDenseMatrix.t)
       case (_, _) => matrix
     }

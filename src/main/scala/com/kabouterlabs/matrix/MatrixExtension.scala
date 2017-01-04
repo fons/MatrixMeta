@@ -110,4 +110,36 @@ object MatrixExtension {
 
   }
 
+  def mapFunc[A,W](m:A)(f:(W)=>W)(implicit ev: MatrixExtensionsTC[A]{type MatrixDataElemT = W}) = ev.mapFunc(m,f)
+  def mapFilter[A,W](m:A)(f:(Int,Int,W)=>W)(implicit ev: MatrixExtensionsTC[A]{type MatrixDataElemT = W}) = ev.mapFilter(m,f)
+  def reduceFunc[A,W](m:A)(v:W)(f:(W,W)=>W)(implicit ev: MatrixExtensionsTC[A]{type MatrixDataElemT = W}) = ev.reduceFunc(m,v,f)
+  def reduceFilter[A,W](m:A)(v:W)(f:(W,Int, Int, W)=>W)(implicit ev: MatrixExtensionsTC[A]{type MatrixDataElemT = W}) = ev.reduceFilter(m,v,f)
+  def foldFunc[A,V,W](m:A)(v:V)(f:(V,W)=>V)(implicit ev: MatrixExtensionsTC[A]{type MatrixDataElemT = W}) = ev.foldFunc(m,v,f)
+
+  def cos[A](m:A)(implicit ev: MatrixExtensionsTC[A]) = ev.cos(m)
+  def acos[A](m:A)(implicit ev: MatrixExtensionsTC[A])   = ev.acos(m)
+  def sin[A](m:A)(implicit ev: MatrixExtensionsTC[A])    = ev.sin(m)
+  def asin[A](m:A)(implicit ev: MatrixExtensionsTC[A])   = ev.asin(m)
+  def tan[A](m:A)(implicit ev: MatrixExtensionsTC[A])    = ev.tan(m)
+  def atan[A](m:A)(implicit ev: MatrixExtensionsTC[A])   = ev.atan(m)
+  def cosh[A](m:A)(implicit ev: MatrixExtensionsTC[A])   = ev.cosh(m)
+  def acosh[A](m:A)(implicit ev: MatrixExtensionsTC[A])  = ev.acosh(m)
+  def sinh[A](m:A)(implicit ev: MatrixExtensionsTC[A])   = ev.sinh(m)
+  def asinh[A](m:A)(implicit ev: MatrixExtensionsTC[A])  = ev.asinh(m)
+  def tanh[A](m:A)(implicit ev: MatrixExtensionsTC[A])   = ev.tanh(m)
+  def atanh[A](m:A)(implicit ev: MatrixExtensionsTC[A])  = ev.atanh(m)
+  def exp[A](m:A)(implicit ev: MatrixExtensionsTC[A])    = ev.exp(m)
+  def log[A](m:A)(implicit ev: MatrixExtensionsTC[A])    = ev.log(m)
+  def log10[A](m:A)(implicit ev: MatrixExtensionsTC[A])  = ev.log10(m)
+  def log1p[A](m:A)(implicit ev: MatrixExtensionsTC[A])  = ev.log1p(m)
+  def expm1[A](m:A)(implicit ev: MatrixExtensionsTC[A])  = ev.expm1(m)
+  def ceil[A](m:A)(implicit ev: MatrixExtensionsTC[A])   = ev.ceil(m)
+  def floor[A](m:A)(implicit ev: MatrixExtensionsTC[A])  = ev.floor(m)
+  def abs[A](m:A)(implicit ev: MatrixExtensionsTC[A])    = ev.abs(m)
+  def round[A](m:A)(implicit ev: MatrixExtensionsTC[A])  = ev.round(m)
+  def sqrt[A](m:A)(implicit ev: MatrixExtensionsTC[A])   = ev.sqrt(m)
+  def pow[A,W](m:A, p:W)(implicit ev: MatrixExtensionsTC[A]{type MatrixDataElemT = W}) = ev.pow(m, p)
+
+  def max[A,W](m:A)(implicit ev: MatrixExtensionsTC[A]) = ev.max(m)
+  def min[A,W](m:A)(implicit ev: MatrixExtensionsTC[A]) = ev.min(m)
 }

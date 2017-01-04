@@ -72,24 +72,24 @@ object Use
 
 }
 
-//
-//object TestCase {
-//
-//  trait XOperationsTC  {
-//    type ElemT
-//    def funky(elemT: ElemT):ElemT
-//  }
-//
-//
-//  implicit object  Ev$Ops extends XOperationsTC {
-//
-//    override type ElemT = Double
-//
-//    override def funky(elemT: ElemT) = 34.89 + elemT
-//  }
-//
-//  def dothis(value: Double) (implicit ev : XOperationsTC{type ElemT = Double}) = ev.funky(value)
-//}
+
+object TestCase {
+
+  trait XOperationsTC  {
+    type ElemT
+    def funky(elemT: ElemT):ElemT
+  }
+
+
+  implicit object  Ev$Ops extends XOperationsTC {
+
+    override type ElemT = Double
+
+    override def funky(elemT: ElemT) = 34.89 + elemT
+  }
+
+  def dothis[T](value: T) (implicit ev : XOperationsTC{type ElemT = T}) = ev.funky(value)
+}
 
 object Main extends App
 {
@@ -97,8 +97,12 @@ object Main extends App
   r.map(_())
 
 
+//  TestCase.dothis(56.89)
+
 
 }
+
+
 
 
 
