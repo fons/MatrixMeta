@@ -36,6 +36,7 @@ import java.io.{PrintWriter, StringWriter, File}
 import com.kabouterlabs.matrix.MatrixExtension.MatrixExtensionsTC
 import com.kabouterlabs.matrix.MatrixOperations.MatrixOperationsTC
 import com.kabouterlabs.matrix._
+import com.kabouterlabs.matrix.except.HandleException
 
 import jeigen.DenseMatrix
 import spire.math.{Complex, Numeric}
@@ -49,33 +50,13 @@ import com.kabouterlabs.matrix.implicits.extension.MatrixExtensionImplicit.Matri
 
 private object JeigenDenseMatrix {
 
-  def apply(rows: Int, colls: Int, data: Array[Double]): Option[DenseMatrix] = {
-    try {
-      val f = for (i <- Range(0, rows)) yield Range(i, rows * colls, rows).map(data(_)).toArray
-      Some(new DenseMatrix(f.toArray))
-    }
-    catch {
-       case e: Throwable =>
-        val sw = new StringWriter
-        e.printStackTrace(new PrintWriter(sw))
-        println("exception caught :" + e + sw)
-        None
-    }
+  def apply(rows: Int, colls: Int, data: Array[Double]): Option[DenseMatrix] =  HandleException {
+    val f = for (i <- Range(0, rows)) yield Range(i, rows * colls, rows).map(data(_)).toArray
+    new DenseMatrix(f.toArray)
   }
 
-  def apply(rows: Int, colls: Int): Option[DenseMatrix] = {
-    try {
-
-      Some(jeigen.Shortcuts.zeros(rows, colls))
-    }
-    catch {
-      case e: Throwable => {
-        val sw = new StringWriter
-        e.printStackTrace(new PrintWriter(sw))
-        println("exception caught :" + e + sw)
-        None
-      }
-    }
+  def apply(rows: Int, colls: Int): Option[DenseMatrix] = HandleException {
+    jeigen.Shortcuts.zeros(rows, colls)
   }
 
 

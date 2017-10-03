@@ -37,6 +37,7 @@ import java.io.{PrintWriter, StringWriter, File}
 import com.kabouterlabs.matrix.MatrixExtension.MatrixExtensionsTC
 import com.kabouterlabs.matrix.MatrixOperations.MatrixOperationsTC
 import com.kabouterlabs.matrix._
+import com.kabouterlabs.matrix.except.HandleException
 import org.jblas.{ComplexDoubleMatrix, Eigen, Solve, DoubleMatrix}
 import spire.math.{Complex, Numeric}
 import spire.implicits._
@@ -50,36 +51,12 @@ import com.kabouterlabs.matrix.implicits.extension.MatrixExtensionImplicit.Matri
 
 private object JblasDoubleMatrix {
 
-  def apply(rows: Int, colls: Int, data: Array[Double]): Option[DoubleMatrix] = {
-    try {
-      val f = for (i <- Range(0, rows)) yield Range(i, rows * colls, rows).map(data(_)).toArray
-      Some(new DoubleMatrix(f.toArray))
-    }
-    catch {
-      case e: Throwable => {
-        val sw = new StringWriter
-        e.printStackTrace(new PrintWriter(sw))
-        println("exception caught :" + e + sw)
-        None
-      }
-    }
+  def apply(rows: Int, colls: Int, data: Array[Double]): Option[DoubleMatrix] = HandleException {
+    val f = for (i <- Range(0, rows)) yield Range(i, rows * colls, rows).map(data(_)).toArray
+    new DoubleMatrix(f.toArray)
   }
 
-  def apply(rows: Int, colls: Int): Option[DoubleMatrix] = {
-    try {
-
-      Some(DoubleMatrix.zeros(rows, colls))
-    }
-    catch {
-      case e: Throwable => {
-        val sw = new StringWriter
-        e.printStackTrace(new PrintWriter(sw))
-        println("exception caught :" + e + sw)
-        None
-      }
-    }
-  }
-
+  def apply(rows: Int, colls: Int): Option[DoubleMatrix] = HandleException {DoubleMatrix.zeros(rows, colls)}
 
   def csvwrite(file: File, matrix: DoubleMatrix): Unit = {
     val pw = new PrintWriter(file)

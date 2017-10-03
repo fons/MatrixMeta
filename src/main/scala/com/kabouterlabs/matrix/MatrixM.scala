@@ -28,7 +28,8 @@
 package com.kabouterlabs.matrix
 import java.io.{PrintWriter, StringWriter}
 
-
+import com.kabouterlabs.matrix.except.HandleException
+import com.kabouterlabs.matrix.except.HandleException.safely
 
 case class MatrixM[V](matrix: Option[V]) {
 
@@ -37,18 +38,7 @@ case class MatrixM[V](matrix: Option[V]) {
     case None    => "{none}"
   }
 
-  def safeMap[W](f: V => W): Option[W] = {
-    try {
-      matrix.map(f(_))
-    }
-    catch {
-      case e: Throwable =>
-        val sw = new StringWriter
-        e.printStackTrace(new PrintWriter(sw))
-        println("exception caught :" + e + sw)
-        None
-    }
-  }
+  def safeMap[W](f: V => W): Option[W] =  HandleException{matrix.map(f(_)).get}
 
   def map1[W](f:V=>W) : MatrixM[W] = {
     matrix match {
@@ -56,26 +46,19 @@ case class MatrixM[V](matrix: Option[V]) {
       case None => MatrixM.none
     }
   }
+
+
   def map[W](f:V=>W):W = matrix.map(f(_)).get
 
-  def flatMap[W](f:V=>MatrixM[W]):MatrixM[W] = {
-    matrix match {
+
+  def flatMap[W](f:V=>MatrixM[W]):MatrixM[W] = matrix match {
       case None => MatrixM.none
-      case Some(_matrix_) => {
-        try {
-          f(_matrix_)
-        }
-        catch {
-          case e: Throwable =>
-            val sw = new StringWriter
-            e.printStackTrace(new PrintWriter(sw))
-            println("exception caught :" + e + sw)
-            MatrixM.none
-        }
-      }
+      case Some(_matrix_) =>   HandleException.handleFlat(f(_matrix_))
     }
-  }
+
 }
+
+
 
 object MatrixM {
 
@@ -113,38 +96,16 @@ object MatrixM {
   def none[U] = new MatrixM[U](None)
 
 
-  def apply[U](f: => U): MatrixM[U] = {
-    try {
-      new MatrixM[U](Some(f))
-    }
-    catch {
-      case e: Throwable =>
-        val sw = new StringWriter
-        e.printStackTrace(new PrintWriter(sw))
-        println("exception caught :" + e + sw)
-        new MatrixM[U](None)
-    }
-  }
+  def apply[U](f: => U): MatrixM[U] = HandleException.handle{f}
 
-  def safeMap[U](f: ()  => U): MatrixM[U] = {
-      try {
-        new MatrixM[U](Some(f()))
-      }
-      catch {
-        case e: Throwable =>
-          val sw = new StringWriter
-          e.printStackTrace(new PrintWriter(sw))
-          println("exception caught :" + e + sw)
-          new MatrixM[U](None)
-      }
 
-    }
+  def safeMap[U](f: ()  => U): MatrixM[U] =  HandleException.handle{f()}
 
   private def safeMap2[U](f: ()  => Option[U]): MatrixM[U] = {
     try {
       new MatrixM[U](f())
     }
-    catch {
+    catch safely {
       case e: Throwable =>
         val sw = new StringWriter
         e.printStackTrace(new PrintWriter(sw))

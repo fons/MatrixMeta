@@ -112,6 +112,7 @@ case class MatrixExample[T](implicit ev$matrix: MatrixOperationsTC[T]{type Matri
     val l6a = l4(::, 3 to 5)
     println(l6a)
     println(ev$matrix)
+    //val n = l6a(2,3, 89.90)
 
     val s1  = l2 :+ l3a
     val s1b = add(l2, l3a)

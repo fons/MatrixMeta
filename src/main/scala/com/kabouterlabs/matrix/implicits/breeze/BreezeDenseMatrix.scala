@@ -35,6 +35,7 @@ import com.kabouterlabs.matrix.MatrixExtension.MatrixExtensionsTC
 import com.kabouterlabs.matrix.MatrixOperations._
 
 import com.kabouterlabs.matrix._
+import com.kabouterlabs.matrix.except.HandleException
 import spire.algebra.Ring
 import spire.math
 
@@ -52,31 +53,10 @@ import com.kabouterlabs.matrix.implicits.extension.MatrixExtensionImplicit.Matri
 
 private object BreezeDenseMatrix {
 
-  def apply[B](rows: Int, colls: Int, data: Array[B]): Option[DenseMatrix[B]] = {
-    try {
-      Some(new DenseMatrix[B](rows, colls, data))
-    }
-    catch {
-      case e: Throwable =>
-        val sw = new StringWriter
-        e.printStackTrace(new PrintWriter(sw))
-        println("exception caught :" + e + sw)
-        None
-    }
-  }
+  def apply[B](rows: Int, colls: Int, data: Array[B]): Option[DenseMatrix[B]] = HandleException{new DenseMatrix[B](rows, colls, data)}
 
-  def apply(rows: Int, cols: Int): Option[DenseMatrix[Double]] = {
-    try {
-      Some(DenseMatrix.zeros[Double](rows, cols))
-    }
-    catch {
-      case e: Throwable =>
-        val sw = new StringWriter
-        e.printStackTrace(new PrintWriter(sw))
-        println("exception caught :" + e + sw)
-        None
-    }
-  }
+
+  def apply(rows: Int, cols: Int): Option[DenseMatrix[Double]] = HandleException{DenseMatrix.zeros[Double](rows, cols)}
 
   def add[B: Numeric](matrix: DenseMatrix[Double], rhs: B): DenseMatrix[Double] = rhs match {
     case q if rhs.isInstanceOf[Double] => matrix :+= rhs.asInstanceOf[Double]

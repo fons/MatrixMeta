@@ -37,6 +37,7 @@ import com.kabouterlabs.matrix.MatrixExtension.MatrixExtensionsTC
 import com.kabouterlabs.matrix._
 
 import com.kabouterlabs.matrix.MatrixOperations.MatrixOperationsTC
+import com.kabouterlabs.matrix.except.HandleException
 
 
 import org.apache.commons.math3.linear._
@@ -53,32 +54,12 @@ The array is column major order but the apache lib expects row major order.
  */
 private object ApacheCommonsMathDenseMatrix {
 
-  def apply(rows: Int, colls: Int, f: => Array[Double]): Option[RealMatrix] = {
-    try {
-      val a = (for (i <- Range(0, rows)) yield Range(i, rows * colls, rows).map(f(_)).toArray).toArray
-      Some(MatrixUtils.createRealMatrix(a))
-    }
-    catch {
-      case e: Throwable =>
-        val sw = new StringWriter
-        e.printStackTrace(new PrintWriter(sw))
-        println("exception caught :" + e + sw)
-        None
-    }
+  def apply(rows: Int, colls: Int, f: => Array[Double]): Option[RealMatrix] = HandleException{
+    val a = (for (i <- Range(0, rows)) yield Range(i, rows * colls, rows).map(f(_)).toArray).toArray
+    MatrixUtils.createRealMatrix(a)
   }
 
-  def apply(rows: Int, colls: Int): Option[RealMatrix] = {
-    try {
-      Some(MatrixUtils.createRealMatrix(rows, colls))
-    }
-    catch {
-      case e: Throwable =>
-        val sw = new StringWriter
-        e.printStackTrace(new PrintWriter(sw))
-        println("exception caught :" + e + sw)
-        None
-    }
-  }
+  def apply(rows: Int, colls: Int): Option[RealMatrix] = HandleException{MatrixUtils.createRealMatrix(rows, colls)}
 
   def lusolver(m: RealMatrix): Option[LUDecomposition] = {
 

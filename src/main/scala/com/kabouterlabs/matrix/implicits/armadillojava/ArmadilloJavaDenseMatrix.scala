@@ -33,6 +33,7 @@ import com.kabouterlabs.matrix.MatrixExtension.MatrixExtensionsTC
 import com.kabouterlabs.matrix._
 
 import com.kabouterlabs.matrix.MatrixOperations.MatrixOperationsTC
+import com.kabouterlabs.matrix.except.HandleException
 
 
 import org.armadillojava.{Col, Mat, Arma}
@@ -50,34 +51,12 @@ import com.kabouterlabs.matrix.implicits.extension.MatrixExtensionImplicit.Matri
 
 private object ArmadilloJavaDenseMatrix {
 
-  def apply(rows: Int, colls: Int, data: Array[Double]): Option[Mat] = {
-    try {
-      val f = for (i <- Range(0, rows)) yield Range(i, rows * colls, rows).map(data(_)).toArray
-      Some(new Mat(f.toArray))
-    }
-    catch {
-      case e: Throwable =>
-        val sw = new StringWriter
-        e.printStackTrace(new PrintWriter(sw))
-        println("exception caught :" + e + sw)
-        None
-    }
+  def apply(rows: Int, colls: Int, data: Array[Double]): Option[Mat] = HandleException {
+    val f = for (i <- Range(0, rows)) yield Range(i, rows * colls, rows).map(data(_)).toArray
+    new Mat(f.toArray)
   }
 
-
-  def apply(rows: Int, colls: Int): Option[Mat] = {
-    try {
-
-      Some(org.armadillojava.Arma.zeros(rows, colls))
-    }
-    catch {
-      case e: Throwable =>
-        val sw = new StringWriter
-        e.printStackTrace(new PrintWriter(sw))
-        println("exception caught :" + e + sw)
-        None
-    }
-  }
+  def apply(rows: Int, colls: Int): Option[Mat] = HandleException{ org.armadillojava.Arma.zeros(rows, colls)}
 
   def csvwrite(file: File, matrix: Mat): Unit = {
     val pw = new PrintWriter(file)
