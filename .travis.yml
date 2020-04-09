@@ -3,7 +3,7 @@ os:
   - linux
   
 scala:
-  - 2.11.8
+  - 2.12.11
 
 jdk:
 - oraclejdk8
