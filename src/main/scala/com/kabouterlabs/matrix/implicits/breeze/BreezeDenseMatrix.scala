@@ -98,6 +98,9 @@ object BreezeDenseMatrixImplicit {
   type MatrixT       = DenseMatrix[ElemT]
   type MatrixMonT    = MatrixM[MatrixT]
   type EigenResultT  = breeze.linalg.eig.DenseEig
+  //            Error:(205, 17) value eigenvectorsComplex is not a member of com.kabouterlabs.matrix.implicits.breeze.BreezeDenseMatrixImplicit.EigenResultT
+  // Note: implicit object Ev$MatrixExtensionsTC is not applicable here because it comes after the application point and it lacks an explicit result type
+  //          if (e.eigenvectorsComplex(col) == 0.0) Complex(e.eigenvectors(row, col), 0.0)
 
 
   private def boolToDouble(b: Boolean): Double = if (b) 1.0 else 0.0
@@ -148,7 +151,7 @@ object BreezeDenseMatrixImplicit {
 
 
   implicit class Ev$AggregationT(matrix: MatrixMonT) extends AggregateT[MatrixMonT] {
-    override def sumRows: MatrixMonT = matrix.map1((m: MatrixT) => breeze.linalg.sum(m(::, *)).toDenseMatrix)
+    override def sumRows: MatrixMonT = matrix.map1((m: MatrixT) => breeze.linalg.sum(m(::, *)).t.toDenseMatrix)
 
     override def sumCols: MatrixMonT = matrix.map1((m: MatrixT) => breeze.linalg.sum(m(*, ::)).toDenseMatrix.t)
 
@@ -165,7 +168,7 @@ object BreezeDenseMatrixImplicit {
 
     override def apply(row: Int, coll: Int, v: ElemT): MatrixMonT = matrix.map1((m) => {m(row to row, coll to coll) := v; m})
 
-    override def toDiag: MatrixMonT = matrix.map1((m: MatrixT) => m :* DenseMatrix.eye[Double](m.rows))
+    override def toDiag: MatrixMonT = matrix.map1((m: MatrixT) => m *:* DenseMatrix.eye[Double](m.rows))
 
     override def toArray: Option[Array[ElemT]] = matrix.safeMap(_.toArray)
 
@@ -202,7 +205,7 @@ object BreezeDenseMatrixImplicit {
     override def vectors(result: Option[EigenResultT]): EigenVectorRetT = for (e <- result) yield {
       (for (col <- Range(0, e.eigenvalues.length)) yield {
         (for (row <- Range(0, e.eigenvalues.length)) yield {
-          if (e.eigenvectorsComplex(col) == 0.0) Complex(e.eigenvectors(row, col), 0.0)
+          if (e.eigenvaluesComplex(col) == 0.0) Complex(e.eigenvectors(row, col), 0.0)
           else {
             val (offset1, offset2, factor) = if ((col % 2) == 0) (0, 1, 1.0) else (-1, 0, -1.0)
             Complex(e.eigenvectors(row, col + offset1), factor * e.eigenvectors(row, col + offset2))
@@ -212,7 +215,7 @@ object BreezeDenseMatrixImplicit {
     }
 
     override def values(result:Option[EigenResultT]):EigenValueRetT = for ( e <- result) yield {
-      for ((r,i) <- e.eigenvalues.data.zip(e.eigenvectorsComplex.data)) yield Complex(r,i)
+      for ((r,i) <- e.eigenvalues.data.zip(e.eigenvaluesComplex.data)) yield Complex(r,i)
     }
 
 
@@ -387,11 +390,11 @@ object BreezeDenseMatrixImplicit {
     })
 
     override def multe(lhs: MatrixMonT, rhs: MatrixMonT): MatrixMonT = for (l <- lhs; r <- rhs) yield MatrixM({
-      l :* r
+      l *:* r
     })
 
     override def dive(lhs: MatrixMonT, rhs: MatrixMonT): MatrixMonT = for (l <- lhs; r <- rhs) yield MatrixM({
-      l :/ r
+      l /:/ r
     })
 
     override def mult(lhs: MatrixMonT, rhs: MatrixMonT): MatrixMonT = for (l <- lhs; r <- rhs) yield MatrixM({
@@ -423,20 +426,20 @@ object BreezeDenseMatrixImplicit {
     })
 
     override def lt(lhs: MatrixMonT, rhs: MatrixMonT): MatrixMonT = for (l <- lhs; r <- rhs) yield MatrixM({
-      ((l :< r)).mapValues(boolToDouble)
+      ((l <:< r)).mapValues(boolToDouble)
     })
 
     override def le(lhs: MatrixMonT, rhs: MatrixMonT): MatrixMonT = for (l <- lhs; r <- rhs) yield MatrixM({
-      ((l :< r) :| (l :== r)).mapValues(boolToDouble)
+      ((l <:< r) |:| (l :== r)).mapValues(boolToDouble)
     })
 
     override def ge(lhs: MatrixMonT, rhs: MatrixMonT): MatrixMonT = for (l <- lhs; r <- rhs) yield MatrixM({
-      (!(l :< r)).mapValues(boolToDouble)
+      (!(l <:< r)).mapValues(boolToDouble)
     })
 
     override def gt(lhs: MatrixMonT, rhs: MatrixMonT): MatrixMonT =
       for (l <- lhs; r <- rhs) yield MatrixM({
-        (!((l :< r) :| (l :== r))).mapValues(boolToDouble)
+        (!((l <:< r) |:| (l :== r))).mapValues(boolToDouble)
       })
 
     //override def create(rows: Int, colls: Int, data: Array[ElemT]): MatrixMonT = MatrixM(rows, colls, data)

@@ -31,13 +31,15 @@ import com.kabouterlabs.matrix.implicits.breeze.BreezeDenseMatrixImplicit._
 import com.kabouterlabs.matrix.MatrixM
 import com.kabouterlabs.matrix.MatrixOperations._
 import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 
 /**
   * Created by fons on 4/19/16.
   */
-trait MatrixImplicit$TestT[U] extends Matchers {
-  this: FlatSpec =>
+trait MatrixImplicit$TestT[U] extends AnyFlatSpec with Matchers {
+  //this =>
 
 
   val t = Array[Double]( 4.0, 5.0, 6.0, 7.0, 8.0,21.0,

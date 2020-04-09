@@ -94,7 +94,7 @@ object MatrixOperations {
 
     def one(row: Int, col: Int): A
 
-    def none
+    def none: Unit
 
     def fill(row: Int, col: Int, value: MatrixDataElemT): A
 

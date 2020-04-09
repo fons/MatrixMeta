@@ -32,11 +32,13 @@ import com.kabouterlabs.matrix.MatrixOperations._
 import com.kabouterlabs.matrix.MatrixExtension._
 import com.kabouterlabs.matrix.implicits.jblass.JblasDoubleMatrixImplicit._
 import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 /**
   * Created by fons on 12/23/16.
   */
-class JblassDenseRealMatrixImplicit$Test extends FlatSpec with Matchers {
+class JblassDenseRealMatrixImplicit$Test extends AnyFlatSpec with Matchers {
   val a1 = Array(4.0, 5.0, 6.0, 7.0, 8.0, 21.0, 56.0, -1.0, -9.0, 90.0, 33.0, 107.0, -78.0, -23.0, 14.0, 33.0)
   val a2 = Array(23.0, 67.0, -78.0, 23.0, 45.0, -65.0, 90.0, 89.0, -102.0, -90.0, 45.67, 23.45, 12.01, -1.0, -100.0, +67.0)
   val hsize = math.sqrt(a1.length).toInt

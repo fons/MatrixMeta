@@ -35,7 +35,7 @@ import com.kabouterlabs.matrix.MatrixExtension._
   * Created by fons on 12/2/16.
   */
 
-case class MatrixExample[T](implicit ev$matrix: MatrixOperationsTC[T]{type MatrixDataElemT=Double},
+case class MatrixExample[T]()(implicit ev$matrix: MatrixOperationsTC[T]{type MatrixDataElemT=Double},
                             ev$extension:MatrixExtensionsTC[T]{type MatrixDataElemT=Double}) {
 
   def apply(): Unit = {
