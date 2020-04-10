@@ -4,7 +4,7 @@
 Table of Contents
 =================
 [![Build Status](https://travis-ci.org/fons/MatrixMeta.svg?branch=master)](https://travis-ci.org/fons/MatrixMeta)
-[![codecov](https://codecov.io/gh/fons/MatrixMeta/branch/master/graph/badge.svg)](https://codecov.io/gh/fons/MatrixMeta)
+
 
 ---
 * [MatrixMeta](#matrixmeta)
