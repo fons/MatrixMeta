@@ -24,8 +24,9 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * EOM
  */
-
 package com.kabouterlabs.matrix
+
+
 
 import scala.annotation.implicitNotFound
 

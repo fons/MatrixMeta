@@ -1,12 +1,13 @@
 name := "MatrixMeta"
 
-
 version := "0.1.0-SNAPSHOT"
 
 organization      := "com.kabouterlabs"
 
 scalaVersion := "2.12.11"
-
+githubOwner := "fons"
+githubRepository := "MatrixMeta"
+githubTokenSource := TokenSource.GitConfig("github.token")
 
 publishMavenStyle := true
 

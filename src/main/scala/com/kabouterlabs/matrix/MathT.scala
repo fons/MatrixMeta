@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017.
+ * Copyright (c) 2016.
  * https://opensource.org/licenses/BSD-3-Clause
  *
  * Copyright (c) 2016, MatrixMeta developers

@@ -27,6 +27,7 @@
 
 package com.kabouterlabs.matrix.implicits.extension
 
+
 import com.kabouterlabs.matrix.MatrixExtension.MatrixExtensionsTC
 import com.kabouterlabs.matrix.{StatT, MathT, MapT, MatrixM}
 import com.kabouterlabs.matrix.MatrixOperations.MatrixOperationsTC

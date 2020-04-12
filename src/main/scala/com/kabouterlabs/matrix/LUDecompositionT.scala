@@ -24,8 +24,9 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * EOM
  */
-
 package com.kabouterlabs.matrix
+
+
 
 /**
   * Created by fons on 12/28/16.
