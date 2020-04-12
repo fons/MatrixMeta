@@ -9,6 +9,9 @@ scala:
 jdk:
 - oraclejdk8
 
+before_script:
+- git config --global github.token SOME_TOKEN
+
 script:
 - sbt compile 
 
